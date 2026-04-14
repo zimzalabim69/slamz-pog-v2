@@ -56,15 +56,22 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
   }, [userData]);
 
   // Update position/rotation for object pooling
+  // Face-down: rotate PI around X so design (top cap) faces floor
+  const faceDownQuat = useMemo(() => {
+    const q = new THREE.Quaternion();
+    q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI);
+    return { x: q.x, y: q.y, z: q.z, w: q.w };
+  }, []);
+
   useEffect(() => {
     if (rb.current) {
       rb.current.setTranslation({ x: position[0], y: position[1], z: position[2] }, true);
-      rb.current.setRotation({ x: rotation[0], y: rotation[1], z: rotation[2], w: 1 }, true);
+      rb.current.setRotation(faceDownQuat, true);
       // Reset velocities when position changes (for resetStack)
       rb.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
       rb.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
     }
-  }, [position, rotation]);
+  }, [position, rotation, faceDownQuat]);
 
   return (
     <RigidBody 

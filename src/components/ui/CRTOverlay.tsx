@@ -30,8 +30,8 @@ export function CRTOverlay() {
     let animationId: number;
 
     const render = () => {
-      // Low quality: skip CRT entirely, just clear
-      if (qualityLevel === 'low') {
+      // Low quality or start screen: skip rendering
+      if (qualityLevel === 'low' || gameState === 'START_SCREEN') {
         animationId = requestAnimationFrame(render);
         return;
       }
@@ -100,10 +100,10 @@ export function CRTOverlay() {
 
     render();
     return () => cancelAnimationFrame(animationId);
-  }, [currentAtmosphere, qualityLevel]);
+  }, [currentAtmosphere, qualityLevel, gameState]);
 
-  // Don't even mount the canvas on low quality
-  if (qualityLevel === 'low') return null;
+  // Hide during start screen or low quality, but stay mounted
+  const isHidden = qualityLevel === 'low' || gameState === 'START_SCREEN';
 
   return (
     <canvas 
@@ -116,7 +116,8 @@ export function CRTOverlay() {
         height: '100vh',
         pointerEvents: 'none',
         zIndex: 100,
-        mixBlendMode: 'multiply'
+        mixBlendMode: 'multiply',
+        display: isHidden ? 'none' : 'block',
       }}
     />
   );

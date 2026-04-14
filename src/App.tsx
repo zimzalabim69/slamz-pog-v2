@@ -172,8 +172,8 @@ function App() {
         </Canvas>
       </WebGLErrorBoundary>
       
-      {/* 1:1 PROTOTYPE OVERLAYS — only render when game is active */}
-      {showGame && <CRTOverlay />}
+      {/* 1:1 PROTOTYPE OVERLAYS — CRT always mounted to avoid pop-in */}
+      <CRTOverlay />
       {showGame && <HUD />}
       {showGame && <PauseMenu />}
       {showGame && (mobileInfo.isMobile ? <MobileControls /> : <DesktopControls />)}
