@@ -122,45 +122,55 @@ function App() {
     }
   }, [initPogs]);
 
+  const qualityLevel = useGameStore((state) => state.qualityLevel);
+  
+  // Adaptive DPR based on quality tier
+  const dpr = React.useMemo(() => {
+    const nativeDpr = window.devicePixelRatio;
+    const isMobile = window.innerWidth < 768;
+    if (qualityLevel === 'low') return 1;
+    if (qualityLevel === 'medium') return Math.min(nativeDpr, 1.5);
+    return isMobile ? Math.min(nativeDpr, 1.5) : Math.min(nativeDpr, 2);
+  }, [qualityLevel]);
+
   const canvasProps = React.useMemo(() => ({
-    dpr: window.innerWidth < 768 ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2),
     gl: {
-      antialias: window.innerWidth < 768 ? false : true,
+      antialias: qualityLevel !== 'low',
       alpha: false,
       powerPreference: "high-performance" as const,
       failIfMajorPerformanceCaveat: false,
       preserveDrawingBuffer: false,
     }
-  }), []); // Constant for the session to prevent context re-initialization jitter
+  }), [qualityLevel]); // Constant for the session to prevent context re-initialization jitter
 
-  // Gate: don't render the game world during start screen
+  // Gate: pause game rendering during start screen but keep mounted
   const showGame = gameState !== 'START_SCREEN';
 
   return (
     <ErrorBoundary>
       <div className="app-container">
-        {showGame && (
-          <WebGLErrorBoundary>
-          <Canvas 
-            shadows={false}
-            className="main-canvas"
-            gl={canvasProps.gl}
-            dpr={canvasProps.dpr}
-            onCreated={({ gl }) => {
-              gl.toneMapping = THREE.ACESFilmicToneMapping;
-              gl.toneMappingExposure = 1.0;
-            }}
-            onError={(error) => {
-              console.error('WebGL error:', error);
-            }}
-          >
-            <Suspense fallback={null}>
-              <Experience />
-              <Showcase />
-            </Suspense>
-          </Canvas>
-        </WebGLErrorBoundary>
-        )}
+        <WebGLErrorBoundary>
+        <Canvas 
+          shadows={false}
+          className="main-canvas"
+          frameloop={showGame ? 'always' : 'never'}
+          style={{ display: showGame ? 'block' : 'none' }}
+          gl={canvasProps.gl}
+          dpr={dpr}
+          onCreated={({ gl }) => {
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = 1.0;
+          }}
+          onError={(error) => {
+            console.error('WebGL error:', error);
+          }}
+        >
+          <Suspense fallback={null}>
+            <Experience />
+            <Showcase />
+          </Suspense>
+        </Canvas>
+      </WebGLErrorBoundary>
       
       {/* 1:1 PROTOTYPE OVERLAYS — only render when game is active */}
       {showGame && <CRTOverlay />}

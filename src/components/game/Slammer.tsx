@@ -84,7 +84,7 @@ export function Slammer() {
       
       rb.current.setNextKinematicTranslation({
         x: intersectPoint.x,
-        y: targetY,
+        y: 5,
         z: intersectPoint.z
       });
 
@@ -106,8 +106,9 @@ export function Slammer() {
 
   // Handle Slam Input
   useEffect(() => {
-    const handleMouseDown = () => {
-      if (debugPanelOpen) return; // Ignore input when debug panel is open
+    const handleMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return; // LMB only
+      if (debugPanelOpen) return;
       if (useGameStore.getState().gameState === 'AIMING') {
         setGameState('POWERING');
         setPower(0);
@@ -115,8 +116,9 @@ export function Slammer() {
       }
     };
 
-    const handleMouseUp = () => {
-      if (debugPanelOpen) return; // Ignore input when debug panel is open
+    const handleMouseUp = (e: MouseEvent) => {
+      if (e.button !== 0) return; // LMB only
+      if (debugPanelOpen) return;
       const state = useGameStore.getState();
       if (state.gameState === 'POWERING' && rb.current) {
         setGameState('SLAMMED');
@@ -245,7 +247,7 @@ export function Slammer() {
     >
       <RoundCuboidCollider args={[0.6, 0.05, 0.6, 0.1]} />
       <mesh ref={mesh}>
-        <cylinderGeometry args={[0.72, 0.72, 0.18, 32]} />
+        <cylinderGeometry args={[0.72, 0.72, 0.18, 24]} />
         <meshStandardMaterial ref={materialRef} />
       </mesh>
     </RigidBody>

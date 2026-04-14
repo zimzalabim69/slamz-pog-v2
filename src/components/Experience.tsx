@@ -16,6 +16,7 @@ import { ArenaDecor } from './environment/ArenaDecor';
 import { Effects } from './Effects';
 import { GameController } from './GameController';
 import { PerformanceMonitor } from './PerformanceMonitor';
+import { AdaptiveQuality } from './AdaptiveQuality';
 import { SessionSummary } from './ui/SessionSummary';
 import { ShowcaseHUD } from './game/ShowcaseHUD';
 
@@ -49,9 +50,8 @@ export function Experience() {
         }}
       />
       
-      {/* 1:1 PROTOTYPE LIGHTING RIG */}
-      <ambientLight color={preset.ambientColor} intensity={preset.ambientIntensity * debugParams.arenaAmbientIntensity} />
-      <hemisphereLight args={[0xaaaaee, 0x333366, preset.ambientIntensity * 1.5]} />
+      {/* OPTIMIZED LIGHTING RIG — 4 lights (ambient + spot + 2 point) */}
+      <ambientLight color={preset.ambientColor} intensity={preset.ambientIntensity * debugParams.arenaAmbientIntensity * 1.8} />
 
       <spotLight
         position={preset.spotPosition}
@@ -62,9 +62,8 @@ export function Experience() {
       />
       <pointLight position={preset.pointPosition} intensity={preset.pointIntensity} color={preset.pointColor} />
 
-      {/* RIM LIGHTS */}
-      <pointLight position={[-10, 5, -5]} intensity={preset.pointIntensity * 0.4} color={preset.pointColor} />
-      <pointLight position={[10, 5, -5]}  intensity={preset.spotIntensity * 1.5}  color={preset.spotColor} />
+      {/* SINGLE RIM LIGHT — merged from two */}
+      <pointLight position={[0, 6, -8]} intensity={preset.spotIntensity * 1.2} color={preset.spotColor} />
       
 
       <color attach="background" args={[preset.bgColor]} />
@@ -97,12 +96,14 @@ export function Experience() {
       <OrbitControls
         ref={orbitRef}
         enablePan={false}
+        mouseButtons={{ LEFT: undefined, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE }}
         maxPolarAngle={Math.PI / 2.1}
         minDistance={5}
         maxDistance={25}
         target={[0, 0, 0]}
       />
       <PerformanceMonitor />
+      <AdaptiveQuality />
     </>
   );
 }

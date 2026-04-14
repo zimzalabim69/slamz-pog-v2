@@ -5,19 +5,25 @@ import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 
 /**
- * 1:1 POST-PROCESSING PIPELINE
- * Skips entirely during non-gameplay states to save GPU.
+ * ADAPTIVE POST-PROCESSING PIPELINE
+ * Respects qualityLevel from AdaptiveQuality:
+ * - high: bloom + chromatic aberration
+ * - medium: bloom only
+ * - low: nothing (return null)
  */
 export function Effects() {
   const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
   const gameState = useGameStore((state) => state.gameState);
+  const qualityLevel = useGameStore((state) => state.qualityLevel);
   const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
   const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
 
-  // Skip post-processing during states that don't benefit from it
-  if (gameState === 'RESETTING' || gameState === 'SESSION_SUMMARY') {
+  // Skip entirely on low quality or non-gameplay states
+  if (qualityLevel === 'low' || gameState === 'RESETTING' || gameState === 'SESSION_SUMMARY') {
     return null;
   }
+
+  const showAberration = qualityLevel === 'high' && !isMobile;
 
   return (
     <EffectComposer enableNormalPass={false}>
@@ -27,7 +33,7 @@ export function Effects() {
         luminanceSmoothing={0.9} 
         mipmapBlur 
       />
-      {!isMobile && (
+      {showAberration && (
         <ChromaticAberration
           blendFunction={BlendFunction.NORMAL}
           offset={new THREE.Vector2(preset.chromaticAberration, preset.chromaticAberration)}

@@ -47,7 +47,7 @@ export function CyberAlley() {
   const isEnabled = currentAtmosphere === 'CYBER_ALLEY';
   
   const rainRef = useRef<THREE.Points>(null);
-  const RAIN_COUNT = 1500;
+  const RAIN_COUNT = 500;
   
   const rainPositions = useMemo(() => {
     const pos = new Float32Array(RAIN_COUNT * 3);
@@ -103,9 +103,8 @@ export function CyberAlley() {
         <group key={i} position={pos} rotation={[0, i < 2 ? 0 : Math.PI, 0]}>
           <mesh>
             <boxGeometry args={[2.2, 5, 3.5]} />
-            <meshStandardMaterial map={CAB_TEX} roughness={0.4} metalness={0.5} />
+            <meshStandardMaterial map={CAB_TEX} roughness={0.4} metalness={0.5} emissive="#00e5ff" emissiveIntensity={0.3} />
           </mesh>
-          <pointLight color="#00e5ff" intensity={4} distance={5} position={[0, 2, 1.8]} />
         </group>
       ))}
 
@@ -114,13 +113,12 @@ export function CyberAlley() {
         <planeGeometry args={[4, 1]} />
         <meshBasicMaterial map={SIGN_TEX_OPEN} transparent />
       </mesh>
-      <pointLight color="#ff007c" intensity={3} distance={8} position={[-4, 8.5, -14]} />
+      <pointLight color="#ff007c" intensity={4} distance={10} position={[0, 9, -14]} />
 
       <mesh position={[4, 9.5, -14.9]}>
         <planeGeometry args={[4, 1]} />
         <meshBasicMaterial map={SIGN_TEX_SLAMZ} transparent />
       </mesh>
-      <pointLight color="#00e5ff" intensity={3} distance={8} position={[4, 9.5, -14]} />
 
       {/* RAIN */}
       <primitive object={new THREE.Points(rainGeo, new THREE.PointsMaterial({ 

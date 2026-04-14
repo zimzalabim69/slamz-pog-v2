@@ -16,7 +16,7 @@ export function Arena() {
     <group>
       {/* MAIN PLAYING SURFACE */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
-        <circleGeometry args={[9, 64]} />
+        <circleGeometry args={[9, 36]} />
         <meshStandardMaterial 
           map={texture}
           emissiveMap={texture}

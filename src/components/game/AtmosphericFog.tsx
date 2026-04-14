@@ -16,6 +16,7 @@ export function AtmosphericFog() {
   const fogColorStr = useGameStore((s) => s.fogColor);
   const fogPulseTrigger = useGameStore((state) => state.fogPulseTrigger);
   const gameState = useGameStore((state) => state.gameState);
+  const qualityLevel = useGameStore((state) => state.qualityLevel);
 
   useThree(); // Ensure we are in an R3F context
 
@@ -142,10 +143,17 @@ export function AtmosphericFog() {
     }
   `;
 
+  // Adaptive: skip fog entirely on low quality
+  if (qualityLevel === 'low') {
+    return null;
+  }
+
+  const sparkleCount = qualityLevel === 'medium' ? 30 : 80;
+
   return (
     <>
       <mesh ref={meshRef} position={[0, 0, 0]}>
-        <sphereGeometry args={[50, 16, 16]} />
+        <sphereGeometry args={[50, 12, 8]} />
         <shaderMaterial
           ref={materialRef}
           transparent
@@ -157,8 +165,8 @@ export function AtmosphericFog() {
           blending={THREE.AdditiveBlending}
         />
       </mesh>
-      <Sparkles count={80} scale={[30, 15, 30]} size={4} speed={0.2} opacity={0.15} color="#ffffff" />
-      <MistWisps />
+      <Sparkles count={sparkleCount} scale={[30, 15, 30]} size={4} speed={0.2} opacity={0.15} color="#ffffff" />
+      {qualityLevel === 'high' && <MistWisps />}
     </>
   );
 }
@@ -166,7 +174,7 @@ export function AtmosphericFog() {
 function MistWisps() {
   return (
     <group>
-      {[...Array(3)].map((_, i) => (
+      {[0, 1].map((_, i) => (
         <MistWisp key={i} index={i} />
       ))}
     </group>
