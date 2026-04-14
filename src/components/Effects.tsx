@@ -6,14 +6,18 @@ import * as THREE from 'three';
 
 /**
  * 1:1 POST-PROCESSING PIPELINE
- * This handles things that are best done in WebGL (Bloom, Aberration).
- * The reactive scanlines and flicker are handled by the CRTOverlay canvas to save GPU compute
- * and ensure that "Analog" feel of the original prototype.
+ * Skips entirely during non-gameplay states to save GPU.
  */
 export function Effects() {
   const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
+  const gameState = useGameStore((state) => state.gameState);
   const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
   const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
+
+  // Skip post-processing during states that don't benefit from it
+  if (gameState === 'RESETTING' || gameState === 'SESSION_SUMMARY') {
+    return null;
+  }
 
   return (
     <EffectComposer enableNormalPass={false}>

@@ -129,40 +129,44 @@ function App() {
       alpha: false,
       powerPreference: "high-performance" as const,
       failIfMajorPerformanceCaveat: false,
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: false,
     }
   }), []); // Constant for the session to prevent context re-initialization jitter
+
+  // Gate: don't render the game world during start screen
+  const showGame = gameState !== 'START_SCREEN';
 
   return (
     <ErrorBoundary>
       <div className="app-container">
-        <WebGLErrorBoundary>
-        <Canvas 
-          shadows={false}
-          className="main-canvas"
-          gl={canvasProps.gl}
-          dpr={canvasProps.dpr}
-          onCreated={({ gl }) => {
-            gl.toneMapping = THREE.ACESFilmicToneMapping;
-            gl.toneMappingExposure = 1.0;
-          }}
-          onError={(error) => {
-            console.error('WebGL error:', error);
-          }}
-        >
-          <Suspense fallback={null}>
-            <Experience />
-            <Showcase />
-          </Suspense>
-        </Canvas>
-      </WebGLErrorBoundary>
+        {showGame && (
+          <WebGLErrorBoundary>
+          <Canvas 
+            shadows={false}
+            className="main-canvas"
+            gl={canvasProps.gl}
+            dpr={canvasProps.dpr}
+            onCreated={({ gl }) => {
+              gl.toneMapping = THREE.ACESFilmicToneMapping;
+              gl.toneMappingExposure = 1.0;
+            }}
+            onError={(error) => {
+              console.error('WebGL error:', error);
+            }}
+          >
+            <Suspense fallback={null}>
+              <Experience />
+              <Showcase />
+            </Suspense>
+          </Canvas>
+        </WebGLErrorBoundary>
+        )}
       
-      {/* 1:1 PROTOTYPE OVERLAYS */}
-      <CRTOverlay />
-      <HUD />
-      <PauseMenu />
-      {/* Conditional component rendering */}
-      {mobileInfo.isMobile ? <MobileControls /> : <DesktopControls />}
+      {/* 1:1 PROTOTYPE OVERLAYS — only render when game is active */}
+      {showGame && <CRTOverlay />}
+      {showGame && <HUD />}
+      {showGame && <PauseMenu />}
+      {showGame && (mobileInfo.isMobile ? <MobileControls /> : <DesktopControls />)}
       {gameState === 'START_SCREEN' && <StartScreen />}
       <SystemTerminal />
       <MobileDebugPanel />

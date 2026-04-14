@@ -9,13 +9,13 @@ export function Arena() {
   
   // Load original prototype texture
   const texture = useTexture('/assets/slamz_mat.png');
-  texture.anisotropy = 16;
+  texture.anisotropy = 4;
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
   return (
     <group>
       {/* MAIN PLAYING SURFACE */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
         <circleGeometry args={[9, 64]} />
         <meshStandardMaterial 
           map={texture}
@@ -28,7 +28,7 @@ export function Arena() {
       </mesh>
 
       {/* OUTER GROUND PLANE — visible dark surface under the arena */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
         <planeGeometry args={[50, 50]} />
         <meshStandardMaterial 
           color="#0c0614"

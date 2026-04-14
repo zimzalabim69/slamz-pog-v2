@@ -157,7 +157,7 @@ export function AtmosphericFog() {
           blending={THREE.AdditiveBlending}
         />
       </mesh>
-      <Sparkles count={200} scale={[30, 15, 30]} size={4} speed={0.2} opacity={0.15} color="#ffffff" />
+      <Sparkles count={80} scale={[30, 15, 30]} size={4} speed={0.2} opacity={0.15} color="#ffffff" />
       <MistWisps />
     </>
   );

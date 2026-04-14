@@ -71,16 +71,15 @@ export function Slammer() {
   const slammerDef = SLAMMER_TYPES[currentSlammerType as keyof typeof SLAMMER_TYPES];
   const slammerMass = slammerDef ? slammerDef.mass : 1.5;
 
-  // Raycaster for aiming
+  // Raycaster for aiming — reuse, never allocate in useFrame
   const intersectPoint = useMemo(() => new THREE.Vector3(), []);
+  const aimingPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), -5), []);
 
   useFrame((_state, delta) => {
     if (!rb.current) return;
 
     if (gameState === 'AIMING' || gameState === 'POWERING') {
       raycaster.setFromCamera(mouse, camera);
-      const targetY = 5;
-      const aimingPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -targetY);
       raycaster.ray.intersectPlane(aimingPlane, intersectPoint);
       
       rb.current.setNextKinematicTranslation({
@@ -245,7 +244,7 @@ export function Slammer() {
       position={[0, 5, 0]}
     >
       <RoundCuboidCollider args={[0.6, 0.05, 0.6, 0.1]} />
-      <mesh ref={mesh} castShadow>
+      <mesh ref={mesh}>
         <cylinderGeometry args={[0.72, 0.72, 0.18, 32]} />
         <meshStandardMaterial ref={materialRef} />
       </mesh>

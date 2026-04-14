@@ -2,10 +2,15 @@
 // RETICLE — Aiming indicator (RingGeometry)
 // ============================================================
 
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '../../store/useGameStore';
+
+// Reusable objects — never allocate in useFrame
+const _raycaster = new THREE.Raycaster();
+const _floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.01);
+const _target = new THREE.Vector3();
 
 export function Reticle() {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -14,21 +19,14 @@ export function Reticle() {
   useFrame(({ mouse, camera }) => {
     if (!meshRef.current) return;
     
-    // Only show during AIMING and POWERING
     meshRef.current.visible = gameState === 'AIMING' || gameState === 'POWERING';
-    
     if (!meshRef.current.visible) return;
 
-    // Raycast from camera to floor
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, camera);
+    _raycaster.setFromCamera(mouse, camera);
+    _raycaster.ray.intersectPlane(_floorPlane, _target);
     
-    const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.01); // Floor is at y=-0.01
-    const target = new THREE.Vector3();
-    raycaster.ray.intersectPlane(floorPlane, target);
-    
-    if (target) {
-      meshRef.current.position.set(target.x, -0.005, target.z); // Just above floor surface
+    if (_target) {
+      meshRef.current.position.set(_target.x, -0.005, _target.z);
     }
   });
 

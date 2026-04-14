@@ -101,7 +101,7 @@ export function CyberAlley() {
       {/* ARCADE CABINETS */}
       {cabinetPositions.map((pos, i) => (
         <group key={i} position={pos} rotation={[0, i < 2 ? 0 : Math.PI, 0]}>
-          <mesh castShadow receiveShadow>
+          <mesh>
             <boxGeometry args={[2.2, 5, 3.5]} />
             <meshStandardMaterial map={CAB_TEX} roughness={0.4} metalness={0.5} />
           </mesh>

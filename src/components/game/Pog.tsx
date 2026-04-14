@@ -81,7 +81,7 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
     >
       {/* Stable RoundCuboid for discs: [halfX, halfY, halfZ, borderRadius] */}
       <RoundCuboidCollider args={[0.5, 0.02, 0.5, 0.025]} />
-      <mesh castShadow receiveShadow material={materials} scale={debugParams.pogScale}>
+      <mesh material={materials} scale={debugParams.pogScale}>
         <cylinderGeometry args={[0.55, 0.55, 0.09, 32]} />
       </mesh>
     </RigidBody>

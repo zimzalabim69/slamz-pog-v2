@@ -59,8 +59,6 @@ export function Experience() {
         penumbra={0.5}
         intensity={preset.spotIntensity * debugParams.arenaLightIntensity}
         color={preset.spotColor}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
       />
       <pointLight position={preset.pointPosition} intensity={preset.pointIntensity} color={preset.pointColor} />
 
