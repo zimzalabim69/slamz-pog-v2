@@ -1,0 +1,100 @@
+import { useGameStore } from '../store/useGameStore';
+import { useTerminalStore } from '../store/useTerminalStore';
+import { SCENE_ORDER } from '../constants/game';
+
+interface CommandRegistry {
+  [key: string]: {
+    description: string;
+    execute: (args: string[]) => string | void;
+  };
+}
+
+export const commands: CommandRegistry = {
+  help: {
+    description: 'List all available commands',
+    execute: () => {
+      return Object.entries(commands)
+        .map(([name, cmd]) => `${name.padEnd(12)} - ${cmd.description}`)
+        .join('\n');
+    }
+  },
+  reset: {
+    description: 'Reset the physics world and POG stack',
+    execute: () => {
+      useGameStore.getState().resetStack();
+      return 'Physics world reset. Stack re-initialized.';
+    }
+  },
+  clear: {
+    description: 'Clear the terminal screen',
+    execute: () => {
+      useTerminalStore.getState().clearLogs();
+    }
+  },
+  env: {
+    description: 'Change environment atmosphere (Usage: env <ID>)',
+    execute: (args) => {
+      const id = args[0]?.toUpperCase();
+      if (!id) return `Available: ${SCENE_ORDER.join(', ')}`;
+      
+      const found = (SCENE_ORDER as any).includes(id);
+      if (found) {
+        useGameStore.getState().setAtmosphere(id);
+        return `Atmosphere shifted to ${id}.`;
+      }
+      return `Unknown atmosphere: ${id}. Try: ${SCENE_ORDER.join(', ')}`;
+    }
+  },
+  stats: {
+    description: 'Show current game session stats',
+    execute: () => {
+      const stats = useGameStore.getState().stats;
+      const pogs = useGameStore.getState().pogs.length;
+      return [
+        '--- SESSION DIAGNOSTICS ---',
+        `Active POGs: ${pogs}`,
+        `Total Slams: ${stats.totalSlams}`,
+        `POGs Won:    ${stats.pogsWon}`,
+        `Best Combo:  ${stats.bestCombo}`,
+        '---------------------------'
+      ].join('\n');
+    }
+  },
+  power: {
+    description: 'Force set current slam power (0-100)',
+    execute: (args) => {
+      const val = parseInt(args[0]);
+      if (isNaN(val)) return 'Usage: power <0-100>';
+      useGameStore.getState().setPower(Math.max(0, Math.min(100, val)));
+      return `Power override set to ${val}%`;
+    }
+  },
+  exit: {
+    description: 'Close the terminal console',
+    execute: () => {
+      useTerminalStore.getState().setTerminalOpen(false);
+    }
+  },
+  'logo-adjust': {
+    description: 'Toggle the 3D Logo Precision Adjuster (Gizmo)',
+    execute: () => {
+      const current = useGameStore.getState().debugLogoMode;
+      useGameStore.getState().setDebugLogoMode(!current);
+      return `Logo Adjuster ${!current ? 'ENABLED' : 'DISABLED'}. Check the screen for the Gizmo!`;
+    }
+  }
+};
+
+export const executeCommand = (input: string) => {
+  const [cmdName, ...args] = input.trim().split(/\s+/);
+  const command = commands[cmdName.toLowerCase()];
+
+  if (command) {
+    const result = command.execute(args);
+    if (result) {
+      useTerminalStore.getState().addLog('system', result);
+    }
+  } else {
+    useTerminalStore.getState().addLog('error', `Unknown command: ${cmdName}. Type 'help' for list.`);
+  }
+};

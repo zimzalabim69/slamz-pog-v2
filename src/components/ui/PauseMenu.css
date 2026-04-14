@@ -1,0 +1,97 @@
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.pause-title {
+  font-size: 72px;
+  font-weight: 900;
+  italic: true;
+  color: #ff00ff;
+  text-shadow: 0 0 20px rgba(255, 0, 255, 0.8), 4px 4px 0 #00ffff;
+  margin-bottom: 40px;
+  letter-spacing: 12px;
+  text-transform: uppercase;
+}
+
+.pause-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 300px;
+}
+
+.pause-btn {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 15px 40px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+}
+
+.pause-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: #ff00ff;
+  transform: scaleY(0);
+  transition: transform 0.2s;
+}
+
+.pause-btn:hover {
+  background: rgba(255, 0, 255, 0.1);
+  border-color: #ff00ff;
+  padding-left: 50px;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+}
+
+.pause-btn:hover::before {
+  transform: scaleY(1);
+}
+
+.pause-btn.primary {
+  border-color: #00ffcc;
+  color: #00ffcc;
+}
+
+.pause-btn.primary::before {
+  background: #00ffcc;
+}
+
+.pause-btn.primary:hover {
+  background: rgba(0, 255, 204, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+}
+
+.pause-hint {
+  margin-top: 40px;
+  font-size: 10px;
+  opacity: 0.5;
+  letter-spacing: 2px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

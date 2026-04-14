@@ -1,0 +1,187 @@
+/* ============================================================
+   EXTREME_SHOWCASE_UI.CSS — PIXEL PERFECT RECREATION
+   MATCHING USER IMAGE (90s Grunge + Extreme Tech)
+   ============================================================ */
+
+:root {
+  --extreme-yellow: #FACC15;
+  --extreme-pink: #FF00FF;
+  --extreme-cyan: #00FFFF;
+  --extreme-purple: #4c1d95; /* Deep purple for circuitry bg */
+}
+
+.extreme-showcase-container {
+  position: fixed;
+  inset: 0;
+  background-color: #1a1a2e; /* Base dark */
+  background-image: 
+    radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%),
+    /* Circuitry Pattern (SVG Data) */
+    url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 H 90 V 90 H 10 Z M20 20 V 80 M80 20 V 80 M20 50 H 80' fill='none' stroke='%233b82f6' stroke-width='0.5' opacity='0.2'/%3E%3Ccircle cx='10' cy='10' r='1' fill='%236366f1'/%3E%3Ccircle cx='90' cy='10' r='1' fill='%236366f1'/%3E%3Ccircle cx='90' cy='90' r='1' fill='%236366f1'/%3E%3Ccircle cx='10' cy='90' r='1' fill='%236366f1'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  overflow: hidden;
+  z-index: 1000;
+  font-family: 'Impact', 'Arial Black', sans-serif;
+}
+
+/* TOP YELLOW BANNER */
+.trapper-top-banner {
+  position: absolute;
+  top: 0;
+  left: -5%;
+  width: 110%;
+  height: 80px;
+  background: var(--extreme-yellow);
+  transform: skewY(-2deg);
+  border-bottom: 8px solid #000;
+  display: flex;
+  align-items: center;
+  padding: 0 10%;
+  z-index: 50;
+  box-shadow: 0 10px 0px var(--extreme-pink);
+}
+
+.trapper-title-box {
+  background: #000;
+  padding: 4px 12px;
+  transform: skewX(-15deg);
+  border: 4px solid #000;
+}
+
+.trapper-title-text {
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -2px;
+  margin: 0;
+}
+
+.trapper-subtitle-text {
+  color: var(--extreme-cyan);
+  font-size: 1.2rem;
+  font-weight: 900;
+  font-style: italic;
+  margin-left: 20px;
+}
+
+/* MIDDLE CYAN BAR */
+.trapper-middle-bar {
+  position: absolute;
+  top: 45%;
+  left: -5%;
+  width: 110%;
+  height: 60px;
+  background: var(--extreme-cyan);
+  transform: skewY(-2deg);
+  border-top: 6px solid #000;
+  border-bottom: 6px solid #000;
+  z-index: 40;
+  box-shadow: 0 -6px 0px var(--extreme-pink);
+}
+
+.trapper-showcase-sticker {
+  position: absolute;
+  left: 5%;
+  top: -15px;
+  background: #000;
+  padding: 4px 20px;
+  border: 4px solid var(--extreme-cyan);
+  transform: rotate(-3deg);
+  box-shadow: 6px 6px 0px var(--extreme-pink);
+}
+
+.trapper-showcase-text {
+  color: var(--extreme-yellow);
+  font-size: 2rem;
+  font-weight: 950;
+  font-style: italic;
+  margin: 0;
+}
+
+/* SIDE DATA BOX */
+.trapper-data-box {
+  position: absolute;
+  top: 15%;
+  left: 4%;
+  width: 400px;
+  background: rgba(0,0,0,0.7);
+  border: 4px solid var(--extreme-pink);
+  padding: 20px;
+  z-index: 60;
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 95% 100%, 0 100%);
+}
+
+.trapper-data-row {
+  margin-bottom: 15px;
+}
+
+.trapper-data-label {
+  color: var(--extreme-yellow);
+  font-size: 1.2rem;
+  font-style: italic;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.trapper-data-value-large {
+  font-size: 6rem;
+  line-height: 0.8;
+  font-weight: 900;
+  font-style: italic;
+  margin: 0;
+  color: #fff;
+  text-shadow: 6px 6px 0 var(--extreme-pink);
+}
+
+.trapper-data-value-standard {
+  color: #a3ff00; /* Neon Green */
+  text-shadow: 4px 4px 0 #000;
+}
+
+.trapper-data-value-pink {
+  color: var(--extreme-pink);
+  text-shadow: 4px 4px 0 #000;
+}
+
+/* VIBE JAM PILL */
+.vibejam-pill {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  background: #fff;
+  color: #000;
+  padding: 10px 25px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: sans-serif;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  z-index: 100;
+}
+
+.vibejam-pill svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* SCANLINES FOR AUTHENTICITY */
+.extreme-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.1) 1px, rgba(0,0,0,0.1) 2px);
+  pointer-events: none;
+  z-index: 200;
+}
+
+@keyframes jitter {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-1px, 1px); }
+  100% { transform: translate(1px, -1px); }
+}
+
+.animate-jitter {
+  animation: jitter 0.1s infinite;
+}

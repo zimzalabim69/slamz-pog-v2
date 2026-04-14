@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Debug Logs Viewer</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .log-entry {
+            background: #222;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid #666;
+        }
+        .log-entry.error {
+            border-left-color: #ff4444;
+            background: #2a1a1a;
+        }
+        .log-entry.warn {
+            border-left-color: #ffaa00;
+            background: #2a2a1a;
+        }
+        .log-entry.info {
+            border-left-color: #00aaff;
+            background: #1a2a2a;
+        }
+        .timestamp {
+            color: #888;
+            font-size: 12px;
+        }
+        .level {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .level.error { background: #ff4444; }
+        .level.warn { background: #ffaa00; }
+        .level.info { background: #00aaff; }
+        .level.debug { background: #666; }
+        .message {
+            margin: 5px 0;
+        }
+        .data {
+            background: #111;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px 0;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .controls {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #00aaff;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0088dd;
+        }
+        .no-logs {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mobile Debug Logs Viewer</h1>
+            <p>View logs from mobile device. Access this page from the same device that's experiencing issues.</p>
+        </div>
+        
+        <div class="controls">
+            <button onclick="loadLogs()">Load Logs</button>
+            <button onclick="clearLogs()">Clear Logs</button>
+            <button onclick="exportLogs()">Export Logs</button>
+            <button onclick="autoRefresh()">Auto Refresh: <span id="refreshStatus">OFF</span></button>
+        </div>
+        
+        <div id="logs-container">
+            <div class="no-logs">Click "Load Logs" to view debug information</div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+        
+        function loadLogs() {
+            try {
+                const logs = JSON.parse(localStorage.getItem('mobileDebugLogs') || '[]');
+                const container = document.getElementById('logs-container');
+                
+                if (logs.length === 0) {
+                    container.innerHTML = '<div class="no-logs">No logs found. Make sure the mobile app has been loaded.</div>';
+                    return;
+                }
+                
+                container.innerHTML = logs.map(log => `
+                    <div class="log-entry ${log.level.toLowerCase()}">
+                        <div class="timestamp">${log.timestamp}</div>
+                        <span class="level ${log.level.toLowerCase()}">${log.level}</span>
+                        <div class="message">${log.message}</div>
+                        ${log.data ? `<div class="data">${JSON.stringify(log.data, null, 2)}</div>` : ''}
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">
+                            ${log.userAgent.substring(0, 100)}... | ${log.screenInfo.width}x${log.screenInfo.height}
+                        </div>
+                    </div>
+                `).reverse().join('');
+                
+                console.log(`Loaded ${logs.length} log entries`);
+            } catch (e) {
+                console.error('Failed to load logs:', e);
+                document.getElementById('logs-container').innerHTML = 
+                    '<div class="no-logs">Error loading logs. Check console for details.</div>';
+            }
+        }
+        
+        function clearLogs() {
+            localStorage.removeItem('mobileDebugLogs');
+            document.getElementById('logs-container').innerHTML = 
+                '<div class="no-logs">Logs cleared. Load new logs from the mobile app.</div>';
+        }
+        
+        function exportLogs() {
+            try {
+                const logs = JSON.parse(localStorage.getItem('mobileDebugLogs') || '[]');
+                const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `mobile-debug-logs-${new Date().toISOString()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.error('Failed to export logs:', e);
+            }
+        }
+        
+        function autoRefresh() {
+            const status = document.getElementById('refreshStatus');
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                status.textContent = 'OFF';
+            } else {
+                autoRefreshInterval = setInterval(loadLogs, 2000);
+                status.textContent = 'ON';
+                loadLogs(); // Load immediately
+            }
+        }
+        
+        // Auto-load on page load
+        window.addEventListener('load', loadLogs);
+    </script>
+</body>
+</html>

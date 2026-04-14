@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Storage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #cc0000;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .warning {
+            color: orange;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clear Local Storage</h1>
+        <p>This will clear all debug logs and cached data that might be causing the application to freeze.</p>
+        
+        <button onclick="clearAllStorage()">Clear All Storage</button>
+        <button onclick="clearDebugLogs()">Clear Debug Logs Only</button>
+        
+        <div id="result"></div>
+        
+        <div class="warning">
+            <strong>Warning:</strong> This will remove all saved data for this domain. You may need to reload the game afterwards.
+        </div>
+    </div>
+
+    <script>
+        function clearAllStorage() {
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                document.getElementById('result').innerHTML = 
+                    '<div class="success">All storage cleared successfully!</div>';
+                console.log('All storage cleared');
+            } catch (e) {
+                document.getElementById('result').innerHTML = 
+                    '<div class="error">Error clearing storage: ' + e.message + '</div>';
+            }
+        }
+        
+        function clearDebugLogs() {
+            try {
+                localStorage.removeItem('mobileDebugLogs');
+                document.getElementById('result').innerHTML = 
+                    '<div class="success">Debug logs cleared successfully!</div>';
+                console.log('Debug logs cleared');
+            } catch (e) {
+                document.getElementById('result').innerHTML = 
+                    '<div class="error">Error clearing debug logs: ' + e.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

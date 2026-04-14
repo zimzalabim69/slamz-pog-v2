@@ -1,0 +1,93 @@
+:root {
+  --neon-pink: #ff00ff;
+  --neon-lime: #a3ff00;
+  --neon-cyan: #00ffff;
+  --neon-yellow: #facc15;
+}
+
+.text-neon-pink { color: var(--neon-pink); }
+.text-neon-lime { color: var(--neon-lime); }
+.text-neon-cyan { color: var(--neon-cyan); }
+.text-neon-yellow { color: var(--neon-yellow); }
+.border-neon-pink { border-color: var(--neon-pink); }
+.border-neon-yellow { border-color: var(--neon-yellow); }
+
+.capture-showcase-overlay {
+  transition: background-color 0.5s ease;
+  background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
+}
+
+/* THE RARE FLASH: Brief screen white-out */
+.rare-flash-overlay {
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.1s ease-out;
+}
+
+.rare-flash-active .rare-flash-overlay {
+  opacity: 0.8 !important;
+  transition: opacity 0.05s ease-in;
+}
+
+/* TRAPPER WINDOW: Folder Style */
+.trapper-window {
+  box-shadow: 12px 12px 0px rgba(0,0,0,0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.trapper-window::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 10px 10px;
+  pointer-events: none;
+}
+
+/* 90s TECH CLIP PATHS */
+.clip-path-tech {
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+
+/* DECORATIVE SQUIGGLE (SVG Icon Pattern) */
+.trapper-squiggle {
+  width: 120px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='40' viewBox='0 0 100 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 Q 15 5, 30 20 T 60 20 T 90 20' fill='none' stroke='%23ff00ff' stroke-width='4'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.animate-in {
+  animation-fill-mode: forwards;
+}
+
+@keyframes slide-in-top {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.fade-in {
+  animation: fade-in 1s ease-out forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

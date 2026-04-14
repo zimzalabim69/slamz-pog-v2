@@ -1,0 +1,152 @@
+/* MobileDebugPanel.css - Debug panel for mobile troubleshooting */
+
+.mobile-debug-panel {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 300px;
+  max-height: 80vh;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #00ffcc;
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  z-index: 99999;
+  overflow-y: auto;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  pointer-events: all;
+  touch-action: manipulation;
+}
+
+.debug-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: rgba(0, 255, 204, 0.1);
+  border-bottom: 1px solid #00ffcc;
+}
+
+.debug-header h3 {
+  margin: 0;
+  color: #00ffcc;
+  font-size: 14px;
+}
+
+.debug-header button {
+  background: #00ffcc;
+  color: #000;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.debug-content {
+  padding: 10px;
+}
+
+.debug-section {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.debug-section:last-child {
+  border-bottom: none;
+}
+
+.debug-section h4 {
+  margin: 0 0 8px 0;
+  color: #00ffcc;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.debug-section p {
+  margin: 4px 0;
+  word-break: break-all;
+}
+
+.debug-section button {
+  display: block;
+  width: 100%;
+  margin: 4px 0;
+  padding: 6px;
+  background: rgba(0, 255, 204, 0.2);
+  color: #00ffcc;
+  border: 1px solid #00ffcc;
+  border-radius: 4px;
+  font-size: 10px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+}
+
+.debug-section button:hover {
+  background: rgba(0, 255, 204, 0.3);
+}
+
+.console-logs {
+  max-height: 150px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  padding: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+}
+
+.log-entry {
+  margin: 2px 0;
+  padding: 2px 4px;
+  border-radius: 2px;
+  word-break: break-all;
+}
+
+.log-entry.log {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.log-entry.warn {
+  color: #ffff00;
+  background: rgba(255, 255, 0, 0.1);
+}
+
+.log-entry.error {
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .mobile-debug-panel {
+    width: 250px;
+    top: 5px;
+    right: 5px;
+    font-size: 11px;
+  }
+  
+  .debug-header h3 {
+    font-size: 12px;
+  }
+  
+  .debug-section h4 {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-debug-panel {
+    width: 200px;
+    top: 0;
+    right: 0;
+    left: 0;
+    max-height: 40vh;
+    border-radius: 0 0 8px 8px;
+  }
+}

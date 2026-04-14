@@ -1,0 +1,21 @@
+@keyframes jitter {
+  0% { transform: translate(0,0) skew(0deg); }
+  20% { transform: translate(-2px, 1px) skew(-1deg); }
+  40% { transform: translate(2px, -1px) skew(1deg); }
+  60% { transform: translate(-1px, 2px) skew(0deg); }
+  80% { transform: translate(1px, -2px) skew(-1deg); }
+  100% { transform: translate(0,0) skew(0deg); }
+}
+
+@keyframes neonPulse {
+  0%, 100% { filter: drop-shadow(0 0 5px #ff00ff) drop-shadow(0 0 10px #ff00ff); }
+  50% { filter: drop-shadow(0 0 15px #00ffff) drop-shadow(0 0 30px #00ffff); }
+}
+
+.animate-jitter { 
+  animation: jitter 0.2s infinite; 
+}
+
+.animate-neon { 
+  animation: neonPulse 2s infinite ease-in-out; 
+}
