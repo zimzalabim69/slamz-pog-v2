@@ -66,8 +66,12 @@ export function GameController() {
         setSlamText('ULTRA SLAM!');
       } else if (power >= 60) {
         setSlamText('RADICAL!');
+      } else if (power >= 40) {
+        setSlamText('NICE!');
+      } else {
+        setSlamText('WEAK...');
       }
-      setTimeout(() => setSlamText(null), 1200);
+      setTimeout(() => setSlamText(null), 1500);
     }
   }, [gameState]);
 

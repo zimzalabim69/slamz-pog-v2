@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { PogStack } from './game/PogStack';
 import { Slammer } from './game/Slammer';
 import { Reticle } from './game/Reticle';
+import { ImpactParticles } from './game/ImpactParticles';
 import { PhysicsFloor } from './game/PhysicsFloor';
 import { Arena } from './game/Arena';
 import { CyberAlley } from './environment/CyberAlley';
@@ -85,8 +86,9 @@ export function Experience() {
       {/* 3D HUD SHOWCASE (Display Case) */}
       <ShowcaseHUD />
 
-      {/* AIMING INDICATORS */}
+      {/* AIMING INDICATORS + IMPACT FX */}
       <Reticle />
+      <ImpactParticles />
 
       {/* Session Summary Screen */}
       <SessionSummary />

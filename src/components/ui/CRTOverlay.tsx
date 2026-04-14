@@ -17,9 +17,9 @@ export function CRTOverlay() {
   useEffect(() => {
     if (gameState === 'SLAMMED') {
         flickerRef.current = 1.0;
-        shakeXRef.current = 8.0;
-        rgbShiftRef.current = 5.0;
-        noiseRef.current = 0.8;
+        shakeXRef.current = 12.0;
+        rgbShiftRef.current = 8.0;
+        noiseRef.current = 1.0;
     }
   }, [gameState]);
 

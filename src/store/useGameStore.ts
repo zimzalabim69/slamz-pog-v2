@@ -108,21 +108,21 @@ export interface DebugParams {
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   // Physics - Pog
-  pogMass: 0.1,
+  pogMass: 0.8,
   pogRestitution: 0.05,
   pogFriction: 0.8,
   pogLinearDamping: 0.15,
   pogAngularDamping: 0.25,
   
   // Physics - Slammer
-  slammerMass: 1.5,
+  slammerMass: 6.0,
   slammerRestitution: 0.7,
   slammerFriction: 0.2,
   slamBaseForce: -22,
   slamPowerMultiplier: -0.4,
-  shatterRadius: 0.75,
-  shatterForceMin: 0.3,
-  shatterForceMax: 1.1,
+  shatterRadius: 1.8,
+  shatterForceMin: 4,
+  shatterForceMax: 10,
   
   // Visual - Slammer
   slammerOpacity: 0.75,

@@ -25,9 +25,14 @@ export function Slammer() {
   const [isGhostMode, setIsGhostMode] = useState(false);
   const [debugPanelOpen, setDebugPanelOpen] = useState(false);
   const debugParams = useGameStore((state) => state.debugParams);
-
   
-  // Update slammer physics properties in real-time
+  // Camera shake state — no allocations in useFrame
+  const shakeIntensity = useRef(0);
+  const shakeDecay = useRef(0.9);
+
+  // Track whether impact has been processed this slam
+  const impactProcessed = useRef(false);
+  const slamPowerRef = useRef(0);
   useEffect(() => {
     if (rb.current) {
       // Damping and other mutable properties can be updated live
@@ -122,8 +127,10 @@ export function Slammer() {
       const state = useGameStore.getState();
       if (state.gameState === 'POWERING' && rb.current) {
         setGameState('SLAMMED');
+        impactProcessed.current = false;
+        slamPowerRef.current = state.power;
         
-        // EXECUTE SLAM — using debug params
+        // EXECUTE SLAM
         const currentPower = state.power;
         const slamForce = debugParams.slamBaseForce + (currentPower * debugParams.slamPowerMultiplier); 
         rb.current.setBodyType(0, true);
@@ -132,39 +139,11 @@ export function Slammer() {
         // TRIGGER FOG BURST ON TOSS
         triggerFogPulse();
 
-        // FOV punch using debug params
+        // FOV punch
         if ('fov' in camera) {
           camera.fov = debugParams.punchFOV;
           camera.updateProjectionMatrix();
         }
-
-        // Impact scatter — using debug params
-        const shatterRadius = debugParams.shatterRadius;
-        const shatterForce = debugParams.shatterForceMin + (currentPower / 100) * (debugParams.shatterForceMax - debugParams.shatterForceMin); // Much lower force for cardboard
-
-        setTimeout(() => {
-          // Wait for slammer to reach the stack (using debug delay)
-          if (!rb.current) return;
-          const impactPos = rb.current.translation();
-          world.forEachRigidBody((body) => {
-            const ud = body.userData as any;
-            if (!ud?.name?.startsWith('pog-')) return;
-            const pos = body.translation();
-            const dx = pos.x - impactPos.x;
-            const dz = pos.z - impactPos.z;
-            const dist = Math.sqrt(dx * dx + dz * dz);
-            if (dist < shatterRadius && dist > 0.01) {
-              const forceMag = shatterForce * (1 - dist / shatterRadius);
-              const dirX = dx / dist;
-              const dirZ = dz / dist;
-              body.applyImpulse(
-                { x: dirX * forceMag, y: 0.15 * forceMag, z: dirZ * forceMag },
-                true
-              );
-              body.wakeUp();
-            }
-          });
-        }, debugParams.slamDelay);
       }
     };
 
@@ -189,12 +168,60 @@ export function Slammer() {
   // Get power value outside useFrame to prevent infinite state updates
   const power = useGameStore((state) => state.power);
 
-  // Visual Power Juice + FOV recovery + Ghosted Effect + Portal Detection
+  // Visual Power Juice + FOV recovery + Ghosted Effect + IMPACT DETECTION
   useFrame(() => {
     // FOV lerp back to base using debug params
     if ('fov' in camera && camera.fov > debugParams.baseFOV + 0.1) {
       camera.fov = THREE.MathUtils.lerp(camera.fov, debugParams.baseFOV, debugParams.fovLerpSpeed);
       camera.updateProjectionMatrix();
+    }
+
+    // Smooth camera shake decay
+    if (shakeIntensity.current > 0.001) {
+      camera.position.x += (Math.random() - 0.5) * shakeIntensity.current;
+      camera.position.y += (Math.random() - 0.5) * shakeIntensity.current;
+      shakeIntensity.current *= shakeDecay.current;
+    } else {
+      shakeIntensity.current = 0;
+    }
+
+    // COLLISION-BASED IMPACT DETECTION (v1 style)
+    // Check if slammer has reached the stack height during a slam
+    if (gameState === 'SLAMMED' && !impactProcessed.current && rb.current) {
+      const pos = rb.current.translation();
+      if (pos.y < 1.1) {
+        impactProcessed.current = true;
+        
+        const currentPower = slamPowerRef.current;
+        const shatterRadius = debugParams.shatterRadius;
+        const shatterForce = debugParams.shatterForceMin + (currentPower / 100) * (debugParams.shatterForceMax - debugParams.shatterForceMin);
+        
+        // SCATTER POGS with upward pop (v1 parity)
+        const impactPos = rb.current.translation();
+        world.forEachRigidBody((body) => {
+          const ud = body.userData as any;
+          if (!ud?.name?.startsWith('pog-')) return;
+          const pogPos = body.translation();
+          const dx = pogPos.x - impactPos.x;
+          const dz = pogPos.z - impactPos.z;
+          const dist = Math.sqrt(dx * dx + dz * dz);
+          if (dist < shatterRadius && dist > 0.01) {
+            const forceMag = shatterForce * (1 - dist / shatterRadius);
+            const dirX = dx / dist;
+            const dirZ = dz / dist;
+            // KEY: upward Y component = 0.35 normalized (v1 parity)
+            // This makes pogs POP UP and outward, not just slide
+            body.applyImpulse(
+              { x: dirX * forceMag, y: 0.35 * forceMag, z: dirZ * forceMag },
+              true
+            );
+            body.wakeUp();
+          }
+        });
+        
+        // Camera shake — set intensity, useFrame handles the rest
+        shakeIntensity.current = currentPower * 0.008;
+      }
     }
 
     // Ghost mode detection
