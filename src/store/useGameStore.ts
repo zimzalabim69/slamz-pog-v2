@@ -153,9 +153,9 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   logoScale: 14.7,
   logoPositionX: -0.2,
   logoPositionY: 1.9,
-  logoPositionZ: -33.3,
+  logoPositionZ: -29.2,
   logoRotationX: 0,
-  logoRotationY: 0.34,
+  logoRotationY: 0.14,
   logoRotationZ: 0,
   
   // Start Screen - Background 3D
@@ -174,9 +174,9 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   startFogColorB: 0.98,
   
   // Start Screen - Smoke Ground Layer
-  smokeGroundColorR: 0.64,
-  smokeGroundColorG: 0.09,
-  smokeGroundColorB: 0.14,
+  smokeGroundColorR: 0.25,
+  smokeGroundColorG: 0.03,
+  smokeGroundColorB: 0.71,
   smokeGroundOpacity: 0.83,
   smokeGroundSpeed: 2,
   smokeGroundCount: 30,
@@ -196,10 +196,10 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   smokeMidHeight: 3,
   
   // Start Screen - Button
-  buttonScale: 0.8,
+  buttonScale: 1.4,
   buttonPositionX: 0,
-  buttonPositionY: 75,
-  buttonFontSize: 31,
+  buttonPositionY: 94,
+  buttonFontSize: 20,
   
   // Arena
   arenaLightIntensity: 1.0,

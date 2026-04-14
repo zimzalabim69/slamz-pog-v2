@@ -224,7 +224,7 @@ function PogExplosion({ active, impactX, impactY, impactZ }: {
           geometry={geometry}
           material={materials[i]}
           visible={false}
-          castShadow
+          castShadow={false}
         />
       ))}
     </group>
@@ -316,7 +316,7 @@ export function StartLogo3D() {
       groupRef.current.position.set(dp.logoPositionX, dp.logoPositionY, dp.logoPositionZ);
       groupRef.current.scale.setScalar(dp.logoScale);
       groupRef.current.rotation.x = dp.logoRotationX;
-      groupRef.current.rotation.y = dp.logoRotationY + Math.sin(Date.now() * 0.0003) * 0.05;
+      groupRef.current.rotation.y = dp.logoRotationY;
       groupRef.current.rotation.z = dp.logoRotationZ;
     }
   });

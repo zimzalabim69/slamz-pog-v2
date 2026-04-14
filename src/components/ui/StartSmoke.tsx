@@ -21,7 +21,6 @@ function createSmokeTexture(): THREE.Texture {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
 
-  // Organic noise
   const imageData = ctx.getImageData(0, 0, size, size);
   for (let i = 0; i < imageData.data.length; i += 4) {
     const noise = (Math.random() - 0.5) * 25;
@@ -37,9 +36,9 @@ function createSmokeTexture(): THREE.Texture {
 }
 
 interface SmokePuff {
-  xNorm: number;    // normalized x (-1 to 1)
-  zNorm: number;    // normalized z
-  yOffset: number;  // random offset from layer height
+  xNorm: number;
+  zNorm: number;
+  yOffset: number;
   driftX: number;
   driftZ: number;
   rotSpeed: number;
@@ -51,6 +50,7 @@ interface SmokePuff {
 }
 
 const LAYER_MAX = 30;
+const SETTLE_TIME = 5; // seconds — match RenderController
 
 function createPuffs(count: number, heightVariance: number): SmokePuff[] {
   const puffs: SmokePuff[] = [];
@@ -77,10 +77,11 @@ function SmokeLayer({ prefix }: { prefix: 'smokeGround' | 'smokeMid' }) {
   const debugParams = useGameStore((state) => state.debugParams);
   const smokeTexture = useMemo(() => createSmokeTexture(), []);
   const geometry = useMemo(() => new THREE.PlaneGeometry(1, 1), []);
+  const frozen = useRef(false);
+  const elapsed = useRef(0);
 
   const puffs = useMemo(() => createPuffs(LAYER_MAX, prefix === 'smokeGround' ? 3 : 6), [prefix]);
 
-  // Pre-create materials
   const materials = useMemo(() =>
     Array.from({ length: LAYER_MAX }).map(() =>
       new THREE.MeshBasicMaterial({
@@ -93,6 +94,9 @@ function SmokeLayer({ prefix }: { prefix: 'smokeGround' | 'smokeMid' }) {
     ), [smokeTexture]);
 
   useFrame(({ clock, camera }) => {
+    // Once frozen, don't update anything
+    if (frozen.current) return;
+
     const dp = debugParams;
     const colorR = dp[`${prefix}ColorR`] as number;
     const colorG = dp[`${prefix}ColorG`] as number;
@@ -121,26 +125,28 @@ function SmokeLayer({ prefix }: { prefix: 'smokeGround' | 'smokeMid' }) {
 
       const drift = time * speed;
 
-      // Position with drift wrapping
       let px = p.xNorm * spread + Math.sin(drift * p.driftX + p.phase) * spread * 0.25;
-      px += Math.sin(drift * 0.06 + p.phase) * 10; // slow lateral sweep
+      px += Math.sin(drift * 0.06 + p.phase) * 10;
       const pz = p.zNorm * spread * 0.4 + Math.cos(drift * p.driftZ + p.phase) * spread * 0.1;
       const py = height + p.yOffset + Math.sin(time * p.bobSpeed + p.phase) * p.bobAmp;
 
       mesh.position.set(px, py, pz - 40);
 
-      // Scale
       const s = p.scaleBase * size;
-      mesh.scale.set(s, s * 0.5, 1); // wider than tall for fog look
+      mesh.scale.set(s, s * 0.5, 1);
 
-      // Billboard
       mesh.quaternion.copy(camera.quaternion);
       mesh.rotation.z += p.rotSpeed * 0.008;
 
-      // Material
       const mat = materials[i];
       mat.color.copy(color);
       mat.opacity = p.opacityBase * opacity;
+    }
+
+    // Check if we should freeze
+    elapsed.current += clock.getDelta ? 0 : 0;
+    if (time > SETTLE_TIME) {
+      frozen.current = true;
     }
   });
 

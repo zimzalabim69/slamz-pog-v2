@@ -7,23 +7,24 @@ import { useGameStore } from '../../store/useGameStore';
 export function StartBackground3D() {
   const groupRef = useRef<THREE.Group>(null);
   const debugParams = useGameStore((state) => state.debugParams);
+  const applied = useRef(false);
 
   // Load the background GLB
   const { scene } = useGLTF('/assets/slamz_logo_bg.glb');
 
-  // Slow ambient rotation for atmosphere
+  // Apply position once, then stop
   useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.position.set(
-        debugParams.bgPositionX,
-        debugParams.bgPositionY,
-        debugParams.bgPositionZ
-      );
-      groupRef.current.scale.setScalar(debugParams.bgScale);
-      groupRef.current.rotation.x = debugParams.bgRotationX;
-      groupRef.current.rotation.y = debugParams.bgRotationY + Math.sin(Date.now() * 0.00008) * 0.03;
-      groupRef.current.rotation.z = debugParams.bgRotationZ;
-    }
+    if (!groupRef.current || applied.current) return;
+    groupRef.current.position.set(
+      debugParams.bgPositionX,
+      debugParams.bgPositionY,
+      debugParams.bgPositionZ
+    );
+    groupRef.current.scale.setScalar(debugParams.bgScale);
+    groupRef.current.rotation.x = debugParams.bgRotationX;
+    groupRef.current.rotation.y = debugParams.bgRotationY;
+    groupRef.current.rotation.z = debugParams.bgRotationZ;
+    applied.current = true;
   });
 
   return (

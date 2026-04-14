@@ -8,7 +8,7 @@ import { StartLogo3D } from './StartLogo3D';
 import { StartBackground3D } from './StartBackground3D';
 import { StartSmoke } from './StartSmoke';
 import { Canvas, useThree } from '@react-three/fiber';
-import { Environment, ContactShadows } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 import './StartScreen.css';
 
 // Reactive FogExp2 that reads debug params every frame
@@ -35,6 +35,38 @@ function StartSceneFog() {
     debugParams.startFogColorG,
     debugParams.startFogColorB,
   ]);
+  
+  return null;
+}
+
+// Throttle render loop after intro animation settles
+function RenderController() {
+  const invalidate = useThree((s) => s.invalidate);
+  const [settled, setSettled] = React.useState(false);
+  
+  React.useEffect(() => {
+    const timer = setTimeout(() => setSettled(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // While not settled, invalidate every frame to keep animation running
+  React.useEffect(() => {
+    if (settled) return;
+    let raf: number;
+    const loop = () => {
+      invalidate();
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [settled, invalidate]);
+  
+  // Once settled, only re-render every 3 seconds for ambient life
+  React.useEffect(() => {
+    if (!settled) return;
+    const interval = setInterval(() => invalidate(), 3000);
+    return () => clearInterval(interval);
+  }, [settled, invalidate]);
   
   return null;
 }
@@ -141,6 +173,7 @@ export const StartScreen: React.FC = () => {
 
       <div className="logo-container-3d">
         <Canvas 
+          frameloop="demand"
           gl={{ outputColorSpace: THREE.SRGBColorSpace }}
           camera={{ position: [0, 0, 8], fov: 35 }}
           style={{ 
@@ -154,25 +187,18 @@ export const StartScreen: React.FC = () => {
           }}
         >
           <StartSceneFog />
+          <RenderController />
           <ambientLight intensity={1.5} />
           <Environment preset="city" />
           
           {/* VIBRANT DUAL LIGHTING (MAGENTA / CYAN) */}
           <pointLight position={[-10, 5, 5]} intensity={12} color="#ff00ff" />
           <pointLight position={[10, 5, 5]} intensity={12} color="#00ffff" />
-          <spotLight position={[0, 10, 10]} intensity={5} angle={0.5} penumbra={1} castShadow />
+          <spotLight position={[0, 10, 10]} intensity={5} angle={0.5} penumbra={1} />
           
           <StartBackground3D />
           <StartSmoke />
           <StartLogo3D />
-          
-          <ContactShadows 
-            position={[0, -5, 0]} 
-            opacity={0.6} 
-            scale={40} 
-            blur={3} 
-            far={10} 
-          />
         </Canvas>
       </div>
 
@@ -194,9 +220,10 @@ export const StartScreen: React.FC = () => {
           PRESS START
         </div>
 
-        <div className="arcade-meta">
-          © 1996 VIBEJAM CORP | UNMUTABLE ARCADE EDITION
-        </div>
+      </div>
+
+      <div className="arcade-meta">
+        © 1996 VIBEJAM CORP | UNMUTABLE ARCADE EDITION
       </div>
 
       <svg width="0" height="0" style={{ position: 'absolute' }}>
