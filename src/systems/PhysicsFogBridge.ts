@@ -8,6 +8,7 @@ import * as THREE from 'three';
  */
 class PhysicsFogBridge {
   public energy: number = 0;
+  public bulletTimeScale: number = 1.0;
   public disturbances: Array<{
     pos: THREE.Vector3;
     energy: number;

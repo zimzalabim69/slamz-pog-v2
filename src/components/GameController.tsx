@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { playImpactSound, playCaptureSound } from '../systems/audio';
 import { getSetForTheme } from '../constants/setDefinitions';
+import { cinematicEngine } from '../systems/CinematicEngine';
 
 const WORLD_UP = new THREE.Vector3(0, 1, 0);
 
@@ -14,13 +15,14 @@ export function GameController() {
   const slamStartTime = useRef<number>(0);
   const hasProcessedSlam = useRef(false);
   const hitStopFrames = useRef<number>(0);
+  const cinematicCooldown = useRef<number>(0);
 
   const gameState  = useGameStore((s) => s.gameState);
   const hitStopActive = useGameStore((s) => s.hitStopActive);
   const setHitStopActive = useGameStore((s) => s.triggerHitStop);
   const setImpactFlashActive = useGameStore((s) => s.triggerImpactFlash);
-  const incrementCombo = useGameStore((s) => s.incrementCombo);
   const setGameState  = useGameStore((s) => s.setGameState);
+  const updateTimer = useGameStore((s) => s.updateTimer);
   const stats         = useGameStore((s) => s.stats);
   const updateStats   = useGameStore((s) => s.updateStats);
   const removePog     = useGameStore((s) => s.removePog);
@@ -112,8 +114,21 @@ export function GameController() {
     // Process fixed timestep logic
     accumulatorRef.current -= FIXED_TIMESTEP;
 
+    // Direct Sync with Cinematic: Block settlement while camera is orbiting
+    if (cinematicEngine.isCinematicActive) {
+      accumulatorRef.current = 0; 
+      cinematicCooldown.current = Date.now(); // Keep resetting the cooldown while active
+      return;
+    }
+
+    // STABILITY DELAY: Wait 1s after cinematic finishes to breathe
+    if (Date.now() - cinematicCooldown.current < 1000) {
+        accumulatorRef.current = 0;
+        return;
+    }
+
     const elapsed = Date.now() - slamStartTime.current;
-    const forceReset = elapsed > 5000;
+    const forceReset = elapsed > 10000; // Increased to 10s for cinematic headroom
 
     let allSettled = true;
     if (!forceReset) {
@@ -136,7 +151,12 @@ export function GameController() {
     setImpactFlashActive();
     
     // Check for perfect hit (95+ power) and trigger perfect hit event
-    const power = slamPowerRef.current;
+    const power = useGameStore.getState().power;
+    
+    // Notify SetManager of slam
+    const setManager = useGameStore.getState().setManager;
+    setManager.onSlam(power);
+    
     if (power >= 95) {
       useGameStore.getState().triggerPerfectHit();
     }
@@ -144,8 +164,18 @@ export function GameController() {
     // Play impact sound immediately on actual impact
     playImpactSound();
 
+    const state = useGameStore.getState();
+    
+    // Timer loop
+    if (state.gameState === "AIMING" || state.gameState === "POWERING" || state.gameState === "SLAMMED") {
+      state.updateTimer(delta);
+
+      if (state.timeLeft <= 0) {
+        state.endGame();
+      }
+    }
+
     // ── FACE-UP DETECTION ─────────────────────────────────
-    const storeState = useGameStore.getState();
     const faceUpPogs: string[] = [];
 
     world.forEachRigidBody((body) => {
@@ -156,14 +186,24 @@ export function GameController() {
       const quat = new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w);
       const localUp = WORLD_UP.clone().applyQuaternion(quat);
 
-      if (localUp.y > 0.7) {
+      // Pogs start rotated [PI,0,0] so design (top cap) faces DOWN
+      // When flipped face-up, the -Y axis points UP (design visible)
+      if (localUp.y < -0.7) {
         faceUpPogs.push(userData['pog-id']);
-        const pogData = storeState.pogs.find((p: any) => p.id === userData['pog-id']);
+        const pogData = state.pogs.find((p: any) => p.id === userData['pog-id']);
         if (pogData) {
           addToCollection({ theme: pogData.theme, rarity: pogData.rarity, date: new Date().toISOString() });
           removePog(userData['pog-id']);
-          enqueueShowcase([{ theme: pogData.theme, rarity: pogData.rarity }]);
-          updateStats({ totalSlams: storeState.stats.totalSlams + 1, pogsWon: storeState.stats.pogsWon + 1 });
+          const setDef = getSetForTheme(pogData.theme);
+          const values: Record<string, number> = { standard: 50, shiny: 250, holographic: 1500 };
+          enqueueShowcase([{
+            theme: pogData.theme,
+            rarity: pogData.rarity,
+            setName: setDef ? setDef.name : 'VINTAGE COLLECTIBLE',
+            setColor: setDef ? setDef.color : '#00ffcc',
+            marketValue: values[pogData.rarity] ?? 50,
+          }]);
+          updateStats({ totalSlams: state.stats.totalSlams + 1, pogsWon: state.stats.pogsWon + 1 });
           playCaptureSound();
         }
       }
@@ -174,7 +214,7 @@ export function GameController() {
     
     // Combo system: increment combo if POGs were flipped, reset if none
     if (faceUpPogs.length > 0) {
-      incrementCombo();
+      useGameStore.getState().incrementCombo();
     } else {
       resetCombo();
     }

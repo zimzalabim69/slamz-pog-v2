@@ -1,11 +1,15 @@
 import { useRef, useEffect, useMemo, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { RigidBody, RapierRigidBody, RoundCuboidCollider, useRapier } from '@react-three/rapier';
+import { RigidBody, RapierRigidBody, CylinderCollider, useRapier } from '@react-three/rapier';
 import { useGameStore } from '../../store/useGameStore';
 
 import { getMaterialFromRegistry } from '../../utils/TextureGenerator';
 import { SLAMMER_TYPES } from '../../constants/slammerTypes';
 import * as THREE from 'three';
+
+import { cinematicEngine } from '../../systems/CinematicEngine';
+
+// Removed debug logs for cleaner console
 
 export function Slammer() {
   const rb = useRef<RapierRigidBody>(null);
@@ -13,6 +17,13 @@ export function Slammer() {
   const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const { mouse, raycaster, camera } = useThree();
   const { world } = useRapier();
+  
+  // Runtime verification (minimal)
+  useEffect(() => {
+    if (rb.current) {
+      // Basic check - remove excessive logging
+    }
+  }, []);
   
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
@@ -34,6 +45,9 @@ export function Slammer() {
   // Track whether impact has been processed this slam
   const impactProcessed = useRef(false);
   const slamPowerRef = useRef(0);
+  
+  // Store original slammer position for direction calculation
+  const originalSlammerPos = useRef(new THREE.Vector3(0, 5, 0));
   useEffect(() => {
     if (rb.current) {
       // Damping and other mutable properties can be updated live
@@ -79,20 +93,32 @@ export function Slammer() {
 
   // Raycaster for aiming — reuse, never allocate in useFrame
   const intersectPoint = useMemo(() => new THREE.Vector3(), []);
-  const aimingPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), -5), []);
+  // Pre-allocate plane and hit vector outside useFrame (perf rule: no new() in useFrame)
+  const aimPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.7), []);
+  const aimHit = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((_state, delta) => {
     if (!rb.current) return;
 
     if (gameState === 'AIMING' || gameState === 'POWERING') {
       raycaster.setFromCamera(mouse, camera);
-      raycaster.ray.intersectPlane(aimingPlane, intersectPoint);
+      
+      // Use pre-allocated plane and hit vector (perf rule: no new() in useFrame)
+      if (!raycaster.ray.intersectPlane(aimPlane, aimHit)) {
+        console.error("RAYCAST FAILED")
+        return
+      }
+      
+      intersectPoint.copy(aimHit)
+      
+      
       
       rb.current.setNextKinematicTranslation({
         x: intersectPoint.x,
         y: 5,
         z: intersectPoint.z
       });
+      
 
       if (gameState === 'POWERING') {
         const power = useGameStore.getState().power;
@@ -113,29 +139,54 @@ export function Slammer() {
   // Handle Slam Input
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.button !== 0) return; // LMB only
-      if (debugPanelOpen) return;
-      if (useGameStore.getState().gameState === 'AIMING') {
-        setGameState('POWERING');
-        setPower(0);
-        setPowerDirection(1);
-      }
+      e.preventDefault();
+      if (useGameStore.getState().gameState === "SESSION_SUMMARY" || useGameStore.getState().gameState === "START_SCREEN") return;
+      if (gameState !== 'AIMING' && gameState !== 'POWERING') return;
+      
+      // Start charging power
+      setGameState('POWERING');
+      setPower(0);
+      setPowerDirection(1);
     };
 
     const handleMouseUp = (e: MouseEvent) => {
       if (e.button !== 0) return; // LMB only
       if (debugPanelOpen) return;
+      if (useGameStore.getState().gameState === "SESSION_SUMMARY" || useGameStore.getState().gameState === "START_SCREEN") return;
       const state = useGameStore.getState();
       if (state.gameState === 'POWERING' && rb.current) {
         setGameState('SLAMMED');
         impactProcessed.current = false;
         slamPowerRef.current = state.power;
         
-        // EXECUTE SLAM
-        const currentPower = state.power;
-        const slamForce = debugParams.slamBaseForce + (currentPower * debugParams.slamPowerMultiplier); 
-        rb.current.setBodyType(0, true);
+        // EXECUTE SLAM - V1 STYLE: DROP STRAIGHT DOWN
+        
+        if (!intersectPoint) {
+          console.error("NO INTERSECT POINT")
+          return
+        }
+
+        // Calculate slam force using tuned params
+        const finalPower = state.power;
+        const slamForce = debugParams.slamBaseForce + (finalPower * debugParams.slamPowerMultiplier);
+        
+        console.log("V1 SLAM FORCE", slamForce);
+        console.log("SLAMMER POS", rb.current.translation());
+        
+        // V1 EXACT: Switch to dynamic BEFORE applying velocity
+        // (V1 did: this.slammer.body.type = CANNON.Body.DYNAMIC + updateMassProperties + wakeUp)
+        rb.current.setBodyType(0, true); // 0 = Dynamic
+        rb.current.wakeUp();
+        
+        // V1 EXACT: Apply velocity
         rb.current.setLinvel({ x: 0, y: slamForce, z: 0 }, true);
+        
+        // 3. ADD ANGULAR VELOCITY (SPIN)
+        rb.current.setAngvel({
+          x: (Math.random() - 0.5) * 5,
+          y: (Math.random() - 0.5) * 5,
+          z: (Math.random() - 0.5) * 5
+        }, true);
 
         // TRIGGER FOG BURST ON TOSS
         triggerFogPulse();
@@ -194,45 +245,66 @@ export function Slammer() {
       shakeRotation.current = { x: 0, y: 0 };
     }
 
-    // COLLISION-BASED IMPACT DETECTION (v1 style)
-    // Check if slammer has reached the stack height during a slam
+    // V1 EXACT: Impact detection based on Y position (no collision reliance)
     if (gameState === 'SLAMMED' && !impactProcessed.current && rb.current) {
       const pos = rb.current.translation();
       if (pos.y < 1.1) {
         impactProcessed.current = true;
         
-        const currentPower = slamPowerRef.current;
-        const shatterRadius = debugParams.shatterRadius;
-        const shatterForce = debugParams.shatterForceMin + (currentPower / 100) * (debugParams.shatterForceMax - debugParams.shatterForceMin);
+        console.log("[SLAM] 💥 IMPACT DETECTED - TRIGGERING ERUPTION");
         
-        // SCATTER POGS with upward pop (v1 parity)
+        const currentPower = slamPowerRef.current;
         const impactPos = rb.current.translation();
+        
+        // APPLY DRAMATIC ERUPTION FORCES (Max Payne Style)
         world.forEachRigidBody((body) => {
           const ud = body.userData as any;
           if (!ud?.name?.startsWith('pog-')) return;
+          
           const pogPos = body.translation();
+          
+          // Calculate radial direction (XZ plane for horizontal spread)
           const dx = pogPos.x - impactPos.x;
           const dz = pogPos.z - impactPos.z;
           const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist < shatterRadius && dist > 0.01) {
-            const forceMag = shatterForce * (1 - dist / shatterRadius);
-            const dirX = dx / dist;
-            const dirZ = dz / dist;
-            // KEY: upward Y component = 0.35 normalized (v1 parity)
-            // This makes pogs POP UP and outward, not just slide
-            body.applyImpulse(
-              { x: dirX * forceMag, y: 0.35 * forceMag, z: dirZ * forceMag },
-              true
-            );
+          
+          if (dist < 3.0) { // Impact radius
+            const dirX = dx / (dist || 0.1);
+            const dirZ = dz / (dist || 0.1);
+            
+            // Base force on power and distance
+            // CALIBRATED FOR 0.1 MASS: Force ~3.5 to 8.0 is the "Goldilocks" zone for stability
+            const forceBase = 3.5 + (currentPower / 100) * 4.5;
+            const distanceDecline = Math.max(0, 1 - dist / 3.0);
+            const finalForce = forceBase * distanceDecline;
+            
+            // Apply Impulse
+            body.applyImpulse({
+              x: dirX * finalForce,
+              y: finalForce * 1.8, // Stronger upward kick
+              z: dirZ * finalForce
+            }, true);
+            
+            // Apply dramatic torque (flips) - lower for better visual stability
+            const torqueForce = finalForce * 0.15;
+            body.applyTorqueImpulse({
+              x: (Math.random() - 0.5) * torqueForce,
+              y: (Math.random() - 0.5) * torqueForce,
+              z: (Math.random() - 0.5) * torqueForce
+            }, true);
+            
             body.wakeUp();
           }
         });
         
-        // Enhanced camera shake with power scaling and rotation
-        shakeIntensity.current = currentPower * 0.02; // Increased from 0.008
+        // ATOMIC FREEZE: Lock the pogs the instant they are hit
+        cinematicEngine.triggerCinematic(world);
+        
+        // Camera shake
+        shakeIntensity.current = currentPower * 0.02 * debugParams.cinematicCometShakeIntensity;
         shakeRotation.current = {
-          x: (Math.random() - 0.5) * currentPower * 0.001,
-          y: (Math.random() - 0.5) * currentPower * 0.001
+          x: (Math.random() - 0.5) * currentPower * 0.002,
+          y: (Math.random() - 0.5) * currentPower * 0.002
         };
       }
     }
@@ -283,9 +355,10 @@ export function Slammer() {
       mass={debugParams.slammerMass}
       restitution={debugParams.slammerRestitution}
       friction={debugParams.slammerFriction}
-      position={[0, 5, 0]}
+      linearDamping={0}
+      position={[0, 8, 0]}
     >
-      <RoundCuboidCollider args={[0.6, 0.05, 0.6, 0.1]} />
+      <CylinderCollider args={[0.72, 0.2]} />
       <mesh ref={mesh}>
         <cylinderGeometry args={[0.72, 0.72, 0.18, 24]} />
         <meshStandardMaterial ref={materialRef} />

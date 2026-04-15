@@ -10,6 +10,8 @@ import * as THREE from 'three';
  * SHOWCASE HUD 12.0: GLOBAL ATMOSPHERE SYNC
  * Standardizes the 16:9 safe zone and syncs rarity colors with the global Atmospheric Fog.
  */
+import { physicsFogBridge } from '../../systems/PhysicsFogBridge';
+
 export function ShowcaseHUD() {
   const currentShowcase = useGameStore((state) => state.currentShowcase);
   const gameState = useGameStore((state) => state.gameState);
@@ -21,6 +23,9 @@ export function ShowcaseHUD() {
   const flashLightRef = useRef<THREE.PointLight>(null);
 
   const { viewport } = useThree();
+
+  // Unified Rotation Time
+  const localRotationTime = useRef(0);
 
   // 16:9 Logic
   const targetAspect = 16 / 9;
@@ -50,13 +55,16 @@ export function ShowcaseHUD() {
     return getMaterialFromRegistry('pog', 'metal', currentShowcase.theme, currentShowcase.rarity);
   }, [currentShowcase]);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (gameState !== 'SHOWCASE') return;
+
+    // Direct Time Injection from Bridge
+    localRotationTime.current += delta * physicsFogBridge.bulletTimeScale;
 
     // 1. POG Rotation/Tilt
     if (meshRef.current) {
-        meshRef.current.rotation.y += 0.02;
-        meshRef.current.rotation.x = 1.1 + Math.sin(state.clock.elapsedTime * 1.5) * 0.05;
+        meshRef.current.rotation.y += 0.02 * physicsFogBridge.bulletTimeScale;
+        meshRef.current.rotation.x = 1.1 + Math.sin(localRotationTime.current * 1.5) * 0.05;
     }
 
     if (flashLightRef.current && flashLightRef.current.intensity > 0) {

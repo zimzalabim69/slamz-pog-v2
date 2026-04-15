@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import type { DebugParams } from '../../store/useGameStore';
 import { DEFAULT_DEBUG_PARAMS } from '../../store/useGameStore';
+import { EnhancedSlider } from './EnhancedSlider';
+import { BooleanToggle } from './BooleanToggle';
 import './DebugPanel.css';
+import './EnhancedSlider.css';
+import './BooleanToggle.css';
 
-type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime';
+type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime' | 'arcadeCabinet';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -120,6 +124,9 @@ export function DebugPanel() {
           <button className={activeTab === 'bulletTime' ? 'active' : ''} onClick={() => setActiveTab('bulletTime')}>
             BULLET TIME
           </button>
+          <button className={activeTab === 'arcadeCabinet' ? 'active' : ''} onClick={() => setActiveTab('arcadeCabinet')}>
+            ARCADE CABINET
+          </button>
       </div>
 
       <div className="debug-panel-content">
@@ -128,163 +135,139 @@ export function DebugPanel() {
             <div className="debug-section">
               <h3>POG PHYSICS</h3>
               
-              <div className="debug-control">
-                <label>Mass: <span>{debugParams.pogMass.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.1" max="120" 
-                  step="0.1" 
-                  value={debugParams.pogMass}
-                  onChange={(e) => updateParam('pogMass', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Mass"
+                value={debugParams.pogMass}
+                min={0.1}
+                max={120}
+                step={0.1}
+                onChange={(value) => updateParam('pogMass', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Restitution (Bounce): <span>{debugParams.pogRestitution.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.pogRestitution}
-                  onChange={(e) => updateParam('pogRestitution', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Restitution (Bounce)"
+                value={debugParams.pogRestitution}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => updateParam('pogRestitution', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Friction: <span>{debugParams.pogFriction.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="2" 
-                  step="0.1" 
-                  value={debugParams.pogFriction}
-                  onChange={(e) => updateParam('pogFriction', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Friction"
+                value={debugParams.pogFriction}
+                min={0}
+                max={2}
+                step={0.1}
+                onChange={(value) => updateParam('pogFriction', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Linear Damping: <span>{debugParams.pogLinearDamping.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.pogLinearDamping}
-                  onChange={(e) => updateParam('pogLinearDamping', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Linear Damping"
+                value={debugParams.pogLinearDamping}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => updateParam('pogLinearDamping', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Angular Damping: <span>{debugParams.pogAngularDamping.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.pogAngularDamping}
-                  onChange={(e) => updateParam('pogAngularDamping', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Angular Damping"
+                value={debugParams.pogAngularDamping}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => updateParam('pogAngularDamping', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>SLAMMER PHYSICS</h3>
               
-              <div className="debug-control">
-                <label>Mass: <span>{debugParams.slammerMass.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="5" 
-                  step="0.1" 
-                  value={debugParams.slammerMass}
-                  onChange={(e) => updateParam('slammerMass', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Mass"
+                value={debugParams.slammerMass}
+                min={0.5}
+                max={5}
+                step={0.1}
+                onChange={(value) => updateParam('slammerMass', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Restitution: <span>{debugParams.slammerRestitution.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.slammerRestitution}
-                  onChange={(e) => updateParam('slammerRestitution', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Restitution"
+                value={debugParams.slammerRestitution}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => updateParam('slammerRestitution', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Friction: <span>{debugParams.slammerFriction.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="2" 
-                  step="0.1" 
-                  value={debugParams.slammerFriction}
-                  onChange={(e) => updateParam('slammerFriction', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Friction"
+                value={debugParams.slammerFriction}
+                min={0}
+                max={2}
+                step={0.1}
+                onChange={(value) => updateParam('slammerFriction', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Base Slam Force: <span>{debugParams.slamBaseForce.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="-50" 
-                  max="0" 
-                  step="1" 
-                  value={debugParams.slamBaseForce}
-                  onChange={(e) => updateParam('slamBaseForce', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Base Slam Force"
+                value={debugParams.slamBaseForce}
+                min={-50}
+                max={0}
+                step={1}
+                onChange={(value) => updateParam('slamBaseForce', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>Power Multiplier: <span>{debugParams.slamPowerMultiplier.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-1" 
-                  max="0" 
-                  step="0.05" 
-                  value={debugParams.slamPowerMultiplier}
-                  onChange={(e) => updateParam('slamPowerMultiplier', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Power Multiplier"
+                value={debugParams.slamPowerMultiplier}
+                min={-1}
+                max={0}
+                step={0.05}
+                onChange={(value) => updateParam('slamPowerMultiplier', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Shatter Radius: <span>{debugParams.shatterRadius.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.1" max="120" 
-                  step="0.05" 
-                  value={debugParams.shatterRadius}
-                  onChange={(e) => updateParam('shatterRadius', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Shatter Radius"
+                value={debugParams.shatterRadius}
+                min={0.1}
+                max={120}
+                step={0.05}
+                onChange={(value) => updateParam('shatterRadius', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Shatter Force Min: <span>{debugParams.shatterForceMin.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="2" 
-                  step="0.1" 
-                  value={debugParams.shatterForceMin}
-                  onChange={(e) => updateParam('shatterForceMin', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Shatter Force Min"
+                value={debugParams.shatterForceMin}
+                min={0}
+                max={2}
+                step={0.1}
+                onChange={(value) => updateParam('shatterForceMin', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Shatter Force Max: <span>{debugParams.shatterForceMax.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="3" 
-                  step="0.1" 
-                  value={debugParams.shatterForceMax}
-                  onChange={(e) => updateParam('shatterForceMax', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Shatter Force Max"
+                value={debugParams.shatterForceMax}
+                min={0}
+                max={3}
+                step={0.1}
+                onChange={(value) => updateParam('shatterForceMax', value)}
+                decimals={2}
+              />
             </div>
           </>
         )}
@@ -294,93 +277,79 @@ export function DebugPanel() {
             <div className="debug-section">
               <h3>SLAMMER VISUALS</h3>
               
-              <div className="debug-control">
-                <label>Ghost Opacity: <span>{debugParams.slammerOpacity.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.slammerOpacity}
-                  onChange={(e) => updateParam('slammerOpacity', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Ghost Opacity"
+                value={debugParams.slammerOpacity}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => updateParam('slammerOpacity', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Power Scale Boost: <span>{debugParams.slammerScaleBoost.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="0.5" 
-                  step="0.05" 
-                  value={debugParams.slammerScaleBoost}
-                  onChange={(e) => updateParam('slammerScaleBoost', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Power Scale Boost"
+                value={debugParams.slammerScaleBoost}
+                min={0}
+                max={0.5}
+                step={0.05}
+                onChange={(value) => updateParam('slammerScaleBoost', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Emissive Intensity: <span>{debugParams.slammerEmissiveIntensity.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="5" 
-                  step="0.1" 
-                  value={debugParams.slammerEmissiveIntensity}
-                  onChange={(e) => updateParam('slammerEmissiveIntensity', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Emissive Intensity"
+                value={debugParams.slammerEmissiveIntensity}
+                min={0}
+                max={5}
+                step={0.1}
+                onChange={(value) => updateParam('slammerEmissiveIntensity', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>POG VISUALS</h3>
               
-              <div className="debug-control">
-                <label>Scale: <span>{debugParams.pogScale.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="2" 
-                  step="0.1" 
-                  value={debugParams.pogScale}
-                  onChange={(e) => updateParam('pogScale', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Scale"
+                value={debugParams.pogScale}
+                min={0.5}
+                max={2}
+                step={0.1}
+                onChange={(value) => updateParam('pogScale', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Rotation Speed: <span>{debugParams.pogRotationSpeed.toFixed(3)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="0.02" 
-                  step="0.001" 
-                  value={debugParams.pogRotationSpeed}
-                  onChange={(e) => updateParam('pogRotationSpeed', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Rotation Speed"
+                value={debugParams.pogRotationSpeed}
+                min={0}
+                max={0.02}
+                step={0.001}
+                onChange={(value) => updateParam('pogRotationSpeed', value)}
+                decimals={3}
+              />
 
-              <div className="debug-control">
-                <label>Metalness: <span>{debugParams.pogMetalness.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.pogMetalness}
-                  onChange={(e) => updateParam('pogMetalness', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Metalness"
+                value={debugParams.pogMetalness}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => updateParam('pogMetalness', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Roughness: <span>{debugParams.pogRoughness.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.pogRoughness}
-                  onChange={(e) => updateParam('pogRoughness', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Roughness"
+                value={debugParams.pogRoughness}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => updateParam('pogRoughness', value)}
+                decimals={2}
+              />
             </div>
           </>
         )}
@@ -389,41 +358,37 @@ export function DebugPanel() {
           <div className="debug-section">
             <h3>CAMERA SETTINGS</h3>
             
-            <div className="debug-control">
-              <label>Base FOV: <span>{debugParams.baseFOV.toFixed(0)}°</span></label>
-              <input 
-                type="range" 
-                min="30" 
-                max="90" 
-                step="1" 
+            <EnhancedSlider
+                label="Base FOV"
                 value={debugParams.baseFOV}
-                onChange={(e) => updateParam('baseFOV', parseFloat(e.target.value))}
+                min={30}
+                max={90}
+                step={1}
+                onChange={(value) => updateParam('baseFOV', value)}
+                decimals={0}
+                unit="°"
               />
-            </div>
 
-            <div className="debug-control">
-              <label>Punch FOV: <span>{debugParams.punchFOV.toFixed(0)}°</span></label>
-              <input 
-                type="range" 
-                min="30" 
-                max="120" 
-                step="1" 
+              <EnhancedSlider
+                label="Punch FOV"
                 value={debugParams.punchFOV}
-                onChange={(e) => updateParam('punchFOV', parseFloat(e.target.value))}
+                min={30}
+                max={120}
+                step={1}
+                onChange={(value) => updateParam('punchFOV', value)}
+                decimals={0}
+                unit="°"
               />
-            </div>
 
-            <div className="debug-control">
-              <label>FOV Lerp Speed: <span>{debugParams.fovLerpSpeed.toFixed(2)}</span></label>
-              <input 
-                type="range" 
-                min="0.01" 
-                max="0.5" 
-                step="0.01" 
+              <EnhancedSlider
+                label="FOV Lerp Speed"
                 value={debugParams.fovLerpSpeed}
-                onChange={(e) => updateParam('fovLerpSpeed', parseFloat(e.target.value))}
+                min={0.01}
+                max={0.5}
+                step={0.01}
+                onChange={(value) => updateParam('fovLerpSpeed', value)}
+                decimals={2}
               />
-            </div>
           </div>
         )}
 
@@ -431,41 +396,35 @@ export function DebugPanel() {
           <div className="debug-section">
             <h3>FOG SETTINGS</h3>
             
-            <div className="debug-control">
-              <label>Density: <span>{debugParams.fogDensity.toFixed(3)}</span></label>
-              <input 
-                type="range" 
-                min="0" 
-                max="0.1" 
-                step="0.001" 
+            <EnhancedSlider
+                label="Density"
                 value={debugParams.fogDensity}
-                onChange={(e) => updateParam('fogDensity', parseFloat(e.target.value))}
+                min={0}
+                max={0.1}
+                step={0.001}
+                onChange={(value) => updateParam('fogDensity', value)}
+                decimals={3}
               />
-            </div>
 
-            <div className="debug-control">
-              <label>Near: <span>{debugParams.fogNear.toFixed(1)}</span></label>
-              <input 
-                type="range" 
-                min="0" 
-                max="20" 
-                step="0.5" 
+              <EnhancedSlider
+                label="Near"
                 value={debugParams.fogNear}
-                onChange={(e) => updateParam('fogNear', parseFloat(e.target.value))}
+                min={0}
+                max={20}
+                step={0.5}
+                onChange={(value) => updateParam('fogNear', value)}
+                decimals={1}
               />
-            </div>
 
-            <div className="debug-control">
-              <label>Far: <span>{debugParams.fogFar.toFixed(0)}</span></label>
-              <input 
-                type="range" 
-                min="10" 
-                max="200" 
-                step="5" 
+              <EnhancedSlider
+                label="Far"
                 value={debugParams.fogFar}
-                onChange={(e) => updateParam('fogFar', parseFloat(e.target.value))}
+                min={10}
+                max={200}
+                step={5}
+                onChange={(value) => updateParam('fogFar', value)}
+                decimals={0}
               />
-            </div>
           </div>
         )}
 
@@ -473,29 +432,25 @@ export function DebugPanel() {
           <div className="debug-section">
             <h3>GAMEPLAY TUNING</h3>
             
-            <div className="debug-control">
-              <label>Power Charge Speed: <span>{debugParams.powerChargeSpeed.toFixed(0)}</span></label>
-              <input 
-                type="range" 
-                min="50" 
-                max="500" 
-                step="10" 
+            <EnhancedSlider
+                label="Power Charge Speed"
                 value={debugParams.powerChargeSpeed}
-                onChange={(e) => updateParam('powerChargeSpeed', parseFloat(e.target.value))}
+                min={50}
+                max={500}
+                step={10}
+                onChange={(value) => updateParam('powerChargeSpeed', value)}
+                decimals={0}
               />
-            </div>
 
-            <div className="debug-control">
-              <label>Slam Impact Delay (ms): <span>{debugParams.slamDelay.toFixed(0)}</span></label>
-              <input 
-                type="range" 
-                min="0" 
-                max="500" 
-                step="50" 
+              <EnhancedSlider
+                label="Slam Impact Delay (ms)"
                 value={debugParams.slamDelay}
-                onChange={(e) => updateParam('slamDelay', parseFloat(e.target.value))}
+                min={0}
+                max={500}
+                step={50}
+                onChange={(value) => updateParam('slamDelay', value)}
+                decimals={0}
               />
-            </div>
           </div>
         )}
 
@@ -504,357 +459,428 @@ export function DebugPanel() {
             <div className="debug-section">
               <h3>LOGO 3D</h3>
               
-              <div className="debug-control">
-                <label>Scale: <span>{debugParams.logoScale.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.1" max="120" 
-                  step="0.1" 
-                  value={debugParams.logoScale}
-                  onChange={(e) => updateParam('logoScale', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Scale"
+                value={debugParams.logoScale}
+                min={0.1}
+                max={120}
+                step={0.1}
+                onChange={(value) => updateParam('logoScale', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Position X: <span>{debugParams.logoPositionX.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-200" 
-                  max="200" 
-                  step="0.1" 
-                  value={debugParams.logoPositionX}
-                  onChange={(e) => updateParam('logoPositionX', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Position X"
+                value={debugParams.logoPositionX}
+                min={-200}
+                max={200}
+                step={0.1}
+                onChange={(value) => updateParam('logoPositionX', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Position Y: <span>{debugParams.logoPositionY.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-200" 
-                  max="200" 
-                  step="0.1" 
-                  value={debugParams.logoPositionY}
-                  onChange={(e) => updateParam('logoPositionY', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Position Y"
+                value={debugParams.logoPositionY}
+                min={-200}
+                max={200}
+                step={0.1}
+                onChange={(value) => updateParam('logoPositionY', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Position Z: <span>{debugParams.logoPositionZ.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-400" 
-                  max="400" 
-                  step="0.1" 
-                  value={debugParams.logoPositionZ}
-                  onChange={(e) => updateParam('logoPositionZ', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Position Z"
+                value={debugParams.logoPositionZ}
+                min={-400}
+                max={400}
+                step={0.1}
+                onChange={(value) => updateParam('logoPositionZ', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Rotation X: <span>{debugParams.logoRotationX.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-12.56" 
-                  max="12.56" 
-                  step="0.1" 
-                  value={debugParams.logoRotationX}
-                  onChange={(e) => updateParam('logoRotationX', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Rotation X"
+                value={debugParams.logoRotationX}
+                min={-12.56}
+                max={12.56}
+                step={0.1}
+                onChange={(value) => updateParam('logoRotationX', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Rotation Y: <span>{debugParams.logoRotationY.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-12.56" 
-                  max="12.56" 
-                  step="0.1" 
-                  value={debugParams.logoRotationY}
-                  onChange={(e) => updateParam('logoRotationY', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Rotation Y"
+                value={debugParams.logoRotationY}
+                min={-12.56}
+                max={12.56}
+                step={0.1}
+                onChange={(value) => updateParam('logoRotationY', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Rotation Z: <span>{debugParams.logoRotationZ.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-12.56" 
-                  max="12.56" 
-                  step="0.1" 
-                  value={debugParams.logoRotationZ}
-                  onChange={(e) => updateParam('logoRotationZ', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Rotation Z"
+                value={debugParams.logoRotationZ}
+                min={-12.56}
+                max={12.56}
+                step={0.1}
+                onChange={(value) => updateParam('logoRotationZ', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>BACKGROUND 3D</h3>
               
-              <div className="debug-control">
-                <label>Scale: <span>{debugParams.bgScale.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.01" max="50" 
-                  step="0.1" 
-                  value={debugParams.bgScale}
-                  onChange={(e) => updateParam('bgScale', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Scale"
+                value={debugParams.bgScale}
+                min={0.01}
+                max={50}
+                step={0.1}
+                onChange={(value) => updateParam('bgScale', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Position X: <span>{debugParams.bgPositionX.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-200" 
-                  max="200" 
-                  step="0.5" 
-                  value={debugParams.bgPositionX}
-                  onChange={(e) => updateParam('bgPositionX', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Position X"
+                value={debugParams.bgPositionX}
+                min={-200}
+                max={200}
+                step={0.5}
+                onChange={(value) => updateParam('bgPositionX', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Position Y: <span>{debugParams.bgPositionY.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-200" 
-                  max="200" 
-                  step="0.5" 
-                  value={debugParams.bgPositionY}
-                  onChange={(e) => updateParam('bgPositionY', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Position Y"
+                value={debugParams.bgPositionY}
+                min={-200}
+                max={200}
+                step={0.5}
+                onChange={(value) => updateParam('bgPositionY', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Position Z: <span>{debugParams.bgPositionZ.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-500" 
-                  max="100" 
-                  step="0.5" 
-                  value={debugParams.bgPositionZ}
-                  onChange={(e) => updateParam('bgPositionZ', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Position Z"
+                value={debugParams.bgPositionZ}
+                min={-500}
+                max={100}
+                step={0.5}
+                onChange={(value) => updateParam('bgPositionZ', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Rotation X: <span>{debugParams.bgRotationX.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-12.56" 
-                  max="12.56" 
-                  step="0.1" 
-                  value={debugParams.bgRotationX}
-                  onChange={(e) => updateParam('bgRotationX', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Rotation X"
+                value={debugParams.bgRotationX}
+                min={-12.56}
+                max={12.56}
+                step={0.1}
+                onChange={(value) => updateParam('bgRotationX', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Rotation Y: <span>{debugParams.bgRotationY.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-12.56" 
-                  max="12.56" 
-                  step="0.1" 
-                  value={debugParams.bgRotationY}
-                  onChange={(e) => updateParam('bgRotationY', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Rotation Y"
+                value={debugParams.bgRotationY}
+                min={-12.56}
+                max={12.56}
+                step={0.1}
+                onChange={(value) => updateParam('bgRotationY', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Rotation Z: <span>{debugParams.bgRotationZ.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="-12.56" 
-                  max="12.56" 
-                  step="0.1" 
-                  value={debugParams.bgRotationZ}
-                  onChange={(e) => updateParam('bgRotationZ', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Rotation Z"
+                value={debugParams.bgRotationZ}
+                min={-12.56}
+                max={12.56}
+                step={0.1}
+                onChange={(value) => updateParam('bgRotationZ', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>SCENE FOG</h3>
               
-              <div className="debug-control">
-                <label>Density: <span>{debugParams.startFogDensity.toFixed(4)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" max="0.1" 
-                  step="0.0005" 
-                  value={debugParams.startFogDensity}
-                  onChange={(e) => updateParam('startFogDensity', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Density"
+                value={debugParams.startFogDensity}
+                min={0}
+                max={0.1}
+                step={0.0005}
+                onChange={(value) => updateParam('startFogDensity', value)}
+                decimals={4}
+              />
 
-              <div className="debug-control">
-                <label>Color R: <span>{debugParams.startFogColorR.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" max="1" 
-                  step="0.01" 
-                  value={debugParams.startFogColorR}
-                  onChange={(e) => updateParam('startFogColorR', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Color R"
+                value={debugParams.startFogColorR}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('startFogColorR', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Color G: <span>{debugParams.startFogColorG.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" max="1" 
-                  step="0.01" 
-                  value={debugParams.startFogColorG}
-                  onChange={(e) => updateParam('startFogColorG', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Color G"
+                value={debugParams.startFogColorG}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('startFogColorG', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Color B: <span>{debugParams.startFogColorB.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" max="1" 
-                  step="0.01" 
-                  value={debugParams.startFogColorB}
-                  onChange={(e) => updateParam('startFogColorB', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Color B"
+                value={debugParams.startFogColorB}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('startFogColorB', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>GROUND FOG LAYER</h3>
               
-              <div className="debug-control">
-                <label>Count: <span>{debugParams.smokeGroundCount.toFixed(0)}</span></label>
-                <input type="range" min="0" max="30" step="1" value={debugParams.smokeGroundCount} onChange={(e) => updateParam('smokeGroundCount', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Opacity: <span>{debugParams.smokeGroundOpacity.toFixed(2)}</span></label>
-                <input type="range" min="0" max="1" step="0.01" value={debugParams.smokeGroundOpacity} onChange={(e) => updateParam('smokeGroundOpacity', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Size: <span>{debugParams.smokeGroundSize.toFixed(1)}</span></label>
-                <input type="range" min="1" max="60" step="0.5" value={debugParams.smokeGroundSize} onChange={(e) => updateParam('smokeGroundSize', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Spread: <span>{debugParams.smokeGroundSpread.toFixed(0)}</span></label>
-                <input type="range" min="10" max="200" step="1" value={debugParams.smokeGroundSpread} onChange={(e) => updateParam('smokeGroundSpread', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Height: <span>{debugParams.smokeGroundHeight.toFixed(1)}</span></label>
-                <input type="range" min="-20" max="10" step="0.5" value={debugParams.smokeGroundHeight} onChange={(e) => updateParam('smokeGroundHeight', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Speed: <span>{debugParams.smokeGroundSpeed.toFixed(2)}</span></label>
-                <input type="range" min="0" max="2" step="0.01" value={debugParams.smokeGroundSpeed} onChange={(e) => updateParam('smokeGroundSpeed', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Color R: <span>{debugParams.smokeGroundColorR.toFixed(2)}</span></label>
-                <input type="range" min="0" max="1" step="0.01" value={debugParams.smokeGroundColorR} onChange={(e) => updateParam('smokeGroundColorR', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Color G: <span>{debugParams.smokeGroundColorG.toFixed(2)}</span></label>
-                <input type="range" min="0" max="1" step="0.01" value={debugParams.smokeGroundColorG} onChange={(e) => updateParam('smokeGroundColorG', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Color B: <span>{debugParams.smokeGroundColorB.toFixed(2)}</span></label>
-                <input type="range" min="0" max="1" step="0.01" value={debugParams.smokeGroundColorB} onChange={(e) => updateParam('smokeGroundColorB', parseFloat(e.target.value))} />
-              </div>
+              <EnhancedSlider
+                label="Count"
+                value={debugParams.smokeGroundCount}
+                min={0}
+                max={30}
+                step={1}
+                onChange={(value) => updateParam('smokeGroundCount', value)}
+                decimals={0}
+              />
+
+              <EnhancedSlider
+                label="Opacity"
+                value={debugParams.smokeGroundOpacity}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('smokeGroundOpacity', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Size"
+                value={debugParams.smokeGroundSize}
+                min={1}
+                max={60}
+                step={0.5}
+                onChange={(value) => updateParam('smokeGroundSize', value)}
+                decimals={1}
+              />
+
+              <EnhancedSlider
+                label="Spread"
+                value={debugParams.smokeGroundSpread}
+                min={10}
+                max={200}
+                step={1}
+                onChange={(value) => updateParam('smokeGroundSpread', value)}
+                decimals={0}
+              />
+
+              <EnhancedSlider
+                label="Height"
+                value={debugParams.smokeGroundHeight}
+                min={-20}
+                max={10}
+                step={0.5}
+                onChange={(value) => updateParam('smokeGroundHeight', value)}
+                decimals={1}
+              />
+
+              <EnhancedSlider
+                label="Speed"
+                value={debugParams.smokeGroundSpeed}
+                min={0}
+                max={2}
+                step={0.01}
+                onChange={(value) => updateParam('smokeGroundSpeed', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Color R"
+                value={debugParams.smokeGroundColorR}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('smokeGroundColorR', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Color G"
+                value={debugParams.smokeGroundColorG}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('smokeGroundColorG', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Color B"
+                value={debugParams.smokeGroundColorB}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('smokeGroundColorB', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>MID WISPS LAYER</h3>
               
-              <div className="debug-control">
-                <label>Count: <span>{debugParams.smokeMidCount.toFixed(0)}</span></label>
-                <input type="range" min="0" max="30" step="1" value={debugParams.smokeMidCount} onChange={(e) => updateParam('smokeMidCount', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Opacity: <span>{debugParams.smokeMidOpacity.toFixed(2)}</span></label>
-                <input type="range" min="0" max="1" step="0.01" value={debugParams.smokeMidOpacity} onChange={(e) => updateParam('smokeMidOpacity', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Size: <span>{debugParams.smokeMidSize.toFixed(1)}</span></label>
-                <input type="range" min="1" max="60" step="0.5" value={debugParams.smokeMidSize} onChange={(e) => updateParam('smokeMidSize', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Spread: <span>{debugParams.smokeMidSpread.toFixed(0)}</span></label>
-                <input type="range" min="10" max="200" step="1" value={debugParams.smokeMidSpread} onChange={(e) => updateParam('smokeMidSpread', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Height: <span>{debugParams.smokeMidHeight.toFixed(1)}</span></label>
-                <input type="range" min="-10" max="20" step="0.5" value={debugParams.smokeMidHeight} onChange={(e) => updateParam('smokeMidHeight', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Speed: <span>{debugParams.smokeMidSpeed.toFixed(2)}</span></label>
-                <input type="range" min="0" max="2" step="0.01" value={debugParams.smokeMidSpeed} onChange={(e) => updateParam('smokeMidSpeed', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Color R: <span>{debugParams.smokeMidColorR.toFixed(2)}</span></label>
-                <input type="range" min="0" max="1" step="0.01" value={debugParams.smokeMidColorR} onChange={(e) => updateParam('smokeMidColorR', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Color G: <span>{debugParams.smokeMidColorG.toFixed(2)}</span></label>
-                <input type="range" min="0" max="1" step="0.01" value={debugParams.smokeMidColorG} onChange={(e) => updateParam('smokeMidColorG', parseFloat(e.target.value))} />
-              </div>
-              <div className="debug-control">
-                <label>Color B: <span>{debugParams.smokeMidColorB.toFixed(2)}</span></label>
-                <input type="range" min="0" max="1" step="0.01" value={debugParams.smokeMidColorB} onChange={(e) => updateParam('smokeMidColorB', parseFloat(e.target.value))} />
-              </div>
+              <EnhancedSlider
+                label="Count"
+                value={debugParams.smokeMidCount}
+                min={0}
+                max={30}
+                step={1}
+                onChange={(value) => updateParam('smokeMidCount', value)}
+                decimals={0}
+              />
+
+              <EnhancedSlider
+                label="Opacity"
+                value={debugParams.smokeMidOpacity}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('smokeMidOpacity', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Size"
+                value={debugParams.smokeMidSize}
+                min={1}
+                max={60}
+                step={0.5}
+                onChange={(value) => updateParam('smokeMidSize', value)}
+                decimals={1}
+              />
+
+              <EnhancedSlider
+                label="Spread"
+                value={debugParams.smokeMidSpread}
+                min={10}
+                max={200}
+                step={1}
+                onChange={(value) => updateParam('smokeMidSpread', value)}
+                decimals={0}
+              />
+
+              <EnhancedSlider
+                label="Height"
+                value={debugParams.smokeMidHeight}
+                min={-20}
+                max={10}
+                step={0.5}
+                onChange={(value) => updateParam('smokeMidHeight', value)}
+                decimals={1}
+              />
+
+              <EnhancedSlider
+                label="Speed"
+                value={debugParams.smokeMidSpeed}
+                min={0}
+                max={2}
+                step={0.01}
+                onChange={(value) => updateParam('smokeMidSpeed', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Color R"
+                value={debugParams.smokeMidColorR}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('smokeMidColorR', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Color G"
+                value={debugParams.smokeMidColorG}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('smokeMidColorG', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Color B"
+                value={debugParams.smokeMidColorB}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => updateParam('smokeMidColorB', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>START BUTTON</h3>
               
-              <div className="debug-control">
-                <label>Scale: <span>{debugParams.buttonScale.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="2" 
-                  step="0.1" 
-                  value={debugParams.buttonScale}
-                  onChange={(e) => updateParam('buttonScale', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Scale"
+                value={debugParams.buttonScale}
+                min={0.5}
+                max={3}
+                step={0.1}
+                onChange={(value) => updateParam('buttonScale', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Position X (%): <span>{debugParams.buttonPositionX.toFixed(0)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="100" 
-                  step="1" 
-                  value={debugParams.buttonPositionX}
-                  onChange={(e) => updateParam('buttonPositionX', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Position X"
+                value={debugParams.buttonPositionX}
+                min={-50}
+                max={50}
+                step={1}
+                onChange={(value) => updateParam('buttonPositionX', value)}
+                decimals={0}
+                unit="%"
+              />
 
-              <div className="debug-control">
-                <label>Position Y (%): <span>{debugParams.buttonPositionY.toFixed(0)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="100" 
-                  step="1" 
-                  value={debugParams.buttonPositionY}
-                  onChange={(e) => updateParam('buttonPositionY', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Position Y"
+                value={debugParams.buttonPositionY}
+                min={70}
+                max={98}
+                step={1}
+                onChange={(value) => updateParam('buttonPositionY', value)}
+                decimals={0}
+                unit="%"
+              />
 
-              <div className="debug-control">
-                <label>Font Size: <span>{debugParams.buttonFontSize.toFixed(0)}px</span></label>
-                <input 
-                  type="range" 
-                  min="12" 
-                  max="48" 
-                  step="1" 
-                  value={debugParams.buttonFontSize}
-                  onChange={(e) => updateParam('buttonFontSize', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Font Size"
+                value={debugParams.buttonFontSize}
+                min={8}
+                max={48}
+                step={1}
+                onChange={(value) => updateParam('buttonFontSize', value)}
+                decimals={0}
+                unit="px"
+              />
             </div>
           </>
         )}
@@ -864,426 +890,365 @@ export function DebugPanel() {
             <div className="debug-section">
               <h3>BULLET TIME TIMING</h3>
               
-              <div className="debug-control">
-                <label>Windup Duration: <span>{debugParams.cinematicWindupDuration.toFixed(2)}s</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="5" 
-                  step="0.1" 
-                  value={debugParams.cinematicWindupDuration}
-                  onChange={(e) => updateParam('cinematicWindupDuration', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Windup Duration"
+                value={debugParams.cinematicWindupDuration}
+                min={0.5}
+                max={5}
+                step={0.1}
+                onChange={(value) => updateParam('cinematicWindupDuration', value)}
+                decimals={2}
+                unit="s"
+              />
 
-              <div className="debug-control">
-                <label>Freeze Duration: <span>{debugParams.cinematicFreezeDuration.toFixed(2)}s</span></label>
-                <input 
-                  type="range" 
-                  min="0.1" 
-                  max="2" 
-                  step="0.05" 
-                  value={debugParams.cinematicFreezeDuration}
-                  onChange={(e) => updateParam('cinematicFreezeDuration', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Freeze Duration"
+                value={debugParams.cinematicFreezeDuration}
+                min={0.1}
+                max={2}
+                step={0.05}
+                onChange={(value) => updateParam('cinematicFreezeDuration', value)}
+                decimals={2}
+                unit="s"
+              />
 
-              <div className="debug-control">
-                <label>Orbit Duration: <span>{debugParams.cinematicOrbitDuration.toFixed(2)}s</span></label>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="8" 
-                  step="0.2" 
-                  value={debugParams.cinematicOrbitDuration}
-                  onChange={(e) => updateParam('cinematicOrbitDuration', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Orbit Duration"
+                value={debugParams.cinematicOrbitDuration}
+                min={1}
+                max={8}
+                step={0.2}
+                onChange={(value) => updateParam('cinematicOrbitDuration', value)}
+                decimals={2}
+                unit="s"
+              />
 
-              <div className="debug-control">
-                <label>Reveal Duration: <span>{debugParams.cinematicRevealDuration.toFixed(2)}s</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="5" 
-                  step="0.1" 
-                  value={debugParams.cinematicRevealDuration}
-                  onChange={(e) => updateParam('cinematicRevealDuration', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Reveal Duration"
+                value={debugParams.cinematicRevealDuration}
+                min={0.5}
+                max={5}
+                step={0.1}
+                onChange={(value) => updateParam('cinematicRevealDuration', value)}
+                decimals={2}
+                unit="s"
+              />
             </div>
 
             <div className="debug-section">
               <h3>BULLET TIME CAMERA</h3>
               
-              <div className="debug-control">
-                <label>Orbit Radius: <span>{debugParams.cinematicOrbitRadius.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="2" 
-                  max="20" 
-                  step="0.5" 
-                  value={debugParams.cinematicOrbitRadius}
-                  onChange={(e) => updateParam('cinematicOrbitRadius', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Orbit Radius"
+                value={debugParams.cinematicOrbitRadius}
+                min={2}
+                max={20}
+                step={0.5}
+                onChange={(value) => updateParam('cinematicOrbitRadius', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>Orbit Height: <span>{debugParams.cinematicOrbitHeight.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="10" 
-                  step="0.2" 
-                  value={debugParams.cinematicOrbitHeight}
-                  onChange={(e) => updateParam('cinematicOrbitHeight', parseFloat(e.target.value))}
-                />
-              </div>
-            </div>
+              <EnhancedSlider
+                label="Orbit Height"
+                value={debugParams.cinematicOrbitHeight}
+                min={0.5}
+                max={10}
+                step={0.2}
+                onChange={(value) => updateParam('cinematicOrbitHeight', value)}
+                decimals={1}
+              />
 
-            <div className="debug-section">
-              <h3>BULLET TIME TIME SCALE</h3>
-              
-              <div className="debug-control">
-                <label>Slow Motion Scale: <span>{debugParams.cinematicTimeScaleSlow.toFixed(3)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.01" 
-                  max="0.5" 
-                  step="0.01" 
-                  value={debugParams.cinematicTimeScaleSlow}
-                  onChange={(e) => updateParam('cinematicTimeScaleSlow', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Slow Motion Scale"
+                value={debugParams.cinematicTimeScaleSlow}
+                min={0.01}
+                max={0.5}
+                step={0.01}
+                onChange={(value) => updateParam('cinematicTimeScaleSlow', value)}
+                decimals={3}
+              />
 
-              <div className="debug-control">
-                <label>Freeze Scale: <span>{debugParams.cinematicTimeScaleFreeze.toFixed(3)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="0.1" 
-                  step="0.001" 
-                  value={debugParams.cinematicTimeScaleFreeze}
-                  onChange={(e) => updateParam('cinematicTimeScaleFreeze', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Freeze Scale"
+                value={debugParams.cinematicTimeScaleFreeze}
+                min={0}
+                max={0.1}
+                step={0.001}
+                onChange={(value) => updateParam('cinematicTimeScaleFreeze', value)}
+                decimals={3}
+              />
             </div>
 
             <div className="debug-section">
               <h3>COMET ZOOM EFFECTS</h3>
               
-              <div className="debug-control">
-                <label>Approach Speed: <span>{debugParams.cinematicCometApproachSpeed.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="10" 
-                  max="100" 
-                  step="5" 
-                  value={debugParams.cinematicCometApproachSpeed}
-                  onChange={(e) => updateParam('cinematicCometApproachSpeed', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Approach Speed"
+                value={debugParams.cinematicCometApproachSpeed}
+                min={10}
+                max={100}
+                step={1}
+                onChange={(value) => updateParam('cinematicCometApproachSpeed', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>Start Distance: <span>{debugParams.cinematicCometStartDistance.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="10" 
-                  max="50" 
-                  step="2" 
-                  value={debugParams.cinematicCometStartDistance}
-                  onChange={(e) => updateParam('cinematicCometStartDistance', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Start Distance"
+                value={debugParams.cinematicCometStartDistance}
+                min={10}
+                max={50}
+                step={1}
+                onChange={(value) => updateParam('cinematicCometStartDistance', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>End Distance: <span>{debugParams.cinematicCometEndDistance.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="10" 
-                  step="0.5" 
-                  value={debugParams.cinematicCometEndDistance}
-                  onChange={(e) => updateParam('cinematicCometEndDistance', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="End Distance"
+                value={debugParams.cinematicCometEndDistance}
+                min={0.5}
+                max={10}
+                step={0.5}
+                onChange={(value) => updateParam('cinematicCometEndDistance', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>FOV Punch: <span>{debugParams.cinematicCometFOVPunch.toFixed(0)}°</span></label>
-                <input 
-                  type="range" 
-                  min="60" 
-                  max="150" 
-                  step="5" 
-                  value={debugParams.cinematicCometFOVPunch}
-                  onChange={(e) => updateParam('cinematicCometFOVPunch', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="FOV Punch"
+                value={debugParams.cinematicCometFOVPunch}
+                min={60}
+                max={150}
+                step={1}
+                onChange={(value) => updateParam('cinematicCometFOVPunch', value)}
+                decimals={0}
+                unit="°"
+              />
 
-              <div className="debug-control">
-                <label>Shake Intensity: <span>{debugParams.cinematicCometShakeIntensity.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="2" 
-                  step="0.1" 
-                  value={debugParams.cinematicCometShakeIntensity}
-                  onChange={(e) => updateParam('cinematicCometShakeIntensity', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Shake Intensity"
+                value={debugParams.cinematicCometShakeIntensity}
+                min={0}
+                max={2}
+                step={0.1}
+                onChange={(value) => updateParam('cinematicCometShakeIntensity', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>POG EXPLOSION & SCATTER</h3>
               
-              <div className="debug-control">
-                <label>Explosion Force: <span>{debugParams.cinematicExplosionForce.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="5" 
-                  max="50" 
-                  step="2" 
-                  value={debugParams.cinematicExplosionForce}
-                  onChange={(e) => updateParam('cinematicExplosionForce', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Explosion Force"
+                value={debugParams.cinematicExplosionForce}
+                min={5}
+                max={50}
+                step={1}
+                onChange={(value) => updateParam('cinematicExplosionForce', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>Scatter Radius: <span>{debugParams.cinematicScatterRadius.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="2" 
-                  max="20" 
-                  step="1" 
-                  value={debugParams.cinematicScatterRadius}
-                  onChange={(e) => updateParam('cinematicScatterRadius', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Scatter Radius"
+                value={debugParams.cinematicScatterRadius}
+                min={2}
+                max={20}
+                step={1}
+                onChange={(value) => updateParam('cinematicScatterRadius', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>Scatter Height: <span>{debugParams.cinematicScatterHeight.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="15" 
-                  step="0.5" 
-                  value={debugParams.cinematicScatterHeight}
-                  onChange={(e) => updateParam('cinematicScatterHeight', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Scatter Height"
+                value={debugParams.cinematicScatterHeight}
+                min={1}
+                max={15}
+                step={1}
+                onChange={(value) => updateParam('cinematicScatterHeight', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>Pog Rotation Speed: <span>{debugParams.cinematicPogRotationSpeed.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="20" 
-                  step="1" 
-                  value={debugParams.cinematicPogRotationSpeed}
-                  onChange={(e) => updateParam('cinematicPogRotationSpeed', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Rotation Speed"
+                value={debugParams.cinematicPogRotationSpeed}
+                min={0}
+                max={20}
+                step={1}
+                onChange={(value) => updateParam('cinematicPogRotationSpeed', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>Float Duration: <span>{debugParams.cinematicPogFloatDuration.toFixed(1)}s</span></label>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="8" 
-                  step="0.5" 
-                  value={debugParams.cinematicPogFloatDuration}
-                  onChange={(e) => updateParam('cinematicPogFloatDuration', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Float Duration"
+                value={debugParams.cinematicPogFloatDuration}
+                min={1}
+                max={8}
+                step={1}
+                onChange={(value) => updateParam('cinematicPogFloatDuration', value)}
+                decimals={1}
+                unit="s"
+              />
             </div>
 
             <div className="debug-section">
               <h3>DRAMATIC TRANSITIONS</h3>
               
-              <div className="debug-control">
-                <label>Transition Speed: <span>{debugParams.cinematicTransitionSpeed.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="5" 
-                  step="0.2" 
-                  value={debugParams.cinematicTransitionSpeed}
-                  onChange={(e) => updateParam('cinematicTransitionSpeed', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Transition Speed"
+                value={debugParams.cinematicTransitionSpeed}
+                min={0.5}
+                max={5}
+                step={0.2}
+                onChange={(value) => updateParam('cinematicTransitionSpeed', value)}
+                decimals={2}
+              />
 
-              <div className="debug-control">
-                <label>Impact Flash Intensity: <span>{debugParams.cinematicImpactFlashIntensity.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="10" 
-                  step="0.5" 
-                  value={debugParams.cinematicImpactFlashIntensity}
-                  onChange={(e) => updateParam('cinematicImpactFlashIntensity', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Impact Flash"
+                value={debugParams.cinematicImpactFlashIntensity}
+                min={0}
+                max={10}
+                step={0.5}
+                onChange={(value) => updateParam('cinematicImpactFlashIntensity', value)}
+                decimals={1}
+              />
 
-              <div className="debug-control">
-                <label>Motion Blur Strength: <span>{debugParams.cinematicMotionBlurStrength.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.cinematicMotionBlurStrength}
-                  onChange={(e) => updateParam('cinematicMotionBlurStrength', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+                label="Motion Blur"
+                value={debugParams.cinematicMotionBlurStrength}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => updateParam('cinematicMotionBlurStrength', value)}
+                decimals={2}
+              />
             </div>
 
             <div className="debug-section">
               <h3>POG LOCK-ON TRACKING</h3>
               
-              <div className="debug-control">
-                <label>Enable Lock-on: <span>{debugParams.cinematicLockOnEnabled ? 'ON' : 'OFF'}</span></label>
-                <input 
-                  type="checkbox" 
-                  checked={debugParams.cinematicLockOnEnabled}
-                  onChange={(e) => updateParam('cinematicLockOnEnabled', e.target.checked ? 1 : 0)}
-                />
-              </div>
+              <BooleanToggle
+              label="Enable Lock-on"
+              value={debugParams.cinematicLockOnEnabled}
+              onChange={(value) => updateParam('cinematicLockOnEnabled', value ? 1 : 0)}
+            />
 
-              <div className="debug-control">
-                <label>Lock Duration: <span>{debugParams.cinematicLockOnDuration.toFixed(1)}s</span></label>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="8" 
-                  step="0.5" 
-                  value={debugParams.cinematicLockOnDuration}
-                  onChange={(e) => updateParam('cinematicLockOnDuration', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Lock Duration"
+              value={debugParams.cinematicLockOnDuration}
+              min={1}
+              max={8}
+              step={0.5}
+              onChange={(value) => updateParam('cinematicLockOnDuration', value)}
+              decimals={1}
+              unit="s"
+            />
 
-              <div className="debug-control">
-                <label>Orbit Radius: <span>{debugParams.cinematicLockOnOrbitRadius.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="10" 
-                  step="0.5" 
-                  value={debugParams.cinematicLockOnOrbitRadius}
-                  onChange={(e) => updateParam('cinematicLockOnOrbitRadius', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Orbit Radius"
+              value={debugParams.cinematicLockOnOrbitRadius}
+              min={1}
+              max={10}
+              step={0.5}
+              onChange={(value) => updateParam('cinematicLockOnOrbitRadius', value)}
+              decimals={1}
+            />
 
-              <div className="debug-control">
-                <label>Orbit Speed: <span>{debugParams.cinematicLockOnOrbitSpeed.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.2" 
-                  max="5" 
-                  step="0.2" 
-                  value={debugParams.cinematicLockOnOrbitSpeed}
-                  onChange={(e) => updateParam('cinematicLockOnOrbitSpeed', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Orbit Speed"
+              value={debugParams.cinematicLockOnOrbitSpeed}
+              min={0.2}
+              max={5}
+              step={0.2}
+              onChange={(value) => updateParam('cinematicLockOnOrbitSpeed', value)}
+              decimals={2}
+            />
 
-              <div className="debug-control">
-                <label>Height Offset: <span>{debugParams.cinematicLockOnHeightOffset.toFixed(1)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="5" 
-                  step="0.2" 
-                  value={debugParams.cinematicLockOnHeightOffset}
-                  onChange={(e) => updateParam('cinematicLockOnHeightOffset', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Height Offset"
+              value={debugParams.cinematicLockOnHeightOffset}
+              min={0}
+              max={5}
+              step={0.2}
+              onChange={(value) => updateParam('cinematicLockOnHeightOffset', value)}
+              decimals={1}
+            />
 
-              <div className="debug-control">
-                <label>Smooth Factor: <span>{debugParams.cinematicLockOnSmoothFactor.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.1" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.cinematicLockOnSmoothFactor}
-                  onChange={(e) => updateParam('cinematicLockOnSmoothFactor', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Smooth Factor"
+              value={debugParams.cinematicLockOnSmoothFactor}
+              min={0.1}
+              max={1}
+              step={0.05}
+              onChange={(value) => updateParam('cinematicLockOnSmoothFactor', value)}
+              decimals={2}
+            />
             </div>
 
             <div className="debug-section">
               <h3>SYNCHRONIZED FALLING & REST</h3>
               
-              <div className="debug-control">
-                <label>Fall Duration: <span>{debugParams.cinematicSyncFallDuration.toFixed(1)}s</span></label>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="5" 
-                  step="0.2" 
-                  value={debugParams.cinematicSyncFallDuration}
-                  onChange={(e) => updateParam('cinematicSyncFallDuration', parseFloat(e.target.value))}
-                />
-              </div>
+              <EnhancedSlider
+              label="Fall Duration"
+              value={debugParams.cinematicSyncFallDuration}
+              min={0.5}
+              max={5}
+              step={0.2}
+              onChange={(value) => updateParam('cinematicSyncFallDuration', value)}
+              decimals={1}
+              unit="s"
+            />
 
-              <div className="debug-control">
-                <label>Fall Speed: <span>{debugParams.cinematicSyncFallSpeed.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0.1" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.cinematicSyncFallSpeed}
-                  onChange={(e) => updateParam('cinematicSyncFallSpeed', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Fall Speed"
+              value={debugParams.cinematicSyncFallSpeed}
+              min={0.1}
+              max={1}
+              step={0.05}
+              onChange={(value) => updateParam('cinematicSyncFallSpeed', value)}
+              decimals={2}
+            />
 
-              <div className="debug-control">
-                <label>Rest Delay: <span>{debugParams.cinematicSyncRestDelay.toFixed(1)}s</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="3" 
-                  step="0.2" 
-                  value={debugParams.cinematicSyncRestDelay}
-                  onChange={(e) => updateParam('cinematicSyncRestDelay', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Rest Delay"
+              value={debugParams.cinematicSyncRestDelay}
+              min={0}
+              max={3}
+              step={0.2}
+              onChange={(value) => updateParam('cinematicSyncRestDelay', value)}
+              decimals={1}
+              unit="s"
+            />
 
-              <div className="debug-control">
-                <label>Face Up Chance: <span>{(debugParams.cinematicFinalFaceUpChance * 100).toFixed(0)}%</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.cinematicFinalFaceUpChance}
-                  onChange={(e) => updateParam('cinematicFinalFaceUpChance', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Face Up Chance"
+              value={debugParams.cinematicFinalFaceUpChance}
+              min={0}
+              max={1}
+              step={0.05}
+              onChange={(value) => updateParam('cinematicFinalFaceUpChance', value)}
+              decimals={0}
+              unit="%"
+            />
 
-              <div className="debug-control">
-                <label>Bounce Count: <span>{debugParams.cinematicBounceCount.toFixed(0)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="5" 
-                  step="1" 
-                  value={debugParams.cinematicBounceCount}
-                  onChange={(e) => updateParam('cinematicBounceCount', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Bounce Count"
+              value={debugParams.cinematicBounceCount}
+              min={0}
+              max={5}
+              step={1}
+              onChange={(value) => updateParam('cinematicBounceCount', value)}
+              decimals={0}
+            />
 
-              <div className="debug-control">
-                <label>Bounce Damping: <span>{debugParams.cinematicBounceDamping.toFixed(2)}</span></label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.05" 
-                  value={debugParams.cinematicBounceDamping}
-                  onChange={(e) => updateParam('cinematicBounceDamping', parseFloat(e.target.value))}
-                />
-              </div>
+            <EnhancedSlider
+              label="Bounce Damping"
+              value={debugParams.cinematicBounceDamping}
+              min={0}
+              max={1}
+              step={0.05}
+              onChange={(value) => updateParam('cinematicBounceDamping', value)}
+              decimals={2}
+            />
             </div>
           </>
         )}
@@ -1292,41 +1257,97 @@ export function DebugPanel() {
           <div className="debug-section">
             <h3>ARENA SETTINGS</h3>
             
-            <div className="debug-control">
-              <label>Directional Light: <span>{debugParams.arenaLightIntensity.toFixed(1)}</span></label>
-              <input 
-                type="range" 
-                min="0" 
-                max="3" 
-                step="0.1" 
-                value={debugParams.arenaLightIntensity}
-                onChange={(e) => updateParam('arenaLightIntensity', parseFloat(e.target.value))}
-              />
-            </div>
+            <EnhancedSlider
+              label="Directional Light"
+              value={debugParams.arenaLightIntensity}
+              min={0}
+              max={3}
+              step={0.1}
+              onChange={(value) => updateParam('arenaLightIntensity', value)}
+              decimals={1}
+            />
 
-            <div className="debug-control">
-              <label>Ambient Light: <span>{debugParams.arenaAmbientIntensity.toFixed(1)}</span></label>
-              <input 
-                type="range" 
-                min="0" 
-                max="2" 
-                step="0.1" 
-                value={debugParams.arenaAmbientIntensity}
-                onChange={(e) => updateParam('arenaAmbientIntensity', parseFloat(e.target.value))}
-              />
-            </div>
+            <EnhancedSlider
+              label="Ambient Light"
+              value={debugParams.arenaAmbientIntensity}
+              min={0}
+              max={2}
+              step={0.1}
+              onChange={(value) => updateParam('arenaAmbientIntensity', value)}
+              decimals={1}
+            />
 
-            <div className="debug-control">
-              <label>Floor Y Position: <span>{debugParams.floorPositionY.toFixed(2)}</span></label>
-              <input 
-                type="range" 
-                min="-2" 
-                max="2" 
-                step="0.05" 
-                value={debugParams.floorPositionY}
-                onChange={(e) => updateParam('floorPositionY', parseFloat(e.target.value))}
-              />
-            </div>
+            <EnhancedSlider
+              label="Floor Y Position"
+              value={debugParams.floorPositionY}
+              min={-2}
+              max={2}
+              step={0.05}
+              onChange={(value) => updateParam('floorPositionY', value)}
+              decimals={2}
+            />
+          </div>
+        )}
+
+        {activeTab === 'arcadeCabinet' && (
+          <div className="debug-section">
+            <h3>ARCADE CABINET</h3>
+            
+            <BooleanToggle
+              label="Visible"
+              value={debugParams.arcadeCabinetVisible}
+              onChange={(value) => updateParam('arcadeCabinetVisible', value ? 1 : 0)}
+            />
+
+            <EnhancedSlider
+              label="Scale"
+              value={debugParams.arcadeCabinetScale}
+              min={0.1}
+              max={3}
+              step={0.1}
+              onChange={(value) => updateParam('arcadeCabinetScale', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position X"
+              value={debugParams.arcadeCabinetPositionX}
+              min={-10}
+              max={10}
+              step={0.5}
+              onChange={(value) => updateParam('arcadeCabinetPositionX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Y"
+              value={debugParams.arcadeCabinetPositionY}
+              min={-5}
+              max={10}
+              step={0.5}
+              onChange={(value) => updateParam('arcadeCabinetPositionY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Z"
+              value={debugParams.arcadeCabinetPositionZ}
+              min={-20}
+              max={5}
+              step={0.5}
+              onChange={(value) => updateParam('arcadeCabinetPositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Y"
+              value={debugParams.arcadeCabinetRotationY}
+              min={-3.14}
+              max={3.14}
+              step={0.1}
+              onChange={(value) => updateParam('arcadeCabinetRotationY', value)}
+              decimals={2}
+            />
           </div>
         )}
       </div>

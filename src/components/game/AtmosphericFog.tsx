@@ -109,10 +109,42 @@ export function AtmosphericFog() {
       return 130.0 * dot(m, g);
     }
 
+  const fragmentShader = `
+    uniform float uTime;
+    uniform vec3 uColor;
+    uniform float uPulse;
+    uniform float uPhysicsEnergy;
+    uniform vec3 uDistPos[5];
+    uniform float uDistEnergy[5];
+    uniform vec3 uDistColor[5];
+    uniform float uIsShowcase;
+    varying vec2 vUv;
+    varying vec3 vWorldPos;
+
+    vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+    float snoise(vec2 v){
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+      vec2 i  = floor(v + dot(v, C.yy) );
+      vec2 x0 = v -   i + dot(i, C.xx);
+      vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1;
+      i = mod(i, 289.0);
+      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+      m = m*m ; m = m*m ;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox; m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+      vec3 g; g.x = a0.x * x0.x + h.x * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
+
     void main() {
       float distToOrigin = length(vWorldPos.xz);
-      float mask = smoothstep(1.0, 8.0, distToOrigin);
-      if (uIsShowcase > 0.5) mask = smoothstep(0.5, 4.0, distToOrigin);
+      // BACKGROUND ONLY: Clear center area (up to 12 units)
+      float mask = smoothstep(10.0, 25.0, distToOrigin);
+      if (uIsShowcase > 0.5) mask = smoothstep(2.0, 8.0, distToOrigin);
 
       float turbulence = 0.4 + (uPhysicsEnergy * 0.1);
       float n = snoise(vWorldPos.xz * 0.2 + uTime * 0.1 * turbulence);
@@ -165,49 +197,10 @@ export function AtmosphericFog() {
           blending={THREE.AdditiveBlending}
         />
       </mesh>
-      <Sparkles count={sparkleCount} scale={[30, 15, 30]} size={4} speed={0.2} opacity={0.15} color="#ffffff" />
-      {qualityLevel === 'high' && <MistWisps />}
+      <group position={[0, 0, 0]}>
+        {/* Pushed sparkles out to background area only (min radius 15) */}
+        <Sparkles count={sparkleCount} scale={[60, 25, 60]} size={6} speed={0.4} opacity={0.12} color="#ffffff" />
+      </group>
     </>
-  );
-}
-
-function MistWisps() {
-  return (
-    <group>
-      {[0, 1].map((_, i) => (
-        <MistWisp key={i} index={i} />
-      ))}
-    </group>
-  );
-}
-
-function MistWisp({ index }: { index: number }) {
-  const mesh = React.useRef<THREE.Mesh>(null);
-  const startPos = React.useMemo(() => [(Math.random() - 0.5) * 20, Math.random() * 5, (Math.random() - 0.5) * 20], []);
-  const uniforms = React.useMemo(() => ({ uOpacity: { value: 0.1 } }), []);
-
-  useFrame((state) => {
-    if (!mesh.current) return;
-    const t = state.clock.elapsedTime * 0.4;
-    const turb = 1 + physicsFogBridge.energy * 0.2;
-    
-    mesh.current.position.x = startPos[0] + Math.sin(t + index) * 2 * turb;
-    mesh.current.position.y = startPos[1] + (t % 10);
-    mesh.current.position.z = startPos[2] + Math.cos(t + index) * 2 * turb;
-    mesh.current.lookAt(state.camera.position);
-    uniforms.uOpacity.value = 0.08 + Math.sin(t * 2) * 0.04;
-  });
-
-  return (
-    <Plane ref={mesh} args={[8, 8]}>
-      <shaderMaterial 
-        transparent 
-        depthWrite={false}
-        blending={THREE.AdditiveBlending} 
-        uniforms={uniforms}
-        vertexShader={`varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`}
-        fragmentShader={`varying vec2 vUv; uniform float uOpacity; void main() { float d = distance(vUv, vec2(0.5)); float mask = smoothstep(0.5, 0.0, d); gl_FragColor = vec4(vec3(1.0), mask * uOpacity); }`}
-      />
-    </Plane>
   );
 }

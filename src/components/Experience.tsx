@@ -16,11 +16,14 @@ import { CyberAlley } from './environment/CyberAlley';
 import { ArenaDecor } from './environment/ArenaDecor';
 import { Effects } from './Effects';
 import { GameController } from './GameController';
+import { CinematicSlam } from './CinematicSlam';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { AdaptiveQuality } from './AdaptiveQuality';
 import { SessionSummary } from './ui/SessionSummary';
 import { ShowcaseHUD } from './game/ShowcaseHUD';
 import { TimerUpdate } from './game/TimerUpdate';
+
+import { PhysicsWorld } from './game/PhysicsWorld';
 
 export function Experience() {
   const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
@@ -79,13 +82,7 @@ export function Experience() {
       <CyberAlley />
 
       {/* PHYSICS WORLD - wraps everything with rigid bodies */}
-      <Physics gravity={[0, -16, 0]}>
-        <PhysicsFloor />
-        <PogStack />
-        <Slammer />
-        <GameController />
-
-      </Physics>
+      <PhysicsWorld />
 
       {/* 3D HUD SHOWCASE (Display Case) */}
       <ShowcaseHUD />

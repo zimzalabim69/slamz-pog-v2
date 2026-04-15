@@ -182,9 +182,9 @@ function App() {
       {/* 1:1 PROTOTYPE OVERLAYS — CRT always mounted to avoid pop-in */}
       <CRTOverlay />
       <Timer />
-      {showGame && <HUD />}
-      {showGame && <ComboPopup />}
-      {showGame && <PerfectHit />}
+      {(gameState === 'AIMING' || gameState === 'POWERING' || gameState === 'SLAMMED') && <HUD />}
+      {(gameState === 'AIMING' || gameState === 'POWERING' || gameState === 'SLAMMED') && <ComboPopup />}
+      {(gameState === 'AIMING' || gameState === 'POWERING' || gameState === 'SLAMMED') && <PerfectHit />}
       {showGame && <PauseMenu />}
       {showGame && (mobileInfo.isMobile ? <MobileControls /> : <DesktopControls />)}
       {gameState === 'START_SCREEN' && <StartScreen />}

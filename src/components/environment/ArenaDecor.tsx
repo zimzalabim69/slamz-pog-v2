@@ -14,9 +14,9 @@ export function ArenaDecor() {
   const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
   const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
   
-  const matTexture = useTexture('/assets/pog_mat.png');
-  matTexture.wrapS = matTexture.wrapT = THREE.RepeatWrapping;
-  matTexture.repeat.set(2, 2);
+  const matTexture = useTexture('/assets/slamz_mat.png');
+  // Removed tiling to prevent affecting the shared texture in the main Arena
+
 
   // Instanced ghost pogs — 12 pogs in 1 draw call
   const pogRef = useRef<THREE.InstancedMesh>(null);

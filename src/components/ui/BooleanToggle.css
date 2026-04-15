@@ -1,0 +1,96 @@
+.boolean-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.boolean-toggle label {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #00ffcc;
+  text-shadow: 0 0 5px rgba(0, 255, 204, 0.5);
+  margin-bottom: 0;
+}
+
+.toggle-status {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0, 255, 204, 0.1);
+  border: 1px solid #00ffcc;
+  transition: all 0.2s ease;
+}
+
+.toggle-status.on {
+  color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+  border-color: #00ff00;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.toggle-status.off {
+  color: #ff0066;
+  background: rgba(255, 0, 102, 0.1);
+  border-color: #ff0066;
+  text-shadow: 0 0 5px rgba(255, 0, 102, 0.5);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 60px;
+  height: 24px;
+}
+
+.toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #ff0066, #ff3366);
+  border: 1px solid #ff0066;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 2px;
+  background: linear-gradient(135deg, #ffffff, #e0e0e0);
+  border: 1px solid #ccc;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked + .toggle-slider {
+  background: linear-gradient(90deg, #00ff00, #00ff66);
+  border-color: #00ff00;
+}
+
+.toggle-input:checked + .toggle-slider:before {
+  transform: translateX(36px);
+  background: linear-gradient(135deg, #00ffcc, #00ccff);
+  border-color: #00ffcc;
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+}
+
+.toggle-switch:hover .toggle-slider {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+}

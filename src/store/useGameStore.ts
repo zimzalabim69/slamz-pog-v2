@@ -105,6 +105,14 @@ export interface DebugParams {
   arenaAmbientIntensity: number;
   floorPositionY: number;
   
+  // Arcade Cabinet
+  arcadeCabinetScale: number;
+  arcadeCabinetPositionX: number;
+  arcadeCabinetPositionY: number;
+  arcadeCabinetPositionZ: number;
+  arcadeCabinetRotationY: number;
+  arcadeCabinetVisible: boolean;
+  
   // Bullet Time Cinematic Scene
   cinematicWindupDuration: number;
   cinematicFreezeDuration: number;
@@ -251,6 +259,14 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   arenaAmbientIntensity: 0.5,
   floorPositionY: 0,
   
+  // Arcade Cabinet
+  arcadeCabinetScale: 1.0,
+  arcadeCabinetPositionX: 0,
+  arcadeCabinetPositionY: 0,
+  arcadeCabinetPositionZ: -5,
+  arcadeCabinetRotationY: 0,
+  arcadeCabinetVisible: true,
+  
   // Bullet Time Cinematic Scene
   cinematicWindupDuration: 2.0,
   cinematicFreezeDuration: 0.2,
@@ -352,9 +368,10 @@ export interface GameStore {
   perfectHitActive: boolean;
   
   // Game flow state
-  timeLeft: number;
   score: number;
   combo: number;
+  bulletTimeScale: number;
+  isCinematicActive: boolean;
 
   // Actions
   initPogs: () => void;
@@ -396,6 +413,8 @@ export interface GameStore {
   updateTimer: (delta: number) => void;
   endSession: () => void;
   triggerPerfectHit: () => void;
+  setBulletTimeScale: (scale: number) => void;
+  setIsCinematicActive: (active: boolean) => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -488,6 +507,8 @@ export const useGameStore = create<GameStore>()(
       timeLeft: 120,
       score: 0,
       combo: 0,
+      bulletTimeScale: 1.0,
+      isCinematicActive: false,
 
       // Actions
       initPogs: () => {
@@ -768,6 +789,9 @@ export const useGameStore = create<GameStore>()(
         gameState: 'SESSION_SUMMARY',
         sessionActive: false 
       }),
+
+      setBulletTimeScale: (bulletTimeScale: number) => set({ bulletTimeScale }),
+      setIsCinematicActive: (isCinematicActive: boolean) => set({ isCinematicActive }),
     };
   })
 );

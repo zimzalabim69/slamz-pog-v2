@@ -7,6 +7,7 @@ import { LightningBolt } from './LightningBolt';
 import { StartLogo3D } from './StartLogo3D';
 import { StartBackground3D } from './StartBackground3D';
 import { StartSmoke } from './StartSmoke';
+import { ArcadeCabinet } from './ArcadeCabinet';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import './StartScreen.css';
@@ -134,9 +135,11 @@ export const StartScreen: React.FC = () => {
     }
     audioManager.playSfx('slam_start', 0.9);
     setZooming(true);
-    setTimeout(() => {
-      setGameState('AIMING');
-    }, 850);
+    const handleStartGame = () => {
+      useGameStore.getState().setGameState('AIMING');
+      useGameStore.getState().initPogs();
+    };
+    setTimeout(handleStartGame, 850);
   }, [setGameState, zooming, hasStartedAudio]);
 
   return (
@@ -198,6 +201,7 @@ export const StartScreen: React.FC = () => {
           
           <StartBackground3D />
           <StartSmoke />
+          <ArcadeCabinet />
           <StartLogo3D />
         </Canvas>
       </div>
