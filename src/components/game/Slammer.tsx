@@ -29,6 +29,7 @@ export function Slammer() {
   // Camera shake state — no allocations in useFrame
   const shakeIntensity = useRef(0);
   const shakeDecay = useRef(0.9);
+  const shakeRotation = useRef({ x: 0, y: 0 });
 
   // Track whether impact has been processed this slam
   const impactProcessed = useRef(false);
@@ -176,13 +177,21 @@ export function Slammer() {
       camera.updateProjectionMatrix();
     }
 
-    // Smooth camera shake decay
+    // Enhanced camera shake decay with rotation
     if (shakeIntensity.current > 0.001) {
       camera.position.x += (Math.random() - 0.5) * shakeIntensity.current;
       camera.position.y += (Math.random() - 0.5) * shakeIntensity.current;
+      
+      // Add rotation shake
+      camera.rotation.x += shakeRotation.current.x;
+      camera.rotation.y += shakeRotation.current.y;
+      
       shakeIntensity.current *= shakeDecay.current;
+      shakeRotation.current.x *= 0.9;
+      shakeRotation.current.y *= 0.9;
     } else {
       shakeIntensity.current = 0;
+      shakeRotation.current = { x: 0, y: 0 };
     }
 
     // COLLISION-BASED IMPACT DETECTION (v1 style)
@@ -219,8 +228,12 @@ export function Slammer() {
           }
         });
         
-        // Camera shake — set intensity, useFrame handles the rest
-        shakeIntensity.current = currentPower * 0.008;
+        // Enhanced camera shake with power scaling and rotation
+        shakeIntensity.current = currentPower * 0.02; // Increased from 0.008
+        shakeRotation.current = {
+          x: (Math.random() - 0.5) * currentPower * 0.001,
+          y: (Math.random() - 0.5) * currentPower * 0.001
+        };
       }
     }
 

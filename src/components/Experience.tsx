@@ -20,9 +20,13 @@ import { PerformanceMonitor } from './PerformanceMonitor';
 import { AdaptiveQuality } from './AdaptiveQuality';
 import { SessionSummary } from './ui/SessionSummary';
 import { ShowcaseHUD } from './game/ShowcaseHUD';
+import { TimerUpdate } from './game/TimerUpdate';
 
 export function Experience() {
   const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
+  const qualityLevel = useGameStore((state) => state.qualityLevel);
+  const sessionActive = useGameStore((state) => state.sessionActive);
+  const updateTimer = useGameStore((state) => state.updateTimer);
   const debugParams = useGameStore((state) => state.debugParams);
   const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
   const orbitRef = React.useRef<any>(null);
@@ -94,6 +98,9 @@ export function Experience() {
       <SessionSummary />
       
       <Effects />
+      
+      {/* Timer Updates */}
+      <TimerUpdate />
       
       <OrbitControls
         ref={orbitRef}

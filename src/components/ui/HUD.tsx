@@ -16,6 +16,8 @@ export function HUD() {
   const advanceShowcase   = useGameStore((s) => s.advanceShowcase);
   const lastSlamText      = useGameStore((s) => s.lastSlamText);
   const resetStack        = useGameStore((s) => s.resetStack);
+  const currentCombo      = useGameStore((s) => s.currentCombo);
+  const comboMultiplier   = useGameStore((s) => s.comboMultiplier);
   const toggleBinder      = useGameStore((s) => s.toggleBinder);
   const toggleAchievements = useGameStore((s) => s.toggleAchievements);
   const showcaseRatioMode = useGameStore((s) => s.showcaseRatioMode);
@@ -55,6 +57,16 @@ export function HUD() {
           <div style={{ fontSize: '10px', color: '#00ffcc', marginTop: '8px' }}>
             POGS WON: <span style={{ color: '#fff', fontSize: '14px' }}>{stats.pogsWon}</span>
           </div>
+          {currentCombo > 0 && (
+            <div style={{ fontSize: '10px', color: '#ff00ff', marginTop: '4px' }}>
+              COMBO: <span style={{ color: '#fff', fontSize: '14px' }}>{currentCombo}x</span>
+              {comboMultiplier > 1 && (
+                <span style={{ color: '#ffff00', fontSize: '12px', marginLeft: '8px' }}>
+                  ({comboMultiplier.toFixed(1)}x)
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', pointerEvents: 'auto' }}>

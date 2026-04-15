@@ -6,12 +6,14 @@ export function CRTOverlay() {
   const gameState = useGameStore((state) => state.gameState);
   const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
   const qualityLevel = useGameStore((state) => state.qualityLevel);
+  const impactFlashActive = useGameStore((state) => state.impactFlashActive);
   
   const flickerRef = useRef(0);
   const shakeXRef = useRef(0);
   const rgbShiftRef = useRef(0);
   const noiseRef = useRef(0);
   const frameSkip = useRef(0);
+  const impactFlashRef = useRef(0);
 
   // Trigger slam reaction
   useEffect(() => {
@@ -22,6 +24,15 @@ export function CRTOverlay() {
         noiseRef.current = 1.0;
     }
   }, [gameState]);
+
+  // Trigger impact flash
+  useEffect(() => {
+    if (impactFlashActive) {
+        impactFlashRef.current = 1.0;
+        // Reset the flag after triggering
+        useGameStore.setState({ impactFlashActive: false });
+    }
+  }, [impactFlashActive]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -89,11 +100,20 @@ export function CRTOverlay() {
         ctx.globalCompositeOperation = 'source-over';
       }
 
+      // 5. IMPACT FLASH (White flash on slam)
+      if (impactFlashRef.current > 0.05) {
+        ctx.globalCompositeOperation = 'screen';
+        ctx.fillStyle = `rgba(255, 255, 255, ${impactFlashRef.current * 0.8})`;
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
       // 5. DECAY
       flickerRef.current *= 0.92;
       shakeXRef.current *= 0.85;
       rgbShiftRef.current *= 0.92;
       noiseRef.current *= 0.9;
+      impactFlashRef.current *= 0.85;
 
       animationId = requestAnimationFrame(render);
     };

@@ -14,6 +14,13 @@ import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { SystemTerminal } from './components/ui/SystemTerminal';
 import { StartScreen } from './components/ui/StartScreen';
 import { DebugPanel } from './components/ui/DebugPanel';
+import { SessionSummary } from './components/ui/SessionSummary';
+import { Binder } from './components/ui/Binder';
+import { Achievements } from './components/ui/Achievements';
+import { Timer } from './components/ui/Timer';
+import { ComboPopup } from './components/ui/ComboPopup';
+import { PerfectHit } from './components/ui/PerfectHit';
+import { EndScreen } from './components/ui/EndScreen';
 import { useMobileDetection } from './hooks/useMobileDetection';
 import { useGameStore } from './store/useGameStore';
 import { useTerminalStore } from './store/useTerminalStore';
@@ -174,10 +181,14 @@ function App() {
       
       {/* 1:1 PROTOTYPE OVERLAYS — CRT always mounted to avoid pop-in */}
       <CRTOverlay />
+      <Timer />
       {showGame && <HUD />}
+      {showGame && <ComboPopup />}
+      {showGame && <PerfectHit />}
       {showGame && <PauseMenu />}
       {showGame && (mobileInfo.isMobile ? <MobileControls /> : <DesktopControls />)}
       {gameState === 'START_SCREEN' && <StartScreen />}
+      {gameState === 'SESSION_SUMMARY' && <EndScreen />}
       <SystemTerminal />
       <MobileDebugPanel />
       <DebugPanel />

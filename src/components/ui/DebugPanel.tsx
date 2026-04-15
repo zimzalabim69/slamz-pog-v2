@@ -4,7 +4,7 @@ import type { DebugParams } from '../../store/useGameStore';
 import { DEFAULT_DEBUG_PARAMS } from '../../store/useGameStore';
 import './DebugPanel.css';
 
-type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena';
+type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -117,6 +117,9 @@ export function DebugPanel() {
         >
           Arena
         </button>
+          <button className={activeTab === 'bulletTime' ? 'active' : ''} onClick={() => setActiveTab('bulletTime')}>
+            BULLET TIME
+          </button>
       </div>
 
       <div className="debug-panel-content">
@@ -856,6 +859,435 @@ export function DebugPanel() {
           </>
         )}
 
+        {activeTab === 'bulletTime' && (
+          <>
+            <div className="debug-section">
+              <h3>BULLET TIME TIMING</h3>
+              
+              <div className="debug-control">
+                <label>Windup Duration: <span>{debugParams.cinematicWindupDuration.toFixed(2)}s</span></label>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="5" 
+                  step="0.1" 
+                  value={debugParams.cinematicWindupDuration}
+                  onChange={(e) => updateParam('cinematicWindupDuration', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Freeze Duration: <span>{debugParams.cinematicFreezeDuration.toFixed(2)}s</span></label>
+                <input 
+                  type="range" 
+                  min="0.1" 
+                  max="2" 
+                  step="0.05" 
+                  value={debugParams.cinematicFreezeDuration}
+                  onChange={(e) => updateParam('cinematicFreezeDuration', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Orbit Duration: <span>{debugParams.cinematicOrbitDuration.toFixed(2)}s</span></label>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="8" 
+                  step="0.2" 
+                  value={debugParams.cinematicOrbitDuration}
+                  onChange={(e) => updateParam('cinematicOrbitDuration', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Reveal Duration: <span>{debugParams.cinematicRevealDuration.toFixed(2)}s</span></label>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="5" 
+                  step="0.1" 
+                  value={debugParams.cinematicRevealDuration}
+                  onChange={(e) => updateParam('cinematicRevealDuration', parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="debug-section">
+              <h3>BULLET TIME CAMERA</h3>
+              
+              <div className="debug-control">
+                <label>Orbit Radius: <span>{debugParams.cinematicOrbitRadius.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="2" 
+                  max="20" 
+                  step="0.5" 
+                  value={debugParams.cinematicOrbitRadius}
+                  onChange={(e) => updateParam('cinematicOrbitRadius', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Orbit Height: <span>{debugParams.cinematicOrbitHeight.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="10" 
+                  step="0.2" 
+                  value={debugParams.cinematicOrbitHeight}
+                  onChange={(e) => updateParam('cinematicOrbitHeight', parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="debug-section">
+              <h3>BULLET TIME TIME SCALE</h3>
+              
+              <div className="debug-control">
+                <label>Slow Motion Scale: <span>{debugParams.cinematicTimeScaleSlow.toFixed(3)}</span></label>
+                <input 
+                  type="range" 
+                  min="0.01" 
+                  max="0.5" 
+                  step="0.01" 
+                  value={debugParams.cinematicTimeScaleSlow}
+                  onChange={(e) => updateParam('cinematicTimeScaleSlow', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Freeze Scale: <span>{debugParams.cinematicTimeScaleFreeze.toFixed(3)}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="0.1" 
+                  step="0.001" 
+                  value={debugParams.cinematicTimeScaleFreeze}
+                  onChange={(e) => updateParam('cinematicTimeScaleFreeze', parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="debug-section">
+              <h3>COMET ZOOM EFFECTS</h3>
+              
+              <div className="debug-control">
+                <label>Approach Speed: <span>{debugParams.cinematicCometApproachSpeed.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="10" 
+                  max="100" 
+                  step="5" 
+                  value={debugParams.cinematicCometApproachSpeed}
+                  onChange={(e) => updateParam('cinematicCometApproachSpeed', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Start Distance: <span>{debugParams.cinematicCometStartDistance.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="10" 
+                  max="50" 
+                  step="2" 
+                  value={debugParams.cinematicCometStartDistance}
+                  onChange={(e) => updateParam('cinematicCometStartDistance', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>End Distance: <span>{debugParams.cinematicCometEndDistance.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="10" 
+                  step="0.5" 
+                  value={debugParams.cinematicCometEndDistance}
+                  onChange={(e) => updateParam('cinematicCometEndDistance', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>FOV Punch: <span>{debugParams.cinematicCometFOVPunch.toFixed(0)}°</span></label>
+                <input 
+                  type="range" 
+                  min="60" 
+                  max="150" 
+                  step="5" 
+                  value={debugParams.cinematicCometFOVPunch}
+                  onChange={(e) => updateParam('cinematicCometFOVPunch', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Shake Intensity: <span>{debugParams.cinematicCometShakeIntensity.toFixed(2)}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="2" 
+                  step="0.1" 
+                  value={debugParams.cinematicCometShakeIntensity}
+                  onChange={(e) => updateParam('cinematicCometShakeIntensity', parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="debug-section">
+              <h3>POG EXPLOSION & SCATTER</h3>
+              
+              <div className="debug-control">
+                <label>Explosion Force: <span>{debugParams.cinematicExplosionForce.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="5" 
+                  max="50" 
+                  step="2" 
+                  value={debugParams.cinematicExplosionForce}
+                  onChange={(e) => updateParam('cinematicExplosionForce', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Scatter Radius: <span>{debugParams.cinematicScatterRadius.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="2" 
+                  max="20" 
+                  step="1" 
+                  value={debugParams.cinematicScatterRadius}
+                  onChange={(e) => updateParam('cinematicScatterRadius', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Scatter Height: <span>{debugParams.cinematicScatterHeight.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="15" 
+                  step="0.5" 
+                  value={debugParams.cinematicScatterHeight}
+                  onChange={(e) => updateParam('cinematicScatterHeight', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Pog Rotation Speed: <span>{debugParams.cinematicPogRotationSpeed.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="20" 
+                  step="1" 
+                  value={debugParams.cinematicPogRotationSpeed}
+                  onChange={(e) => updateParam('cinematicPogRotationSpeed', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Float Duration: <span>{debugParams.cinematicPogFloatDuration.toFixed(1)}s</span></label>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="8" 
+                  step="0.5" 
+                  value={debugParams.cinematicPogFloatDuration}
+                  onChange={(e) => updateParam('cinematicPogFloatDuration', parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="debug-section">
+              <h3>DRAMATIC TRANSITIONS</h3>
+              
+              <div className="debug-control">
+                <label>Transition Speed: <span>{debugParams.cinematicTransitionSpeed.toFixed(2)}</span></label>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="5" 
+                  step="0.2" 
+                  value={debugParams.cinematicTransitionSpeed}
+                  onChange={(e) => updateParam('cinematicTransitionSpeed', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Impact Flash Intensity: <span>{debugParams.cinematicImpactFlashIntensity.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="10" 
+                  step="0.5" 
+                  value={debugParams.cinematicImpactFlashIntensity}
+                  onChange={(e) => updateParam('cinematicImpactFlashIntensity', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Motion Blur Strength: <span>{debugParams.cinematicMotionBlurStrength.toFixed(2)}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.05" 
+                  value={debugParams.cinematicMotionBlurStrength}
+                  onChange={(e) => updateParam('cinematicMotionBlurStrength', parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="debug-section">
+              <h3>POG LOCK-ON TRACKING</h3>
+              
+              <div className="debug-control">
+                <label>Enable Lock-on: <span>{debugParams.cinematicLockOnEnabled ? 'ON' : 'OFF'}</span></label>
+                <input 
+                  type="checkbox" 
+                  checked={debugParams.cinematicLockOnEnabled}
+                  onChange={(e) => updateParam('cinematicLockOnEnabled', e.target.checked ? 1 : 0)}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Lock Duration: <span>{debugParams.cinematicLockOnDuration.toFixed(1)}s</span></label>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="8" 
+                  step="0.5" 
+                  value={debugParams.cinematicLockOnDuration}
+                  onChange={(e) => updateParam('cinematicLockOnDuration', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Orbit Radius: <span>{debugParams.cinematicLockOnOrbitRadius.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="10" 
+                  step="0.5" 
+                  value={debugParams.cinematicLockOnOrbitRadius}
+                  onChange={(e) => updateParam('cinematicLockOnOrbitRadius', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Orbit Speed: <span>{debugParams.cinematicLockOnOrbitSpeed.toFixed(2)}</span></label>
+                <input 
+                  type="range" 
+                  min="0.2" 
+                  max="5" 
+                  step="0.2" 
+                  value={debugParams.cinematicLockOnOrbitSpeed}
+                  onChange={(e) => updateParam('cinematicLockOnOrbitSpeed', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Height Offset: <span>{debugParams.cinematicLockOnHeightOffset.toFixed(1)}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="5" 
+                  step="0.2" 
+                  value={debugParams.cinematicLockOnHeightOffset}
+                  onChange={(e) => updateParam('cinematicLockOnHeightOffset', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Smooth Factor: <span>{debugParams.cinematicLockOnSmoothFactor.toFixed(2)}</span></label>
+                <input 
+                  type="range" 
+                  min="0.1" 
+                  max="1" 
+                  step="0.05" 
+                  value={debugParams.cinematicLockOnSmoothFactor}
+                  onChange={(e) => updateParam('cinematicLockOnSmoothFactor', parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="debug-section">
+              <h3>SYNCHRONIZED FALLING & REST</h3>
+              
+              <div className="debug-control">
+                <label>Fall Duration: <span>{debugParams.cinematicSyncFallDuration.toFixed(1)}s</span></label>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="5" 
+                  step="0.2" 
+                  value={debugParams.cinematicSyncFallDuration}
+                  onChange={(e) => updateParam('cinematicSyncFallDuration', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Fall Speed: <span>{debugParams.cinematicSyncFallSpeed.toFixed(2)}</span></label>
+                <input 
+                  type="range" 
+                  min="0.1" 
+                  max="1" 
+                  step="0.05" 
+                  value={debugParams.cinematicSyncFallSpeed}
+                  onChange={(e) => updateParam('cinematicSyncFallSpeed', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Rest Delay: <span>{debugParams.cinematicSyncRestDelay.toFixed(1)}s</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="3" 
+                  step="0.2" 
+                  value={debugParams.cinematicSyncRestDelay}
+                  onChange={(e) => updateParam('cinematicSyncRestDelay', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Face Up Chance: <span>{(debugParams.cinematicFinalFaceUpChance * 100).toFixed(0)}%</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.05" 
+                  value={debugParams.cinematicFinalFaceUpChance}
+                  onChange={(e) => updateParam('cinematicFinalFaceUpChance', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Bounce Count: <span>{debugParams.cinematicBounceCount.toFixed(0)}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="5" 
+                  step="1" 
+                  value={debugParams.cinematicBounceCount}
+                  onChange={(e) => updateParam('cinematicBounceCount', parseFloat(e.target.value))}
+                />
+              </div>
+
+              <div className="debug-control">
+                <label>Bounce Damping: <span>{debugParams.cinematicBounceDamping.toFixed(2)}</span></label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.05" 
+                  value={debugParams.cinematicBounceDamping}
+                  onChange={(e) => updateParam('cinematicBounceDamping', parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+          </>
+        )}
+
         {activeTab === 'arena' && (
           <div className="debug-section">
             <h3>ARENA SETTINGS</h3>
@@ -907,6 +1339,8 @@ export function DebugPanel() {
     </div>
   );
 }
+
+
 
 
 

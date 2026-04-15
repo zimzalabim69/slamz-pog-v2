@@ -13,8 +13,13 @@ export function GameController() {
 
   const slamStartTime = useRef<number>(0);
   const hasProcessedSlam = useRef(false);
+  const hitStopFrames = useRef<number>(0);
 
   const gameState  = useGameStore((s) => s.gameState);
+  const hitStopActive = useGameStore((s) => s.hitStopActive);
+  const setHitStopActive = useGameStore((s) => s.triggerHitStop);
+  const setImpactFlashActive = useGameStore((s) => s.triggerImpactFlash);
+  const incrementCombo = useGameStore((s) => s.incrementCombo);
   const setGameState  = useGameStore((s) => s.setGameState);
   const stats         = useGameStore((s) => s.stats);
   const updateStats   = useGameStore((s) => s.updateStats);
@@ -71,15 +76,14 @@ export function GameController() {
       } else {
         setSlamText('WEAK...');
       }
-      setTimeout(() => setSlamText(null), 1500);
+      setSlamText(null);
     }
   }, [gameState]);
 
   // ── Impact SFX (wired via collision) ─────────────────────
   useEffect(() => {
     if (gameState === 'SLAMMED') {
-      const timer = setTimeout(() => playImpactSound(), 200);
-      return () => clearTimeout(timer);
+      playImpactSound();
     }
   }, [gameState]);
 
@@ -89,6 +93,16 @@ export function GameController() {
 
   // Per-frame settle check (identical logic to original) with fixed timestep
   useFrame((_, delta) => {
+    // Handle hit-stop: freeze physics for 4 frames when triggered
+    if (hitStopActive) {
+      hitStopFrames.current++;
+      if (hitStopFrames.current >= 4) {
+        hitStopFrames.current = 0;
+        useGameStore.setState({ hitStopActive: false });
+      }
+      return; // Skip physics processing during hit-stop
+    }
+
     if (gameState !== 'SLAMMED' || hasProcessedSlam.current) return;
 
     // Accumulate time for fixed timestep
@@ -116,9 +130,22 @@ export function GameController() {
 
     if (!allSettled && !forceReset) return;
     hasProcessedSlam.current = true;
+    
+    // Trigger hit-stop on impact
+    setHitStopActive();
+    setImpactFlashActive();
+    
+    // Check for perfect hit (95+ power) and trigger perfect hit event
+    const power = slamPowerRef.current;
+    if (power >= 95) {
+      useGameStore.getState().triggerPerfectHit();
+    }
+    
+    // Play impact sound immediately on actual impact
+    playImpactSound();
 
     // ── FACE-UP DETECTION ─────────────────────────────────
-    const state = useGameStore.getState();
+    const storeState = useGameStore.getState();
     const faceUpPogs: string[] = [];
 
     world.forEachRigidBody((body) => {
@@ -129,30 +156,28 @@ export function GameController() {
       const quat = new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w);
       const localUp = WORLD_UP.clone().applyQuaternion(quat);
 
-      // dot > 0.5 means face-up (same threshold as original)
-      if (localUp.y > 0.5) {
-        const pogId = userData.name.replace('pog-', '');
-        faceUpPogs.push(pogId);
-        
-        // Only process face-up POGs that haven't been counted yet
-        if (!state.faceUpPogs.includes(pogId)) {
-          const pogData = state.pogs.find(p => p.id === pogId);
-          if (pogData) {
-            // Add to session score
-            addFaceUpPog(pogId);
-            
-            // In practice mode, don't add to permanent collection yet
-            if (state.gameMode === 'CLASSIC') {
-              addToCollection({ theme: pogData.theme, rarity: pogData.rarity, date: new Date().toISOString() });
-              removePog(pogId);
-            }
-          }
+      if (localUp.y > 0.7) {
+        faceUpPogs.push(userData['pog-id']);
+        const pogData = storeState.pogs.find((p: any) => p.id === userData['pog-id']);
+        if (pogData) {
+          addToCollection({ theme: pogData.theme, rarity: pogData.rarity, date: new Date().toISOString() });
+          removePog(userData['pog-id']);
+          enqueueShowcase([{ theme: pogData.theme, rarity: pogData.rarity }]);
+          updateStats({ totalSlams: storeState.stats.totalSlams + 1, pogsWon: storeState.stats.pogsWon + 1 });
+          playCaptureSound();
         }
       }
     });
 
     // Update face-up POGs tracking
     useGameStore.getState().setFaceUpPogs(faceUpPogs);
+    
+    // Combo system: increment combo if POGs were flipped, reset if none
+    if (faceUpPogs.length > 0) {
+      incrementCombo();
+    } else {
+      resetCombo();
+    }
 
     // Handle practice mode vs classic mode differently
     if (state.gameMode === 'PRACTICE_FOR_KEEPS' || state.gameMode === 'NO_RESTACK_CHAOS') {
