@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import type { GameState, CollectionItem, SessionStats, PogData, GameMode, SessionScore, PracticeSession } from '../types/game';
 import { PROCEDURAL_THEMES, ASSET_THEMES } from '../constants/pogData';
@@ -738,7 +738,7 @@ export const useGameStore = create<GameStore>()(
         return {
           currentShowcase: next,
           showcaseQueue: rest,
-          gameState: 'SHOWCASE',
+          gameState: 'ROUND_JACKPOT',
         };
       }),
 
@@ -883,6 +883,7 @@ export const useGameStore = create<GameStore>()(
     };
   })
 );
+
 
 
 

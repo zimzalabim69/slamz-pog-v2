@@ -1,6 +1,6 @@
-// ============================================================
-// AUDIO SYSTEM — Ported 1:1 from original AudioSystem.js
-// Procedural Web Audio API — no asset files needed
+﻿// ============================================================
+// AUDIO SYSTEM â€” Ported 1:1 from original AudioSystem.js
+// Procedural Web Audio API â€” no asset files needed
 // ============================================================
 
 let audioCtx: AudioContext | null = null;
@@ -58,7 +58,7 @@ export function playVelcroRip() {
 
 export function playCaptureSound() {
   const ctx = getCtx();
-  // Rising chime — same feel as original "capture" 
+  // Rising chime â€” same feel as original "capture" 
   [0, 100, 200].forEach((delay, i) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -169,5 +169,51 @@ export function playZipSound() {
   filter.connect(gain);
   gain.connect(ctx.destination);
   
+  source.start();
+}
+
+/**
+ * Jackpot Fanfare: The "Big Payoff" sound
+ * High-energy celebratory burst combining rising chords and shimmering noise
+ */
+export function playJackpotFanfare() {
+  const ctx = getCtx();
+  const baseFreq = 220; // A3
+  const intervals = [1, 1.25, 1.5, 2, 2.5, 3]; // Major triad overtones
+  
+  // Power Chords
+  intervals.forEach((interval, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const delay = i * 0.05;
+    
+    osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle';
+    osc.frequency.setValueAtTime(baseFreq * interval, ctx.currentTime + delay);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * interval * 1.5, ctx.currentTime + delay + 0.8);
+    
+    gain.gain.setValueAtTime(0.15, ctx.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 1.2);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + 1.2);
+  });
+
+  // Shimmer Burst
+  const bufferSize = ctx.sampleRate * 0.8;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - (i / bufferSize), 2);
+  }
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.value = 5000;
+  source.connect(filter);
+  filter.connect(ctx.destination);
   source.start();
 }

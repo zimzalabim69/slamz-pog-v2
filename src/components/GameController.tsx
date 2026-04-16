@@ -1,4 +1,4 @@
-import { useFrame } from '@react-three/fiber';
+﻿import { useFrame } from '@react-three/fiber';
 import { useRapier } from '@react-three/rapier';
 import { useGameStore } from '../store/useGameStore';
 import { useEffect, useRef } from 'react';
@@ -8,6 +8,8 @@ import { getSetForTheme } from '../constants/setDefinitions';
 import { cinematicEngine } from '../systems/CinematicEngine';
 
 const WORLD_UP = new THREE.Vector3(0, 1, 0);
+const _quat = new THREE.Quaternion();
+const _vec3 = new THREE.Vector3();
 
 export function GameController() {
   const { world } = useRapier();
@@ -17,7 +19,7 @@ export function GameController() {
   const hitStopFrames = useRef<number>(0);
   const settleStartTime = useRef<number>(0);
   const sustainedSettleTicks = useRef<number>(0); // Consecutive fixed-timestep ticks all pogs have been below threshold
-  const SUSTAINED_SETTLE_THRESHOLD = 20; // ~0.33s at 60Hz fixed-timestep — must stay settled this long
+  const SUSTAINED_SETTLE_THRESHOLD = 20; // ~0.33s at 60Hz fixed-timestep â€” must stay settled this long
 
   const gameState  = useGameStore((s) => s.gameState);
   const hitStopActive = useGameStore((s) => s.hitStopActive);
@@ -39,13 +41,13 @@ export function GameController() {
   const endPracticeSession = useGameStore((s) => s.endPracticeSession);
   const resetCombo    = useGameStore((s) => s.resetCombo);
 
-  // ── Keyboard shortcuts [R], [E], [Space] ─────────────────
+  // â”€â”€ Keyboard shortcuts [R], [E], [Space] â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
       if (key === 'r') resetStack();
       if (key === 'e') cycleAtmosphere();
-      if (e.code === 'Space' && gameState === 'SHOWCASE') {
+      if (e.code === 'Space' && gameState === 'ROUND_JACKPOT') {
         advanceShowcase();
       }
     };
@@ -53,7 +55,7 @@ export function GameController() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Mark slam start ───────────────────────────────────────
+  // â”€â”€ Mark slam start â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (gameState === 'SLAMMED') {
       slamStartTime.current = Date.now();
@@ -85,7 +87,7 @@ export function GameController() {
     }
   }, [gameState]);
 
-  // ── Impact SFX (wired via collision) ─────────────────────
+  // â”€â”€ Impact SFX (wired via collision) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (gameState === 'SLAMMED') {
       playImpactSound();
@@ -124,7 +126,7 @@ export function GameController() {
     // post-handoff grace period. The 0.98 damping during cinematic artificially
     // flattens velocities below the settle threshold, which would cause false
     // positives the instant damping clears (before gravity has time to re-accelerate).
-    // forceReset still wins — we don't want to hang forever if cinematic misbehaves.
+    // forceReset still wins â€” we don't want to hang forever if cinematic misbehaves.
     if (!forceReset && (cinematicEngine.isCinematicActive || cinematicEngine.isInGracePeriod())) {
       sustainedSettleTicks.current = 0;
       return;
@@ -159,7 +161,7 @@ export function GameController() {
 
     hasProcessedSlam.current = true;
     const settleTime = Date.now() - settleStartTime.current;
-    console.log(`[PHYSICS] 🏁 All bodies settled in ${settleTime}ms (Threshold: 0.01)`);
+    console.log(`[PHYSICS] ðŸ All bodies settled in ${settleTime}ms (Threshold: 0.01)`);
     
     // Trigger hit-stop on impact
     setHitStopActive();
@@ -190,7 +192,7 @@ export function GameController() {
       }
     }
 
-    // ── FACE-UP DETECTION ─────────────────────────────────
+    // â”€â”€ FACE-UP DETECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const faceUpPogs: string[] = [];
 
     world.forEachRigidBody((body) => {
@@ -198,10 +200,10 @@ export function GameController() {
       if (typeof userData?.name !== 'string' || !userData.name.startsWith('pog-')) return;
 
       const rot = body.rotation();
-      const quat = new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w);
-      const localUp = WORLD_UP.clone().applyQuaternion(quat);
+      _quat.set(rot.x, rot.y, rot.z, rot.w);
+      _vec3.copy(WORLD_UP).applyQuaternion(_quat);
 
-      if (localUp.y > 0.7) {
+      if (_vec3.y > 0.7) {
         faceUpPogs.push(userData['pog-id']);
         const pogData = state.pogs.find((p: any) => p.id === userData['pog-id']);
         if (pogData) {
@@ -217,7 +219,7 @@ export function GameController() {
             marketValue: values[pogData.rarity] ?? 50,
           }]);
           updateStats({ totalSlams: state.stats.totalSlams + 1, pogsWon: state.stats.pogsWon + 1 });
-          playCaptureSound();
+          // SILENT: playCaptureSound() removed to build tension for final summary
         }
       }
     });
@@ -269,11 +271,11 @@ export function GameController() {
 
       if (showcaseItems.length > 0) {
         updateStats({ pogsWon: stats.pogsWon + showcaseItems.length });
-        playCaptureSound();
-        setGameState('SHOWCASE');
+        // The Jackpot Fanfare and UI will now fire after cinematic completion
+        setGameState('ROUND_JACKPOT');
         enqueueShowcase(showcaseItems);
       } else {
-        // Nothing won — just reset
+        // Nothing won â€” just reset
         setGameState('RESETTING');
         setTimeout(() => {
           useGameStore.getState().setGameState('AIMING');
@@ -282,10 +284,10 @@ export function GameController() {
     }
   });
 
-  // ── Advance showcase timer (5s auto-advance like original) 
+  // â”€â”€ Advance showcase timer (5s auto-advance like original) 
   const showcaseStart = useRef(0);
   useEffect(() => {
-    if (gameState === 'SHOWCASE') {
+    if (gameState === 'ROUND_JACKPOT') {
       showcaseStart.current = Date.now();
     }
   }, [currentShowcase, gameState]);
@@ -299,5 +301,7 @@ export function GameController() {
 
   return null;
 }
+
+
 
 
