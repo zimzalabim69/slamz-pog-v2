@@ -25,25 +25,20 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
   const currentPos = useRef(new THREE.Vector3());
   const currentRot = useRef(new THREE.Quaternion());
 
-  // Add slight restitution variation per pog
-  const restitution = useMemo(() => 
-    debugParams.pogRestitution + (Math.random() - 0.5) * 0.1, 
-    [debugParams.pogRestitution]
-  );
-  
   const materials = useMemo(() => {
     const mat = getMaterialFromRegistry('pog', 'metal', theme, rarity);
-    if (Array.isArray(mat)) {
-      mat.forEach(m => {
-        if (m instanceof THREE.MeshStandardMaterial) {
-          m.metalness = debugParams.pogMetalness;
-          m.roughness = debugParams.pogRoughness;
-        }
-      });
-    } else if (mat instanceof THREE.MeshStandardMaterial) {
-      mat.metalness = debugParams.pogMetalness;
-      mat.roughness = debugParams.pogRoughness;
-    }
+        const materialList = (Array.isArray(mat) ? mat : [mat]).filter(
+      (material): material is THREE.MeshStandardMaterial =>
+        typeof material === 'object' && material !== null && 'metalness' in material && 'roughness' in material
+    );
+
+    materialList.forEach((material) => {
+      material.metalness = debugParams.pogMetalness;
+      material.roughness = debugParams.pogRoughness;
+      material.depthWrite = true;
+      material.depthTest = true;
+    });
+
     return mat;
   }, [theme, rarity, debugParams.pogMetalness, debugParams.pogRoughness]);
   
@@ -78,13 +73,14 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
   }, [position, rotation, faceDownQuat]);
 
   const gameState = useGameStore((state) => state.gameState);
+  const globalDampingScale = useGameStore((state) => state.globalDampingScale);
   
   useEffect(() => {
     if (!rb.current) return;
     
-    // During manual cinematic, we force kinematic to prevent physics interference
+    // In Volcanic mode, POGs stay Dynamic during the Bullet Time orbit
     if (cinematicEngine.isCinematicActive) {
-      rb.current.setBodyType(2, true); // 2 = KinematicPositionBased
+      rb.current.setBodyType(0, true); // 0 = Dynamic
       return;
     }
 
@@ -95,30 +91,46 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
     }
   }, [gameState]);
 
-  // MANUAL MATRIX DRIFT LOOP
-  useFrame((_state, delta) => {
+  // VOLCANIC DAMPING & VELOCITY GOVERNOR LOOP
+  const setPeakVelocity = useGameStore((state) => state.setPeakVelocity);
+  
+  useFrame(() => {
     if (!rb.current) return;
 
-    if (cinematicEngine.isCinematicActive && cinematicEngine.manualDriftScale > 0) {
-      const p = rb.current.translation();
-      currentPos.current.set(p.x, p.y, p.z);
-      
-      const constraint = cinematicEngine.calculateConstrainedDrift(id, currentPos.current, delta);
-      if (constraint) {
-        // 1. Position Drift
-        currentPos.current.add(constraint.drift);
-        rb.current.setNextKinematicTranslation(currentPos.current);
+    // 1. DAMPING (Slow-Mo Simulation)
+    if (cinematicEngine.isCinematicActive && globalDampingScale > 0) {
+      rb.current.setLinearDamping(globalDampingScale);
+      rb.current.setAngularDamping(globalDampingScale);
+    } else {
+      rb.current.setLinearDamping(debugParams.pogLinearDamping);
+      rb.current.setAngularDamping(debugParams.pogAngularDamping);
+    }
 
-        // 2. Rotation Drift
-        const r = rb.current.rotation();
-        currentRot.current.set(r.x, r.y, r.z, r.w);
-        
-        const euler = new THREE.Euler(constraint.angDrift.x, constraint.angDrift.y, constraint.angDrift.z);
-        const qDelta = new THREE.Quaternion().setFromEuler(euler);
-        
-        currentRot.current.multiply(qDelta);
-        rb.current.setNextKinematicRotation(currentRot.current);
-      }
+    // 2. VELOCITY GOVERNOR (The Brakes)
+    const linvel = rb.current.linvel();
+    const velocityMagnitude = Math.sqrt(linvel.x ** 2 + linvel.y ** 2 + linvel.z ** 2);
+    
+    // Report Peak for HUD Meter
+    if (velocityMagnitude > 0.01) {
+      setPeakVelocity(velocityMagnitude);
+    }
+
+    if (velocityMagnitude > debugParams.pogMaxVelocity) {
+      // Apply "Jelly Brakes" (Massive Damping)
+      rb.current.setLinearDamping(20.0); 
+      rb.current.setAngularDamping(20.0);
+      
+      // Forcefully clamp the vector
+      const scale = debugParams.pogMaxVelocity / velocityMagnitude;
+      rb.current.setLinvel({
+        x: linvel.x * scale,
+        y: linvel.y * scale,
+        z: linvel.z * scale
+      }, true);
+    } else if (!cinematicEngine.isCinematicActive) {
+      // Restore normal damping when within limits
+      rb.current.setLinearDamping(debugParams.pogLinearDamping);
+      rb.current.setAngularDamping(debugParams.pogAngularDamping);
     }
   });
 
@@ -147,6 +159,7 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
 Pog.displayName = 'Pog';
 
 Pog.displayName = 'Pog';
+
 
 
 

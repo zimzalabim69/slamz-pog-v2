@@ -1,135 +1,128 @@
 import * as THREE from 'three';
 import { RapierRigidBody } from '@react-three/rapier';
+import { useGameStore } from '../store/useGameStore';
 
 /**
  * SLAMZ PRO-TOUR CINEMATIC ENGINE
  * 
  * A professional-grade puppet system for physics-based cinematics.
- * Resolves the "Bullet Time" stability issues by decoupling simulation 
+ * Resolves the 'Bullet Time' stability issues by decoupling simulation 
  * from cinematic camera orbits.
  */
 class CinematicEngine {
-  public manualDriftScale: number = 0; // 0 = freeze, 1 = normal speed
   public isCinematicActive: boolean = false;
-  
-  // Cinematic Constants for "The Swarm"
-  public driftVelocityScale: number = 0.05; // Ultra-slow "Hollywood" drift
-  public domeRadius: number = 4.5; // Tighter swarm
-  public domeFriction: number = 0.9; 
-  
-  private snapshots: Map<string, {
-    velocity: THREE.Vector3;
-    angularVelocity: THREE.Vector3;
-    position: THREE.Vector3;
-    rotation: THREE.Quaternion;
-  }> = new Map();
 
   /**
-   * ATOMIC TRIGGER: Captures state and FREEZES the world immediately.
-   * Call this from the Slammer at the exact moment of impact.
+   * VOLCANIC TRIGGER: Shifts environment to Zero-G/Slow-Mo and applies impulses.
+   * Treating pogs as 'actual objects' with continuous collision.
    */
-  public triggerCinematic(world: any) {
+  public triggerCinematic(
+    world: any, 
+    impactPoint: THREE.Vector3 | { x: number, y: number, z: number }, 
+    impactPower: number, 
+    slammerMass: number, 
+    debugParams: any
+  ) {
     if (!world) return;
     
-    this.snapshots.clear();
     this.isCinematicActive = true;
-
-    world.forEachRigidBody((body: RapierRigidBody) => {
-      const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
-        const id = ud.name.replace('pog-', '');
-        const linvel = body.linvel();
-        const angvel = body.angvel();
-        
-        // 1. Capture momentum for the manual drift phase
-        this.snapshots.set(id, {
-          velocity: new THREE.Vector3(linvel.x, linvel.y, linvel.z),
-          angularVelocity: new THREE.Vector3(angvel.x, angvel.y, angvel.z),
-          position: new THREE.Vector3().copy(body.translation() as any),
-          rotation: new THREE.Quaternion().copy(body.rotation() as any)
-        });
-
-        // 2. ATOMIC FREEZE: Stop the physical body instantly 
-        // This prevents them from moving while we wait for the React render cycle to pause physics
-        body.setLinvel({ x: 0, y: 0, z: 0 }, true);
-        body.setAngvel({ x: 0, y: 0, z: 0 }, true);
-      }
+    
+    // 1. Shift Environment to 'Bullet Time'
+    useGameStore.setState({ 
+      bulletTimeActive: true,
+      globalDampingScale: 0.98 // ULTRA-THICK AIR (Containment)
     });
 
-    console.log(`[ENGINE] ❄️ ATOMIC FREEZE ENGAGED - ${this.snapshots.size} POGS CAPTURED`);
-  }
-
-  /**
-   * Get Snapshot: Returns the physical memory of a specific object.
-   */
-  public getSnapshot(id: string) {
-    return this.snapshots.get(id);
-  }
-
-  /**
-   * Calculate Constrained Drift: Handle "The Swarm" behavior.
-   * - Reduces hyper-sonic velocities to "Hollywood" speeds.
-   * - Applies drag when approaching the Dome Radius.
-   * - Adds a tiny centripetal bias for the orbital look.
-   */
-  public calculateConstrainedDrift(id: string, currentPos: THREE.Vector3, delta: number) {
-    const snapshot = this.snapshots.get(id);
-    if (!snapshot) return null;
-
-    // 1. Calculate Base Drift (Nerfed for cinematic scale)
-    const drift = snapshot.velocity.clone().multiplyScalar(delta * this.manualDriftScale * this.driftVelocityScale);
-    
-    // 2. Dome Constraint (Radial Friction)
-    const distFromCenter = currentPos.length();
-    if (distFromCenter > this.domeRadius) {
-      // Exponentially slow down outside the dome
-      const overshoot = distFromCenter - this.domeRadius;
-      const dragFactor = Math.max(0, 1 - (overshoot * 0.5));
-      drift.multiplyScalar(dragFactor * this.domeFriction);
-      
-      // Add a tiny pull back to center
-      const pull = currentPos.clone().normalize().multiplyScalar(-0.01 * delta);
-      drift.add(pull);
-    }
-
-    // 3. Rotation Drift (Nerfed slightly less as spin looks cool)
-    const angDrift = snapshot.angularVelocity.clone().multiplyScalar(delta * this.manualDriftScale * 0.8);
-
-    return { drift, angDrift };
-  }
-
-  /**
-   * Hand-off: Restores the captured physical state back to the active bodies.
-   * Call this when the cinematic ends to resume simulation.
-   */
-  public handOff(world: any) {
-    if (!world) return;
+    const impactSpeed = (impactPower / 100) * debugParams.powerChargeSpeed;
+    // CALIBRATION: Reduced base force to 'Teenage Boy' levels (90s Accuracy)
+    const forceBase = slammerMass * impactSpeed * debugParams.slamForceMultiplier * 0.12;
 
     world.forEachRigidBody((body: RapierRigidBody) => {
       const ud = body.userData as any;
       if (ud?.name?.startsWith('pog-')) {
-        const id = ud.name.replace('pog-', '');
-        const snapshot = this.snapshots.get(id);
-        if (snapshot) {
-          // Hand control back to the physics solver with the correct momentum
-          body.setLinvel(snapshot.velocity, true);
-          body.setAngvel(snapshot.angularVelocity, true);
+        const pogPos = body.translation();
+        
+        // --- THE VOLCANIC PHYSICS ---
+        const dx = pogPos.x - impactPoint.x;
+        const dz = pogPos.z - impactPoint.z;
+        const dist = Math.sqrt(dx * dx + dz * dz);
+        
+        if (dist < debugParams.eruptionRadius) {
+          // CHAOS INJECTION: Add random 'Jitter' to the blast vector
+          const jitterX = (Math.random() - 0.5) * 0.4;
+          const jitterZ = (Math.random() - 0.5) * 0.4;
+
+          const dirX = (dx / (dist || 0.1)) + jitterX;
+          const dirZ = (dz / (dist || 0.1)) + jitterZ;
+          const decline = Math.max(0, 1 - dist / debugParams.eruptionRadius);
+          
+          // 1. Air Wedge Effect (Upward + Radial Lift)
+          const airLift = forceBase * decline * debugParams.eruptionUpwardMultiplier;
+          const radialPush = forceBase * decline * 0.15; // HEAVILY BIASED UPWARD
+          
+          body.applyImpulse({
+            x: dirX * radialPush,
+            y: airLift,
+            z: dirZ * radialPush
+          }, true);
+
+          // 2. Tumble Mechanics (Torque) - Increased for 'flipping'
+          const torque = forceBase * decline * debugParams.eruptionTorqueMultiplier * 2.0;
+          body.applyTorqueImpulse({
+            x: (Math.random() - 0.5) * torque,
+            y: (Math.random() - 0.5) * torque,
+            z: (Math.random() - 0.5) * torque
+          }, true);
+
+          // Ensure bodies are dynamic and awake
+          body.setBodyType(0, true);
+          body.wakeUp();
         }
       }
     });
+
+    console.log('[ENGINE] 🌋 VOLCANIC TRIGGER ACTIVE - CALIBRATED POWER');
+  }
+
+  /**
+   * Hand-off: FULL RELEASE - restore normal physics completely.
+   */
+  public handOff(world: any) {
+    if (!world) return;
     
-    // Clear and reset
-    this.manualDriftScale = 1.0;
+    const debugParams = useGameStore.getState().debugParams;
+    
+    // FULL RELEASE - remove ALL constraints
+    useGameStore.setState({ 
+      bulletTimeActive: false,
+      globalDampingScale: 0
+    });
+
+    // CRITICAL: Reset damping on all pog bodies back to normal!
+    world.forEachRigidBody((body: RapierRigidBody) => {
+      const ud = body.userData as any;
+      if (ud?.name?.startsWith('pog-')) {
+        // Restore normal damping values (the 0.98 bullet-time damping is stuck on them!)
+        body.setLinearDamping(debugParams.pogLinearDamping);
+        body.setAngularDamping(debugParams.pogAngularDamping);
+        body.wakeUp();
+      }
+    });
+
+    console.log('[ENGINE] 🌍 FULL RELEASE - DAMPING CLEARED - POGS FREE');
+    
     this.isCinematicActive = false;
   }
 
   /**
-   * Reset the engine completely (e.g. on new round)
+   * Reset the engine completely
    */
   public reset() {
-    this.snapshots.clear();
-    this.manualDriftScale = 1.0;
     this.isCinematicActive = false;
+    useGameStore.setState({ 
+        bulletTimeActive: false,
+        globalDampingScale: 0
+    });
   }
 }
 

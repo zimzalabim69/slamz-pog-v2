@@ -31,7 +31,7 @@ export const SCENE_PRESETS = {
     pointPosition: [-10, 8, 5] as [number, number, number],
     floorColor: '#050010',
     floorEmissive: '#4400aa',
-    floorEmissiveIntensity: 10.0,
+    floorEmissiveIntensity: 1.5,
     bloomStrength: 0.8,
     bloomRadius: 0.4,
     bloomThreshold: 0.85,

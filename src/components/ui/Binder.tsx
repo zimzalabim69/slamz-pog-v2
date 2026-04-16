@@ -22,7 +22,7 @@ export function Binder() {
 
   const counts: Record<string, number> = {};
   const ownedThemes = new Set<string>();
-  collection.forEach((p) => {
+  collection.forEach((p: { theme: string }) => {
     counts[p.theme] = (counts[p.theme] || 0) + 1;
     ownedThemes.add(p.theme);
   });
@@ -161,3 +161,4 @@ function ArtworkInspector({ theme, onClose }: { theme: string; onClose: () => vo
     </div>
   );
 }
+

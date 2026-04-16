@@ -8,6 +8,7 @@ import { StartLogo3D } from './StartLogo3D';
 import { StartBackground3D } from './StartBackground3D';
 import { StartSmoke } from './StartSmoke';
 import { ArcadeCabinet } from './ArcadeCabinet';
+import { SlamzWraith } from '../game/SlamzWraith';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import './StartScreen.css';
@@ -15,8 +16,7 @@ import './StartScreen.css';
 // Reactive FogExp2 that reads debug params every frame
 function StartSceneFog() {
   const { scene } = useThree();
-  const debugParams = useGameStore((state) => state.debugParams);
-  
+  const debugParams = useGameStore((state) => state.debugParams);  
   React.useEffect(() => {
     const color = new THREE.Color(
       debugParams.startFogColorR,
@@ -43,8 +43,7 @@ function StartSceneFog() {
 // Throttle render loop after intro animation settles
 function RenderController() {
   const invalidate = useThree((s) => s.invalidate);
-  const [settled, setSettled] = React.useState(false);
-  
+  const [settled, setSettled] = React.useState(false);  
   React.useEffect(() => {
     const timer = setTimeout(() => setSettled(true), 5000);
     return () => clearTimeout(timer);
@@ -78,8 +77,7 @@ export const StartScreen: React.FC = () => {
   const [zooming, setZooming] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [isGlitching, setIsGlitching] = useState(false);
-  const [hasStartedAudio, setHasStartedAudio] = useState(false);
-  
+  const [hasStartedAudio, setHasStartedAudio] = useState(false);  
   // Lightning state: tracks active bolts and their positions
   const [activeBolt, setActiveBolt] = useState<{ x1: number, y1: number, x2: number, y2: number } | null>(null);
   const lightningTimer = useRef<NodeJS.Timeout | null>(null);
@@ -202,6 +200,7 @@ export const StartScreen: React.FC = () => {
           <StartBackground3D />
           <StartSmoke />
           <ArcadeCabinet />
+          <SlamzWraith />
           <StartLogo3D />
         </Canvas>
       </div>
@@ -209,32 +208,21 @@ export const StartScreen: React.FC = () => {
       <div className={`start-screen-content ${isGlitching ? 'rgb-glitch' : ''}`}>
         <div style={{ height: '30vh' }} /> {/* Spacer for logo area */}
         
-        <div className="sub-title">PRO-TOUR</div>
-        
         <div 
           className="press-start"
           style={{
-            transform: `scale(${debugParams.buttonScale})`,
-            left: `${debugParams.buttonPositionX}%`,
-            top: `${debugParams.buttonPositionY}%`,
-            fontSize: `${debugParams.buttonFontSize}px`,
-            position: 'absolute'
+            transform: `scale(${debugParams.buttonScale})`
           }}
         >
           PRESS START
         </div>
-
-      </div>
-
-      <div className="arcade-meta">
-        © 1996 VIBEJAM CORP | UNMUTABLE ARCADE EDITION
       </div>
 
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <defs>
           <filter id="rgb-split">
-            <feOffset in="SourceGraphics" dx="-3" dy="1" result="red" />
-            <feOffset in="SourceGraphics" dx="3" dy="-1" result="blue" />
+            <feOffset in="SourceGraphic" dx="-3" dy="1" result="red" />
+            <feOffset in="SourceGraphic" dx="3" dy="-1" result="blue" />
             <feBlend in="red" in2="blue" mode="screen" />
           </filter>
         </defs>

@@ -1,5 +1,6 @@
 import { useGameStore } from '../../store/useGameStore';
 import { Pog } from './Pog';
+import { Ring } from './Ring';
 
 /**
  * POG STACK COMPONENT (Phase 3: Pre-populated)
@@ -10,11 +11,23 @@ import { Pog } from './Pog';
 export function PogStack() {
   const pogs = useGameStore((state) => state.pogs);
 
+  // Get top POG position for glowing indicator
+  const topPogPos = pogs.length > 0 ? pogs[pogs.length - 1]?.position : null;
+
   return (
     <>
       {pogs.map((pog) => (
         <Pog key={pog.id} {...pog} />
       ))}
+      {/* Glowing impact indicator on top POG */}
+      {topPogPos && (
+        <Ring 
+          position={[topPogPos[0], topPogPos[1] + 0.05, topPogPos[2]]} 
+          args={[0.1, 0.12, 32]} 
+          color="#00ffcc" 
+          opacity={0.8} 
+        />
+      )}
     </>
   );
 }

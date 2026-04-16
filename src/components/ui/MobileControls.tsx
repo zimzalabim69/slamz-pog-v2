@@ -3,7 +3,7 @@
  * Optimized for zero-jitter and low-latency touch response.
  */
 
-import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import './MobileControls.css';
 
@@ -133,7 +133,7 @@ export const MobileControls = () => {
     });
   };
 
-  const onTouchEnd = (e: React.TouchEvent) => {
+  const onTouchEnd = () => {
     handleJoystickEnd();
     handleActionEnd();
   };
@@ -191,3 +191,4 @@ export const MobileControls = () => {
     </div>
   );
 };
+

@@ -7,6 +7,7 @@ import { Slammer } from './Slammer';
 import { GameController } from '../GameController';
 
 import { CinematicSlam } from '../CinematicSlam';
+import { CollisionTuningSuite } from './CollisionTuningSuite';
 
 /**
  * PHYSICS INNER SCENE
@@ -20,6 +21,7 @@ const PhysicsInnerScene = React.memo(() => {
       <Slammer />
       <GameController />
       <CinematicSlam />
+      <CollisionTuningSuite />
     </>
   );
 });
@@ -32,12 +34,13 @@ const PhysicsInnerScene = React.memo(() => {
  */
 export function PhysicsWorld() {
   const isCinematicActive = useGameStore((state) => state.isCinematicActive);
+  const bulletTimeActive = useGameStore((state) => state.bulletTimeActive);
 
   return (
     <Physics 
-      gravity={[0, -16, 0]} 
-      timeStep={1 / 60} // Keep this constant to avoid GPU resets
-      paused={isCinematicActive} // PAUSE during Matrix orbit
+      gravity={bulletTimeActive ? [0, 0, 0] : [0, -16, 0]} 
+      timeStep={1 / 60}
+      paused={false} // NEVER PAUSE in Volcanic Mode
     >
       <PhysicsInnerScene />
     </Physics>

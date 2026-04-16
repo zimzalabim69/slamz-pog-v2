@@ -12,9 +12,9 @@ export function StartBackground3D() {
   // Load the background GLB
   const { scene } = useGLTF('/assets/slamz_logo_bg.glb');
 
-  // Apply position once, then stop
+  // Apply position, scale, and rotation from debugParams
   useFrame(() => {
-    if (!groupRef.current || applied.current) return;
+    if (!groupRef.current) return;
     groupRef.current.position.set(
       debugParams.bgPositionX,
       debugParams.bgPositionY,
@@ -24,7 +24,6 @@ export function StartBackground3D() {
     groupRef.current.rotation.x = debugParams.bgRotationX;
     groupRef.current.rotation.y = debugParams.bgRotationY;
     groupRef.current.rotation.z = debugParams.bgRotationZ;
-    applied.current = true;
   });
 
   return (

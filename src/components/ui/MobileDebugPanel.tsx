@@ -4,8 +4,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useMobileDetection } from '../../hooks/useMobileDetection';
-import { mobileLogger, logDeviceInfo } from '../../utils/mobileLogger';
+import { useMobileDetection } from '../hooks/useMobileDetection';
+import { mobileLogger, logDeviceInfo } from '../utils/mobileLogger';
+import { remoteLogger } from '../utils/remoteLogger';
 import './MobileDebugPanel.css';
 
 export const MobileDebugPanel = () => {
@@ -144,74 +145,15 @@ export const MobileDebugPanel = () => {
           <p>Pixel Ratio: {window.devicePixelRatio}</p>
           <p>Canvas Size: {window.innerWidth}x{window.innerHeight}</p>
           <p>Memory: {(navigator as any).deviceMemory || 'Unknown'} GB</p>
-          <p>Cores: {navigator.hardwareConcurrency || 'Unknown'}</p>
         </div>
         
         <div className="debug-section">
           <h4>Console Logs</h4>
           <div className="console-logs">
-            {consoleLogs.length === 0 ? (
-              <p>No logs captured yet</p>
-            ) : (
-              consoleLogs.map((log, index) => (
-                <div key={index} className={`log-entry ${log.includes('[ERROR]') ? 'error' : log.includes('[WARN]') ? 'warn' : 'log'}`}>
-                  {log}
-                </div>
-              ))
-            )}
+            {consoleLogs.map((log, index) => (
+              <p key={index}>{log}</p>
+            ))}
           </div>
-        </div>
-        
-        <div className="debug-section">
-          <h4>Actions</h4>
-          <button 
-            onClick={() => window.location.reload()}
-            onTouchStart={(e) => e.preventDefault()}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              window.location.reload();
-            }}
-          >Reload Page</button>
-          <button 
-            onClick={() => console.log('Debug info:', { mobileInfo, webglInfo })}
-            onTouchStart={(e) => e.preventDefault()}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              console.log('Debug info:', { mobileInfo, webglInfo });
-            }}
-          >Log to Console</button>
-          <button 
-            onClick={() => {
-              // Force canvas resize
-              const canvas = document.querySelector('canvas');
-              if (canvas) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                console.log('Canvas resized');
-              }
-            }}
-            onTouchStart={(e) => e.preventDefault()}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              const canvas = document.querySelector('canvas');
-              if (canvas) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                console.log('Canvas resized');
-              }
-            }}
-          >Resize Canvas</button>
-          <button 
-            onClick={() => {
-              // Open debug logs viewer in new tab
-              window.open('/debug-logs.html', '_blank');
-            }}
-            onTouchStart={(e) => e.preventDefault()}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              window.open('/debug-logs.html', '_blank');
-            }}
-          >View All Logs</button>
         </div>
       </div>
     </div>

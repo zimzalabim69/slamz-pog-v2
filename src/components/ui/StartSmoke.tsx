@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '../../store/useGameStore';
@@ -78,7 +78,6 @@ function SmokeLayer({ prefix }: { prefix: 'smokeGround' | 'smokeMid' }) {
   const smokeTexture = useMemo(() => createSmokeTexture(), []);
   const geometry = useMemo(() => new THREE.PlaneGeometry(1, 1), []);
   const frozen = useRef(false);
-  const elapsed = useRef(0);
 
   const puffs = useMemo(() => createPuffs(LAYER_MAX, prefix === 'smokeGround' ? 3 : 6), [prefix]);
 
@@ -142,12 +141,6 @@ function SmokeLayer({ prefix }: { prefix: 'smokeGround' | 'smokeMid' }) {
       mat.color.copy(color);
       mat.opacity = p.opacityBase * opacity;
     }
-
-    // Check if we should freeze
-    elapsed.current += clock.getDelta ? 0 : 0;
-    if (time > SETTLE_TIME) {
-      frozen.current = true;
-    }
   });
 
   return (
@@ -173,3 +166,4 @@ export function StartSmoke() {
     </>
   );
 }
+

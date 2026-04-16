@@ -1,11 +1,15 @@
 import { useGameStore } from '../../store/useGameStore';
 import { SCENE_PRESETS } from '../../constants/game';
 import { useTexture } from '@react-three/drei';
+import { SlamzWraith } from './SlamzWraith';
 import * as THREE from 'three';
 
 export function Arena() {
   const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
   const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
+  
+  const debugParams = useGameStore((state) => state.debugParams);
+  const floorY = debugParams.floorPositionY || -0.01;
   
   // Load original prototype texture
   const texture = useTexture('/assets/slamz_mat.png');
@@ -15,7 +19,7 @@ export function Arena() {
   return (
     <group>
       {/* MAIN PLAYING SURFACE */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, floorY, 0]}>
         <circleGeometry args={[9, 36]} />
         <meshStandardMaterial 
           map={texture}

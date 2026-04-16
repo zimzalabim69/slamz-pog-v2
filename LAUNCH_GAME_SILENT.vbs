@@ -1,3 +1,4 @@
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run """C:\Users\sikke\CascadeProjects\slamz-pog-v2\LAUNCH_GAME.bat""", 0, False
+WshShell.CurrentDirectory = "C:\Users\sikke\CascadeProjects\slamz-pog-v2"
+WshShell.Run Chr(34) & "C:\Users\sikke\CascadeProjects\slamz-pog-v2\LAUNCH_GAME.bat" & Chr(34), 0, False
 Set WshShell = Nothing

@@ -1,6 +1,10 @@
 @echo off
-title SLAMZ POG v2 - Starting...
-cd /d "C:\Users\sikke\CascadeProjects\slamz-pog-v2"
+setlocal
+
+set "PROJECT_DIR=C:\Users\sikke\CascadeProjects\slamz-pog-v2"
+set "GAME_URL=http://127.0.0.1:4173"
+
+cd /d "%PROJECT_DIR%"
 
 echo.
 echo ========================================
@@ -8,52 +12,11 @@ echo   SLAMZ POG v2 - VIBE JAM 2026
 echo ========================================
 echo.
 
-REM === CLEANUP PHASE ===
-echo [CLEANUP] Clearing conflicts...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$ready = $false; try { $response = Invoke-WebRequest -UseBasicParsing '%GAME_URL%' -TimeoutSec 2; if ($response.StatusCode -eq 200) { $ready = $true } } catch {}; if (-not $ready) { Start-Process cmd.exe -ArgumentList '/k','cd /d "%PROJECT_DIR%" && npm run dev -- --host 127.0.0.1 --port 4173' -WorkingDirectory '%PROJECT_DIR%' }; exit 0"
 
-REM 1. Kill Node.js processes (dev servers, build tools)
-taskkill /F /IM node.exe /T >nul 2>&1
-if %errorlevel% equ 0 (
-    echo   [OK] Killed zombie Node processes
-) else (
-    echo   [OK] No Node conflicts found
-)
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$deadline = (Get-Date).AddSeconds(20); do { try { $response = Invoke-WebRequest -UseBasicParsing '%GAME_URL%' -TimeoutSec 2; if ($response.StatusCode -eq 200) { exit 0 } } catch {}; Start-Sleep -Milliseconds 500 } while ((Get-Date) -lt $deadline); exit 0"
 
-REM 2. Kill npm processes (package manager locks)
-taskkill /F /IM npm.exe /T >nul 2>&1
-
-REM 3. Kill anything on ports 5174-5176 (Vite's port range)
-for /L %%p in (5174,1,5176) do (
-    for /f "tokens=5" %%a in ('netstat -aon ^| findstr :%%p ^| findstr LISTENING') do (
-        echo   [OK] Freed port %%p (killed PID %%a)
-        taskkill /F /PID %%a >nul 2>&1
-    )
-)
-
-REM 4. Clear browser cache/storage (optional - uncomment if needed)
-REM echo   [OK] Clearing browser storage...
-REM start "" "http://localhost:5174/clear-storage.html"
-
-REM 5. Give OS time to release resources
-timeout /t 2 /nobreak > nul
-
-echo.
-echo [START] Launching fresh server...
-echo.
-
-REM === LAUNCH PHASE ===
-start "SLAMZ POG v2 Server" cmd /k "npm run dev"
-
-REM Wait for Vite to initialize
-timeout /t 4 /nobreak > nul
-
-REM Open game in browser
-start "" "http://localhost:5174"
-
-echo.
-echo [READY] Game launched successfully!
-echo.
-echo Server console is running in background.
-echo Close "SLAMZ POG v2 Server" window to stop.
-echo.
-pause
+start "" "%GAME_URL%"
+exit /b 0

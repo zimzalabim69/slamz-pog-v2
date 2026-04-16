@@ -7,8 +7,8 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 
 /**
- * CINEMATIC SLAM - ATOMIC TRIGGER EDITION
- * We respond to the Engine's Atomic Freeze to start our timeline.
+ * CINEMATIC SLAM - SMART CAMERA TRACKING EDITION
+ * Dynamically frames the pog explosion cloud by tracking all pogs!
  */
 export function CinematicSlam() {
   const { camera } = useThree();
@@ -20,12 +20,13 @@ export function CinematicSlam() {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const originalPosRef = useRef(new THREE.Vector3());
   const orbitData = useRef({ angle: 0 });
+  const trackingFrameRef = useRef(0);
   
   useEffect(() => {
     // We start the timeline when the engine's isCinematicActive flag is true
     // This happens ATOMICALLY in the Slammer's impact loop.
     if (cinematicEngine.isCinematicActive && !timelineRef.current) {
-      console.log('[CINEMATIC] 🎬 ATOMIC SEQUENCE START');
+      console.log('[CINEMATIC] 🎬 ATOMIC SEQUENCE START - SMART TRACKING');
       
       originalPosRef.current.copy(camera.position);
       const impactPoint = new THREE.Vector3(0, 0.1, 0);
@@ -46,68 +47,89 @@ export function CinematicSlam() {
         }
       });
       
-      // PHASE 1: WINDUP - Liquid ramp down
+      // Helper: Calculate bounding box of all pogs
+      const getPogBounds = () => {
+        const positions: THREE.Vector3[] = [];
+        world.forEachRigidBody((body: any) => {
+          const ud = body.userData as any;
+          if (ud?.name?.startsWith('pog-')) {
+            const pos = body.translation();
+            positions.push(new THREE.Vector3(pos.x, pos.y, pos.z));
+          }
+        });
+        
+        if (positions.length === 0) {
+          return { center: impactPoint, maxDist: 8 };
+        }
+        
+        // Calculate center and max distance
+        const center = new THREE.Vector3();
+        positions.forEach(p => center.add(p));
+        center.divideScalar(positions.length);
+        
+        let maxDist = 0;
+        positions.forEach(p => {
+          const dist = p.distanceTo(center);
+          if (dist > maxDist) maxDist = dist;
+        });
+        
+        return { center, maxDist: Math.max(maxDist, 4) }; // Min 4 units
+      };
+      
+      // PHASE 1: WINDUP - SMART PULL BACK based on pog spread
+      const radius = debugParams.cinematicOrbitRadius;
+      const height = debugParams.cinematicOrbitHeight;
+      
       tl.to(camera.position, {
         duration: debugParams.cinematicWindupDuration,
-        x: 5,
-        y: 2.5,
-        z: 5,
-        ease: "expo.out",
-        onUpdate: () => camera.lookAt(impactPoint)
+        x: 0,
+        y: height + 2,
+        z: radius + 6,
+        ease: 'expo.out',
+        onUpdate: () => {
+          // Dynamic framing - track the pog cloud center
+          const bounds = getPogBounds();
+          camera.lookAt(bounds.center);
+        }
       }, 0);
       
-      tl.to(cinematicEngine, {
-        manualDriftScale: 0.05,
-        duration: debugParams.cinematicWindupDuration,
-        ease: "expo.out"
-      }, 0);
-      
-      // PHASE 2: LITERAL FREEZE
-      tl.to(cinematicEngine, {
-        manualDriftScale: 0.0001,
+      // PHASE 2: LITERAL FREEZE - Camera holds but keeps tracking
+      tl.to({}, { 
         duration: debugParams.cinematicFreezeDuration,
-        ease: "none"
-      }, debugParams.cinematicWindupDuration);
+        onUpdate: () => {
+          const bounds = getPogBounds();
+          camera.lookAt(bounds.center);
+        }
+      }, tl.duration());
       
-      // PHASE 3: BULLET TIME ORBIT
+      // PHASE 3: BULLET TIME ORBIT - Track while orbiting
       orbitData.current.angle = 0;
       tl.to(orbitData.current, {
         angle: Math.PI * 2,
         duration: debugParams.cinematicOrbitDuration,
-        ease: "power2.inOut",
+        ease: 'power2.inOut',
         onUpdate: () => {
-          const radius = debugParams.cinematicOrbitRadius;
-          const height = debugParams.cinematicOrbitHeight;
-          camera.position.x = Math.cos(orbitData.current.angle) * radius;
-          camera.position.z = Math.sin(orbitData.current.angle) * radius;
-          camera.position.y = height;
-          camera.lookAt(impactPoint);
+          const bounds = getPogBounds();
+          
+          // Dynamically adjust orbit radius based on spread
+          const dynamicRadius = Math.max(radius, bounds.maxDist * 2.5);
+          
+          camera.position.x = Math.cos(orbitData.current.angle) * dynamicRadius;
+          camera.position.z = Math.sin(orbitData.current.angle) * dynamicRadius;
+          camera.position.y = height + bounds.center.y; // Track vertical center
+          camera.lookAt(bounds.center);
         }
-      }, debugParams.cinematicWindupDuration + debugParams.cinematicFreezeDuration);
+      }, tl.duration());
       
-      tl.to(cinematicEngine, {
-        manualDriftScale: 0.12, 
-        duration: debugParams.cinematicOrbitDuration,
-        ease: "none"
-      }, debugParams.cinematicWindupDuration + debugParams.cinematicFreezeDuration);
-      
-      // PHASE 4: REVEAL - Liquid ramp back to full
-      const revealStart = debugParams.cinematicWindupDuration + debugParams.cinematicFreezeDuration + debugParams.cinematicOrbitDuration;
-      
-      tl.to(cinematicEngine, {
-        manualDriftScale: 1.0,
-        duration: debugParams.cinematicRevealDuration,
-        ease: "expo.in"
-      }, revealStart);
-      
+      // PHASE 4: REVEAL - Return to standard view
       tl.to(camera.position, {
         duration: debugParams.cinematicRevealDuration,
         x: originalPosRef.current.x,
         y: originalPosRef.current.y,
         z: originalPosRef.current.z,
-        ease: "expo.out",
+        ease: 'expo.out',
         onUpdate: () => camera.lookAt(0, 0, 0)
-      }, revealStart);
+      }, tl.duration());
       
       timelineRef.current = tl;
     }

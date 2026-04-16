@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useMemo } from 'react';
+import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -69,7 +69,7 @@ function createParticles(ix: number, iy: number, iz: number): PogParticle[] {
       avx: (Math.random() - 0.5) * 18,
       avy: (Math.random() - 0.5) * 18,
       avz: (Math.random() - 0.5) * 18,
-      scale: (0.5 + Math.random() * 0.6) * 1.5,
+      scale: (0.5 + Math.random() * 0.6) * 1.5 * (useGameStore.getState().debugParams.pogScale || 1),
       settled: false,
       groundY: GROUND_Y + Math.random() * 1.0,
       bounces: 0,
@@ -86,6 +86,7 @@ function PogExplosion({ active, impactX, impactY, impactZ }: {
 }) {
   const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
   const particlesRef = useRef<PogParticle[] | null>(null);
+  const debugParams = useGameStore((state) => state.debugParams);
 
   // Shared geometry (cylinder pog shape)
   const geometry = useMemo(() => new THREE.CylinderGeometry(0.55, 0.55, 0.09, 24), []);
@@ -163,6 +164,9 @@ function PogExplosion({ active, impactX, impactY, impactZ }: {
 
     const dt = Math.min(delta, 0.05);
     const particles = particlesRef.current;
+    
+    // Physics Calibration from Debug Params
+    const grav = -160 * (debugParams.cinematicExplosionForce / 25); 
 
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
@@ -176,7 +180,7 @@ function PogExplosion({ active, impactX, impactY, impactZ }: {
       }
 
       // Physics integration
-      p.vy += GRAVITY * dt;
+      p.vy += grav * dt;
       p.px += p.vx * dt;
       p.py += p.vy * dt;
       p.pz += p.vz * dt;
@@ -244,6 +248,21 @@ export function StartLogo3D() {
 
   // Load the GLB model
   const { scene } = useGLTF('/assets/slamz_logo.glb');
+
+  // Wire materials to Debug Params
+  useEffect(() => {
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const mat = mesh.material as THREE.MeshStandardMaterial;
+        if (mat) {
+          mat.metalness = debugParams.pogMetalness;
+          mat.roughness = debugParams.pogRoughness;
+          mat.needsUpdate = true;
+        }
+      }
+    });
+  }, [scene, debugParams.pogMetalness, debugParams.pogRoughness]);
 
   // Fire impact effects once
   const fireImpact = useCallback(() => {

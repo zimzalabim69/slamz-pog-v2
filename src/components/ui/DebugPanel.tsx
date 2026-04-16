@@ -8,12 +8,13 @@ import './DebugPanel.css';
 import './EnhancedSlider.css';
 import './BooleanToggle.css';
 
-type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime' | 'arcadeCabinet';
+type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime' | 'tuning' | 'arcadeCabinet' | 'wraith' | 'json';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const debugParams = useGameStore((state) => state.debugParams);
   const setDebugParams = useGameStore((state) => state.setDebugParams);
+  const autoSlamActive = useGameStore((state) => state.autoSlamActive);
   const [activeTab, setActiveTab] = useState<TabType>('physics');
 
   // Broadcast debug panel state to prevent game input
@@ -33,9 +34,10 @@ export function DebugPanel() {
   };
 
   const exportParams = () => {
-    const json = JSON.stringify(debugParams, null, 2);
-    navigator.clipboard.writeText(json);
-    alert('Parameters copied to clipboard!');
+    setActiveTab('json');
+    console.group('🛠️ SLAMZ DEBUG EXPORT');
+    console.log(JSON.stringify(debugParams, null, 2));
+    console.groupEnd();
   };
 
   const importParams = () => {
@@ -121,12 +123,37 @@ export function DebugPanel() {
         >
           Arena
         </button>
-          <button className={activeTab === 'bulletTime' ? 'active' : ''} onClick={() => setActiveTab('bulletTime')}>
-            BULLET TIME
-          </button>
-          <button className={activeTab === 'arcadeCabinet' ? 'active' : ''} onClick={() => setActiveTab('arcadeCabinet')}>
-            ARCADE CABINET
-          </button>
+        <button 
+          className={activeTab === 'bulletTime' ? 'active' : ''} 
+          onClick={() => setActiveTab('bulletTime')}
+        >
+          BULLET TIME
+        </button>
+        <button 
+          className={activeTab === 'tuning' ? 'active' : ''} 
+          onClick={() => setActiveTab('tuning')}
+        >
+          🛠️ TUNING
+        </button>
+        <button 
+          className={activeTab === 'arcadeCabinet' ? 'active' : ''} 
+          onClick={() => setActiveTab('arcadeCabinet')}
+        >
+          ARCADE CABINET
+        </button>
+        <button 
+          className={activeTab === 'wraith' ? 'active' : ''} 
+          onClick={() => setActiveTab('wraith')}
+        >
+          👻 PLAYER WRAITH
+        </button>
+        <button 
+          className={activeTab === 'json' ? 'active' : ''} 
+          onClick={() => setActiveTab('json')}
+          style={{ border: '1px solid #00ffff', color: '#00ffff', fontWeight: 'bold' }}
+        >
+          📋 RAW JSON
+        </button>
       </div>
 
       <div className="debug-panel-content">
@@ -183,6 +210,17 @@ export function DebugPanel() {
                 step={0.05}
                 onChange={(value) => updateParam('pogAngularDamping', value)}
                 decimals={2}
+              />
+
+              <EnhancedSlider
+                label="MAX VELOCITY (Brakes)"
+                value={debugParams.pogMaxVelocity}
+                min={1}
+                max={100}
+                step={0.5}
+                onChange={(value) => updateParam('pogMaxVelocity', value)}
+                decimals={1}
+                unit="m/s"
               />
             </div>
 
@@ -1296,7 +1334,7 @@ export function DebugPanel() {
             <BooleanToggle
               label="Visible"
               value={debugParams.arcadeCabinetVisible}
-              onChange={(value) => updateParam('arcadeCabinetVisible', value ? 1 : 0)}
+              onChange={(value) => updateParam('arcadeCabinetVisible', value as any)}
             />
 
             <EnhancedSlider
@@ -1350,6 +1388,183 @@ export function DebugPanel() {
             />
           </div>
         )}
+
+        {activeTab === 'tuning' && (
+          <div className="debug-section">
+            <h3>🛠️ COLLISION TUNING SUITE</h3>
+            
+            <BooleanToggle
+              label="Enable Auto-Slam Loop"
+              value={autoSlamActive}
+              onChange={(value) => useGameStore.setState({ autoSlamActive: value })}
+            />
+
+            <EnhancedSlider
+              label="Auto-Slam Power"
+              value={debugParams.autoSlamPower}
+              min={1}
+              max={100}
+              step={1}
+              onChange={(value) => updateParam('autoSlamPower', value)}
+              decimals={0}
+              unit="%"
+            />
+
+            <div className="debug-divider" />
+            
+            <h3>SCENE ARCHITECTURE</h3>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '10px', marginBottom: '15px' }}>
+               <button 
+                 onClick={() => useGameStore.getState().setSceneMode('ARCADE')}
+                 style={{
+                   flex: 1,
+                   padding: '10px',
+                   background: useGameStore.getState().sceneMode === 'ARCADE' ? '#00ffff' : 'rgba(0,0,0,0.5)',
+                   color: useGameStore.getState().sceneMode === 'ARCADE' ? '#000' : '#00ffff',
+                   border: '1px solid #00ffff',
+                   cursor: 'pointer',
+                   fontFamily: 'monospace',
+                   fontSize: '10px',
+                   fontWeight: '900'
+                 }}
+               >
+                 [ ARCADE ]
+               </button>
+               <button 
+                 onClick={() => useGameStore.getState().setSceneMode('LAB')}
+                 style={{
+                   flex: 1,
+                   padding: '10px',
+                   background: useGameStore.getState().sceneMode === 'LAB' ? '#00ffff' : 'rgba(0,0,0,0.5)',
+                   color: useGameStore.getState().sceneMode === 'LAB' ? '#000' : '#00ffff',
+                   border: '1px solid #00ffff',
+                   cursor: 'pointer',
+                   fontFamily: 'monospace',
+                   fontSize: '10px',
+                   fontWeight: '900'
+                 }}
+               >
+                 [ LAB ]
+               </button>
+            </div>
+
+            <div className="debug-divider" />
+
+            <h3>PHYSICS ERUPTION</h3>
+            
+            <EnhancedSlider
+              label="Upward Kick (Y Multiplier)"
+              value={debugParams.eruptionUpwardMultiplier}
+              min={0}
+              max={10}
+              step={0.1}
+              onChange={(value) => updateParam('eruptionUpwardMultiplier', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Impact Radius"
+              value={debugParams.eruptionRadius}
+              min={0.1}
+              max={10}
+              step={0.1}
+              onChange={(value) => updateParam('eruptionRadius', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Spin Intensity (Torque)"
+              value={debugParams.eruptionTorqueMultiplier}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={(value) => updateParam('eruptionTorqueMultiplier', value)}
+              decimals={2}
+            />
+          </div>
+        )}
+        {activeTab === 'wraith' && (
+          <div className="debug-section">
+            <h3>PLAYER WRAITH (Character)</h3>
+            
+            <EnhancedSlider
+              label="Position X"
+              value={debugParams.wraithPositionX}
+              min={-50}
+              max={50}
+              step={0.1}
+              onChange={(value) => updateParam('wraithPositionX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Y"
+              value={debugParams.wraithPositionY}
+              min={-10}
+              max={50}
+              step={0.1}
+              onChange={(value) => updateParam('wraithPositionY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Z"
+              value={debugParams.wraithPositionZ}
+              min={-100}
+              max={50}
+              step={0.1}
+              onChange={(value) => updateParam('wraithPositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Scale"
+              value={debugParams.wraithScale}
+              min={0.1}
+              max={30}
+              step={0.1}
+              onChange={(value) => updateParam('wraithScale', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Y"
+              value={debugParams.wraithRotationY}
+              min={-Math.PI * 2}
+              max={Math.PI * 2}
+              step={0.1}
+              onChange={(value) => updateParam('wraithRotationY', value)}
+              decimals={2}
+            />
+          </div>
+        )}
+
+        {activeTab === 'json' && (
+          <div className="debug-tab-content">
+            <h3 style={{ color: '#00ffff', marginBottom: '10px' }}>📋 LIVE CONFIGURATION</h3>
+            <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '10px' }}>
+              Copy the text below and paste it to Antigravity to "Bake In" these settings.
+            </p>
+            <textarea
+              readOnly
+              value={JSON.stringify(debugParams, null, 2)}
+              onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+              style={{
+                width: '100%',
+                height: '400px',
+                backgroundColor: '#050510',
+                color: '#00ffcc',
+                fontFamily: 'monospace',
+                fontSize: '11px',
+                border: '1px solid #333',
+                padding: '10px',
+                borderRadius: '4px',
+                resize: 'none',
+                outline: 'none'
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="debug-panel-footer">
@@ -1360,6 +1575,8 @@ export function DebugPanel() {
     </div>
   );
 }
+
+
 
 
 

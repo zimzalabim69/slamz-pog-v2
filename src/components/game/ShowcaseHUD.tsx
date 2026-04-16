@@ -55,7 +55,7 @@ export function ShowcaseHUD() {
     return getMaterialFromRegistry('pog', 'metal', currentShowcase.theme, currentShowcase.rarity);
   }, [currentShowcase]);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (gameState !== 'SHOWCASE') return;
 
     // Direct Time Injection from Bridge
@@ -152,3 +152,4 @@ export function ShowcaseHUD() {
     </Hud>
   );
 }
+

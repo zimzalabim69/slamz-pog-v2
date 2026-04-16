@@ -1,41 +1,28 @@
 import * as React from 'react';
-import { Suspense } from 'react';
 import { PerspectiveCamera, OrbitControls } from '@react-three/drei';
-import { Physics } from '@react-three/rapier';
 import { useGameStore } from '../store/useGameStore';
-
 import { SCENE_PRESETS } from '../constants/game';
 import * as THREE from 'three';
-import { PogStack } from './game/PogStack';
-import { Slammer } from './game/Slammer';
 import { Reticle } from './game/Reticle';
 import { ImpactParticles } from './game/ImpactParticles';
-import { PhysicsFloor } from './game/PhysicsFloor';
-import { Arena } from './game/Arena';
-import { CyberAlley } from './environment/CyberAlley';
-import { ArenaDecor } from './environment/ArenaDecor';
+import { PhysicsWorld } from './game/PhysicsWorld';
+import { TimerUpdate } from './game/TimerUpdate';
 import { Effects } from './Effects';
-import { GameController } from './GameController';
-import { CinematicSlam } from './CinematicSlam';
+import { ArcadeMode } from './scenes/ArcadeMode';
+import { ImpactLab } from './scenes/ImpactLab';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { AdaptiveQuality } from './AdaptiveQuality';
-import { SessionSummary } from './ui/SessionSummary';
-import { ShowcaseHUD } from './game/ShowcaseHUD';
-import { TimerUpdate } from './game/TimerUpdate';
-
-import { PhysicsWorld } from './game/PhysicsWorld';
 
 export function Experience() {
   const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
-  const qualityLevel = useGameStore((state) => state.qualityLevel);
-  const sessionActive = useGameStore((state) => state.sessionActive);
-  const updateTimer = useGameStore((state) => state.updateTimer);
+  const sceneMode = useGameStore((state) => state.sceneMode);
+  const cameraTension = useGameStore((state) => state.cameraTension);
+  const isCinematicActive = useGameStore((state) => state.isCinematicActive);
   const debugParams = useGameStore((state) => state.debugParams);
   const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
   const orbitRef = React.useRef<any>(null);
   const cameraRef = React.useRef<any>(null);
 
-  // Recovery of FOV pulse from Slammer (handled in cameraRef update)
   React.useEffect(() => {
     if (cameraRef.current) {
       cameraRef.current.lookAt(0, -1.5, 0);
@@ -44,74 +31,59 @@ export function Experience() {
 
   return (
     <>
-      <PerspectiveCamera 
+      <PerspectiveCamera
         ref={cameraRef}
-        makeDefault 
-        position={[0, 8, 6]} 
+        makeDefault
+        position={[0, 8, 6]}
         fov={50}
         onUpdate={(cam) => {
-           // Basic recovery if FOV is still punched from slam
-           if (cam.fov > 50.1) {
-             cam.fov = THREE.MathUtils.lerp(cam.fov, 50, 0.1);
-             cam.updateProjectionMatrix();
-           }
+          if (isCinematicActive) return; // LOCKDOWN: GSAP has control
+          
+          const baseFOV = debugParams.baseFOV || 50;
+          const targetFOV = baseFOV - (cameraTension * 15);
+          cam.fov = THREE.MathUtils.lerp(cam.fov, targetFOV, 0.1);
+
+          if (cameraTension > 0.8) {
+            const shake = (cameraTension - 0.8) * 0.1;
+            cam.position.x += (Math.random() - 0.5) * shake;
+            cam.position.y += (Math.random() - 0.5) * shake;
+          }
+
+          cam.updateProjectionMatrix();
         }}
       />
-      
-      {/* OPTIMIZED LIGHTING RIG — 4 lights (ambient + spot + 2 point) */}
-      <ambientLight color={preset.ambientColor} intensity={preset.ambientIntensity * debugParams.arenaAmbientIntensity * 1.8} />
 
-      <spotLight
-        position={preset.spotPosition}
-        angle={Math.PI / 3}
-        penumbra={0.5}
-        intensity={preset.spotIntensity * debugParams.arenaLightIntensity}
-        color={preset.spotColor}
+      <color attach="background" args={[sceneMode === 'LAB' ? '#050510' : preset.bgColor]} />
+      
+      {/* GLOBAL FOG (REWIRED) */}
+      <fogExp2 
+        attach="fog" 
+        args={[
+          sceneMode === 'LAB' ? '#050510' : preset.bgColor, 
+          debugParams.fogDensity || 0.01
+        ]} 
       />
-      <pointLight position={preset.pointPosition} intensity={preset.pointIntensity} color={preset.pointColor} />
 
-      {/* SINGLE RIM LIGHT — merged from two */}
-      <pointLight position={[0, 6, -8]} intensity={preset.spotIntensity * 1.2} color={preset.spotColor} />
-      
-
-      <color attach="background" args={[preset.bgColor]} />
-
-      {/* NON-PHYSICS ENVIRONMENT */}
-      <Suspense fallback={null}><Arena /></Suspense>
-      <Suspense fallback={null}><ArenaDecor /></Suspense>
-      <CyberAlley />
-
-      {/* PHYSICS WORLD - wraps everything with rigid bodies */}
+      {sceneMode === 'ARCADE' ? <ArcadeMode /> : <ImpactLab />}
       <PhysicsWorld />
-
-      {/* 3D HUD SHOWCASE (Display Case) */}
-      <ShowcaseHUD />
-
-      {/* AIMING INDICATORS + IMPACT FX */}
       <Reticle />
       <ImpactParticles />
-
-      {/* Session Summary Screen */}
-      <SessionSummary />
-      
       <Effects />
-      
-      {/* Timer Updates */}
       <TimerUpdate />
-      
-      <OrbitControls
-        ref={orbitRef}
-        enablePan={false}
-        mouseButtons={{ LEFT: undefined, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE }}
-        maxPolarAngle={Math.PI / 2.1}
-        minDistance={5}
-        maxDistance={25}
-        target={[0, 0, 0]}
-      />
+
+      {!isCinematicActive && (
+        <OrbitControls
+          ref={orbitRef}
+          enablePan={false}
+          mouseButtons={{ LEFT: undefined, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE }}
+          maxPolarAngle={Math.PI / 2.1}
+          minDistance={5}
+          maxDistance={25}
+          target={[0, 0, 0]}
+        />
+      )}
       <PerformanceMonitor />
       <AdaptiveQuality />
     </>
   );
 }
-
-

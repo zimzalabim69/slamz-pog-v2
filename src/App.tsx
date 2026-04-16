@@ -1,31 +1,16 @@
-import * as React from 'react';
 import { Component, Suspense, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { Experience } from './components/Experience';
 import { HUD } from './components/ui/HUD';
-import { CRTOverlay } from './components/ui/CRTOverlay';
 import { Showcase } from './components/ui/Showcase';
-import { MobileControls } from './components/ui/MobileControls';
-import { DesktopControls } from './components/ui/DesktopControls';
-import { MobileDebugPanel } from './components/ui/MobileDebugPanel';
-import { FallbackUI } from './components/ui/FallbackUI';
-import { PauseMenu } from './components/ui/PauseMenu';
-import { ErrorBoundary } from './components/ui/ErrorBoundary';
-import { SystemTerminal } from './components/ui/SystemTerminal';
 import { StartScreen } from './components/ui/StartScreen';
-import { DebugPanel } from './components/ui/DebugPanel';
-import { SessionSummary } from './components/ui/SessionSummary';
-import { Binder } from './components/ui/Binder';
-import { Achievements } from './components/ui/Achievements';
-import { Timer } from './components/ui/Timer';
-import { ComboPopup } from './components/ui/ComboPopup';
-import { PerfectHit } from './components/ui/PerfectHit';
-import { EndScreen } from './components/ui/EndScreen';
-import { useMobileDetection } from './hooks/useMobileDetection';
-import { useGameStore } from './store/useGameStore';
-import { useTerminalStore } from './store/useTerminalStore';
+import { CRTOverlay } from './components/ui/CRTOverlay';
 import { Canvas } from '@react-three/fiber';
-import './App.css';
+import { useGameStore } from './store/useGameStore';
+import { DebugPanel } from './components/ui/DebugPanel';
+import { PauseMenu } from './components/ui/PauseMenu';
+import { PerfectHit } from './components/ui/PerfectHit';
+import { SessionSummary } from './components/ui/SessionSummary';
 
 // ============================================================
 // WEBGL DETECTION & ERROR BOUNDARY
@@ -33,22 +18,9 @@ import './App.css';
 const checkWebGLSupport = () => {
   try {
     const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl2') || 
-               canvas.getContext('webgl') || 
-               canvas.getContext('experimental-webgl') ||
-               canvas.getContext('moz-webgl') ||
-               canvas.getContext('webkit-webgl');
-    
-    if (!gl) return false;
-    
-    // Test WebGL functionality
-    const testContext = gl as WebGLRenderingContext;
-    const shader = testContext.createShader(testContext.FRAGMENT_SHADER);
-    if (!shader) return false;
-    
-    return true;
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    return !!gl;
   } catch (e) {
-    console.error('WebGL detection failed:', e);
     return false;
   }
 };
@@ -65,27 +37,49 @@ class WebGLErrorBoundary extends Component<{ children: ReactNode }, { hasError: 
 
   componentDidCatch(error: Error) {
     console.error("WebGL Critical Crash:", error);
+    console.error("WebGL Support:", this.state.webglSupported);
   }
 
   render() {
     if (this.state.hasError || !this.state.webglSupported) {
       return (
-        <div className="webgl-error-container">
-          <h1 className="webgl-error-title">
+        <div style={{
+          width: '100vw', 
+          height: '100vh', 
+          background: '#100', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          flexDirection: 'column',
+          fontFamily: "'Orbitron', sans-serif",
+          color: '#ff4444',
+          textAlign: 'center',
+          padding: '20px'
+        }}>
+          <h1 style={{ fontSize: '2rem' }}>
             {!this.state.webglSupported ? 'WEBGL NOT SUPPORTED' : 'WEBGL CRITICAL ERROR'}
           </h1>
-          <p className="webgl-error-message">
+          <p style={{ marginTop: '20px', color: '#ffaaaa' }}>
             {!this.state.webglSupported 
               ? 'Your browser does not support WebGL. Try Chrome, Firefox, or Edge.'
               : 'The graphics context was lost or failed to initialize.'}
           </p>
-          <div className="webgl-error-tips">
+          <div style={{ marginTop: '20px', fontSize: '12px', color: '#ff8888' }}>
             <p>🔧 Try: Restart browser | Enable hardware acceleration | Update graphics drivers</p>
-            <p>Test WebGL: <a href="https://webglreport.com" target="_blank" rel="noopener" className="webgl-error-link">webglreport.com</a></p>
+            <p>🌐 Test WebGL: <a href="https://webglreport.com" target="_blank" style={{ color: '#ffaa00' }}>webglreport.com</a></p>
           </div>
           <button 
             onClick={() => window.location.reload()}
-            className="webgl-retry-button"
+            style={{
+              marginTop: '30px',
+              background: '#ff4444',
+              color: '#fff',
+              border: 'none',
+              padding: '10px 30px',
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
           >
             RETRY SYSTEM BOOT
           </button>
@@ -100,103 +94,45 @@ class WebGLErrorBoundary extends Component<{ children: ReactNode }, { hasError: 
 // MAIN APP COMPONENT
 // ============================================================
 function App() {
-  const gameState = useGameStore((state) => state.gameState);
-  const initPogs = useGameStore((state) => state.initPogs);
-  const togglePause = useGameStore((state) => state.togglePause);
-  const mobileInfo = useMobileDetection();
-  const hasInitialized = React.useRef(false);
-  
-  React.useEffect(() => {
-    // ESC Global Listener for Pause
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        togglePause();
-      }
-      if (e.key === '`') { // Tilde/Backtick
-        useTerminalStore.getState().toggleTerminal();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePause]);
-
-  React.useEffect(() => {
-    // PROTECTED INIT: One-time system boot
-    if (!hasInitialized.current) {
-      console.log("System booting: Initializing Pogs...");
-      initPogs();
-      hasInitialized.current = true;
-    }
-  }, [initPogs]);
-
-  const qualityLevel = useGameStore((state) => state.qualityLevel);
-  
-  // Adaptive DPR based on quality tier
-  const dpr = React.useMemo(() => {
-    const nativeDpr = window.devicePixelRatio;
-    const isMobile = window.innerWidth < 768;
-    if (qualityLevel === 'low') return 1;
-    if (qualityLevel === 'medium') return Math.min(nativeDpr, 1.5);
-    return isMobile ? Math.min(nativeDpr, 1.5) : Math.min(nativeDpr, 2);
-  }, [qualityLevel]);
-
-  const canvasProps = React.useMemo(() => ({
-    gl: {
-      antialias: qualityLevel !== 'low',
-      alpha: false,
-      powerPreference: "high-performance" as const,
-      failIfMajorPerformanceCaveat: false,
-      preserveDrawingBuffer: false,
-    }
-  }), [qualityLevel]); // Constant for the session to prevent context re-initialization jitter
-
-  // Gate: pause game rendering during start screen but keep mounted
-  const showGame = gameState !== 'START_SCREEN';
+  const gameState = useGameStore((s) => s.gameState);
 
   return (
-    <ErrorBoundary>
-      <div className="app-container">
-        <WebGLErrorBoundary>
+    <div style={{ width: '100vw', height: '100vh', background: '#000', overflow: 'hidden' }}>
+      <WebGLErrorBoundary>
         <Canvas 
           shadows={false}
-          className="main-canvas"
-          frameloop={showGame ? 'always' : 'never'}
-          style={{ display: showGame ? 'block' : 'none' }}
-          gl={canvasProps.gl}
-          dpr={dpr}
+          style={{ background: '#050510' }}
+          gl={{
+            antialias: true,
+            alpha: false,
+            powerPreference: "high-performance",
+            failIfMajorPerformanceCaveat: false,
+            preserveDrawingBuffer: true,
+          }}
           onCreated={({ gl }) => {
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1.0;
           }}
-          onError={(error) => {
-            console.error('WebGL error:', error);
-          }}
         >
           <Suspense fallback={null}>
-            <Experience />
-            <Showcase />
+            {gameState !== 'START_SCREEN' && <Experience />}
           </Suspense>
         </Canvas>
       </WebGLErrorBoundary>
       
-      {/* 1:1 PROTOTYPE OVERLAYS — CRT always mounted to avoid pop-in */}
-      <CRTOverlay />
-      <Timer />
-      {(gameState === 'AIMING' || gameState === 'POWERING' || gameState === 'SLAMMED') && <HUD />}
-      {(gameState === 'AIMING' || gameState === 'POWERING' || gameState === 'SLAMMED') && <ComboPopup />}
-      {(gameState === 'AIMING' || gameState === 'POWERING' || gameState === 'SLAMMED') && <PerfectHit />}
-      {showGame && <PauseMenu />}
-      {showGame && (mobileInfo.isMobile ? <MobileControls /> : <DesktopControls />)}
+      {/* CORE GAME UI LAYERS */}
       {gameState === 'START_SCREEN' && <StartScreen />}
-      {gameState === 'SESSION_SUMMARY' && <EndScreen />}
-      <SystemTerminal />
-      <MobileDebugPanel />
+      <HUD />
+      <Showcase />
+      <CRTOverlay />
+      
+      {/* SYSTEM OVERLAYS */}
+      <PauseMenu />
+      <PerfectHit />
+      <SessionSummary />
       <DebugPanel />
-      <FallbackUI />
-      </div>
-    </ErrorBoundary>
+    </div>
   );
 }
 
 export default App;
-

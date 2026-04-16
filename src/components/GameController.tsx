@@ -5,7 +5,6 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { playImpactSound, playCaptureSound } from '../systems/audio';
 import { getSetForTheme } from '../constants/setDefinitions';
-import { cinematicEngine } from '../systems/CinematicEngine';
 
 const WORLD_UP = new THREE.Vector3(0, 1, 0);
 
@@ -15,7 +14,7 @@ export function GameController() {
   const slamStartTime = useRef<number>(0);
   const hasProcessedSlam = useRef(false);
   const hitStopFrames = useRef<number>(0);
-  const cinematicCooldown = useRef<number>(0);
+  const settleStartTime = useRef<number>(0);
 
   const gameState  = useGameStore((s) => s.gameState);
   const hitStopActive = useGameStore((s) => s.hitStopActive);
@@ -55,6 +54,7 @@ export function GameController() {
   useEffect(() => {
     if (gameState === 'SLAMMED') {
       slamStartTime.current = Date.now();
+      settleStartTime.current = Date.now();
       hasProcessedSlam.current = false;
 
       // Track total slams
@@ -114,21 +114,8 @@ export function GameController() {
     // Process fixed timestep logic
     accumulatorRef.current -= FIXED_TIMESTEP;
 
-    // Direct Sync with Cinematic: Block settlement while camera is orbiting
-    if (cinematicEngine.isCinematicActive) {
-      accumulatorRef.current = 0; 
-      cinematicCooldown.current = Date.now(); // Keep resetting the cooldown while active
-      return;
-    }
-
-    // STABILITY DELAY: Wait 1s after cinematic finishes to breathe
-    if (Date.now() - cinematicCooldown.current < 1000) {
-        accumulatorRef.current = 0;
-        return;
-    }
-
     const elapsed = Date.now() - slamStartTime.current;
-    const forceReset = elapsed > 10000; // Increased to 10s for cinematic headroom
+    const forceReset = elapsed > 5000;
 
     let allSettled = true;
     if (!forceReset) {
@@ -145,6 +132,8 @@ export function GameController() {
 
     if (!allSettled && !forceReset) return;
     hasProcessedSlam.current = true;
+    const settleTime = Date.now() - settleStartTime.current;
+    console.log(`[PHYSICS] 🏁 All bodies settled in ${settleTime}ms (Threshold: 0.0025)`);
     
     // Trigger hit-stop on impact
     setHitStopActive();
@@ -186,9 +175,7 @@ export function GameController() {
       const quat = new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w);
       const localUp = WORLD_UP.clone().applyQuaternion(quat);
 
-      // Pogs start rotated [PI,0,0] so design (top cap) faces DOWN
-      // When flipped face-up, the -Y axis points UP (design visible)
-      if (localUp.y < -0.7) {
+      if (localUp.y > 0.7) {
         faceUpPogs.push(userData['pog-id']);
         const pogData = state.pogs.find((p: any) => p.id === userData['pog-id']);
         if (pogData) {

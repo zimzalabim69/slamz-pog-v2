@@ -19,6 +19,7 @@ export interface DebugParams {
   slammerFriction: number;
   slamBaseForce: number;
   slamPowerMultiplier: number;
+  slamForceMultiplier: number;
   shatterRadius: number;
   shatterForceMin: number;
   shatterForceMax: number;
@@ -130,12 +131,18 @@ export interface DebugParams {
   cinematicCometFOVPunch: number;
   cinematicCometShakeIntensity: number;
   
-  // Pog Explosion & Scatter
+  // Pog Explosion & Scatter (Eruption Suite)
   cinematicExplosionForce: number;
   cinematicScatterRadius: number;
   cinematicScatterHeight: number;
   cinematicPogRotationSpeed: number;
   cinematicPogFloatDuration: number;
+  
+  // NEW: Collision Eruption Tuning
+  eruptionUpwardMultiplier: number; // The "Kick"
+  eruptionRadius: number;           // Impact zone
+  eruptionTorqueMultiplier: number; // Spin intensity
+  autoSlamPower: number;            // Fixed power for loop tests
   
   // Dramatic Transitions
   cinematicTransitionSpeed: number;
@@ -157,15 +164,25 @@ export interface DebugParams {
   cinematicFinalFaceUpChance: number;
   cinematicBounceCount: number;
   cinematicBounceDamping: number;
+
+  // Wraith (Player)
+  wraithPositionX: number;
+  wraithPositionY: number;
+  wraithPositionZ: number;
+  wraithScale: number;
+  wraithRotationY: number;
+
+  // New Physics Governance
+  pogMaxVelocity: number;
 }
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   // Physics - Pog
-  pogMass: 0.1,
+  pogMass: 0.25,
   pogRestitution: 0.05,
-  pogFriction: 1,
-  pogLinearDamping: 0.15,
-  pogAngularDamping: 0.25,
+  pogFriction: 2,
+  pogLinearDamping: 0.8,
+  pogAngularDamping: 1.0,
   
   // Physics - Slammer
   slammerMass: 1.2,
@@ -173,6 +190,7 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   slammerFriction: 0.2,
   slamBaseForce: -49,
   slamPowerMultiplier: -0.85,
+  slamForceMultiplier: 0.25,
   shatterRadius: 0.1,
   shatterForceMin: 0,
   shatterForceMax: 0,
@@ -183,7 +201,7 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   slammerEmissiveIntensity: 1.5,
   
   // Visual - Pog
-  pogScale: 1.0,
+  pogScale: 1,
   pogRotationSpeed: 0.002,
   pogMetalness: 0.3,
   pogRoughness: 0.7,
@@ -203,10 +221,10 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   slamDelay: 200,
   
   // Start Screen - Logo 3D
-  logoScale: 14.7,
+  logoScale: 11.6,
   logoPositionX: -0.2,
-  logoPositionY: 1.9,
-  logoPositionZ: -29.2,
+  logoPositionY: 0,
+  logoPositionZ: -31.5,
   logoRotationX: 0,
   logoRotationY: 0.14,
   logoRotationZ: 0,
@@ -238,8 +256,8 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   smokeGroundHeight: -6.5,
   
   // Start Screen - Smoke Mid Wisps Layer
-  smokeMidColorR: 0.0,
-  smokeMidColorG: 0.0,
+  smokeMidColorR: 0,
+  smokeMidColorG: 0,
   smokeMidColorB: 0.8,
   smokeMidOpacity: 0.34,
   smokeMidSpeed: 0.28,
@@ -255,62 +273,78 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   buttonFontSize: 20,
   
   // Arena
-  arenaLightIntensity: 1.0,
+  arenaLightIntensity: 1,
   arenaAmbientIntensity: 0.5,
   floorPositionY: 0,
   
   // Arcade Cabinet
-  arcadeCabinetScale: 1.0,
-  arcadeCabinetPositionX: 0,
-  arcadeCabinetPositionY: 0,
-  arcadeCabinetPositionZ: -5,
+  arcadeCabinetScale: 0.1,
+  arcadeCabinetPositionX: -10,
+  arcadeCabinetPositionY: -5,
+  arcadeCabinetPositionZ: 5,
   arcadeCabinetRotationY: 0,
   arcadeCabinetVisible: true,
   
   // Bullet Time Cinematic Scene
-  cinematicWindupDuration: 2.0,
+  cinematicWindupDuration: 2,
   cinematicFreezeDuration: 0.2,
-  cinematicOrbitDuration: 4.0,
-  cinematicRevealDuration: 2.0,
-  cinematicOrbitRadius: 8.0,
+  cinematicOrbitDuration: 4,
+  cinematicRevealDuration: 2,
+  cinematicOrbitRadius: 8,
   cinematicOrbitHeight: 2.5,
   cinematicTimeScaleSlow: 0.08,
   cinematicTimeScaleFreeze: 0.01,
   
   // Comet Zoom Effects
-  cinematicCometApproachSpeed: 50.0,
-  cinematicCometStartDistance: 30.0,
-  cinematicCometEndDistance: 2.0,
-  cinematicCometFOVPunch: 120.0,
+  cinematicCometApproachSpeed: 50,
+  cinematicCometStartDistance: 30,
+  cinematicCometEndDistance: 2,
+  cinematicCometFOVPunch: 120,
   cinematicCometShakeIntensity: 0.8,
   
-  // Pog Explosion & Scatter
-  cinematicExplosionForce: 15.0,
-  cinematicScatterRadius: 8.0,
-  cinematicScatterHeight: 6.0,
-  cinematicPogRotationSpeed: 8.0,
-  cinematicPogFloatDuration: 3.0,
+  // Pog Explosion & Scatter (Eruption Suite)
+  cinematicExplosionForce: 15,
+  cinematicScatterRadius: 8,
+  cinematicScatterHeight: 6,
+  cinematicPogRotationSpeed: 8,
+  cinematicPogFloatDuration: 1.5,
+  
+  // NEW: Collision Eruption Tuning
+  eruptionUpwardMultiplier: 0.3,
+  eruptionRadius: 3,
+  eruptionTorqueMultiplier: 0.15,
+  autoSlamPower: 100,
   
   // Dramatic Transitions
-  cinematicTransitionSpeed: 2.0,
-  cinematicImpactFlashIntensity: 3.0,
+  cinematicTransitionSpeed: 2,
+  cinematicImpactFlashIntensity: 3,
   cinematicMotionBlurStrength: 0.7,
   
   // Pog Lock-on Tracking
   cinematicLockOnEnabled: true,
-  cinematicLockOnDuration: 3.0,
-  cinematicLockOnOrbitRadius: 4.0,
+  cinematicLockOnDuration: 3,
+  cinematicLockOnOrbitRadius: 4,
   cinematicLockOnOrbitSpeed: 1.5,
-  cinematicLockOnHeightOffset: 1.0,
+  cinematicLockOnHeightOffset: 1,
   cinematicLockOnSmoothFactor: 0.8,
   
   // Synchronized Falling & Rest
   cinematicSyncFallDuration: 2.5,
   cinematicSyncFallSpeed: 0.3,
-  cinematicSyncRestDelay: 1.0,
+  cinematicSyncRestDelay: 1,
   cinematicFinalFaceUpChance: 0.5,
   cinematicBounceCount: 2,
   cinematicBounceDamping: 0.6,
+  
+  // Wraith (Player)
+  wraithPositionX: 0,
+  wraithPositionY: 5.1,
+  wraithPositionZ: -53.6,
+  wraithScale: 15,
+  wraithRotationY: 0,
+
+  // New Physics Governance
+  pogMaxVelocity: 15.0
 };
 
 export interface ShowcaseItem {
@@ -342,8 +376,16 @@ export interface GameStore {
   previousState: GameState | null;
   fogPulseTrigger: number;
   fogColor: string;
+  debugLogoMode: boolean;
   
   // Debug params
+  // NEW: Collision Tuning Suite
+  autoSlamActive: boolean;
+  
+  // NEW: Scene Based Architecture
+  sceneMode: 'ARCADE' | 'LAB';
+  cameraTension: number; // 0 = relaxed, 1 = max tension
+  
   debugParams: DebugParams;
   
   // Practice mode additions
@@ -368,10 +410,13 @@ export interface GameStore {
   perfectHitActive: boolean;
   
   // Game flow state
+  timeLeft: number;
   score: number;
   combo: number;
   bulletTimeScale: number;
   isCinematicActive: boolean;
+  bulletTimeActive: boolean;
+  globalDampingScale: number;
 
   // Actions
   initPogs: () => void;
@@ -398,7 +443,9 @@ export interface GameStore {
   endPracticeSession: () => void;
   toggleShowcaseRatio: () => void;
   togglePause: () => void;
+  setSceneMode: (sceneMode: 'ARCADE' | 'LAB') => void;
   setFogColor: (color: string) => void;
+  setDebugLogoMode: (enabled: boolean) => void;
   triggerFogPulse: () => void;
   setDebugParams: (params: Partial<DebugParams>) => void;
   
@@ -410,11 +457,17 @@ export interface GameStore {
   
   // Timer and session actions
   startSession: () => void;
+  startGame: () => void;
   updateTimer: (delta: number) => void;
   endSession: () => void;
+  endGame: () => void;
   triggerPerfectHit: () => void;
   setBulletTimeScale: (scale: number) => void;
   setIsCinematicActive: (active: boolean) => void;
+  
+  // Diagnostic Actions
+  setPeakVelocity: (velocity: number) => void;
+  peakVelocity: number;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -464,12 +517,21 @@ export const useGameStore = create<GameStore>()(
       binderOpen: false,
       achievementsOpen: false,
       achievementToast: null,
-      currentSlammerType: 'slamzer_mortal',
+      currentSlammerType: 'standard',
       qualityLevel: 'high',
       showcaseRatioMode: 'safe',
       previousState: null,
       fogPulseTrigger: 0,
       fogColor: '#00ffcc',
+      debugLogoMode: false,
+      
+      // NEW: Tuning Suite
+      autoSlamActive: false,
+
+      // NEW: Scene Based Architecture
+      sceneMode: 'ARCADE',
+      cameraTension: 0,
+      setSceneMode: (sceneMode: 'ARCADE' | 'LAB') => set({ sceneMode }),
       
       // Debug params
       debugParams: loadDebugParams(),
@@ -509,6 +571,9 @@ export const useGameStore = create<GameStore>()(
       combo: 0,
       bulletTimeScale: 1.0,
       isCinematicActive: false,
+      bulletTimeActive: false,
+      globalDampingScale: 0,
+      peakVelocity: 0,
 
       // Actions
       initPogs: () => {
@@ -620,7 +685,7 @@ export const useGameStore = create<GameStore>()(
               rotation: [0, Math.random() * Math.PI * 2, 0] as [number, number, number],
             };
           });
-          set({ pogs: updatedPogs, gameState: 'AIMING', power: 0, showcaseQueue: [], currentShowcase: null });
+          set({ pogs: updatedPogs, gameState: 'AIMING', power: 0, showcaseQueue: [], currentShowcase: null, peakVelocity: 0 });
         }
       },
 
@@ -733,12 +798,19 @@ export const useGameStore = create<GameStore>()(
       }),
 
       setFogColor: (fogColor: string) => set({ fogColor }),
+      setDebugLogoMode: (debugLogoMode: boolean) => set({ debugLogoMode }),
       triggerFogPulse: () => set((state) => ({ fogPulseTrigger: state.fogPulseTrigger + 1 })),
       setDebugParams: (params: Partial<DebugParams>) => set((state) => {
         const newParams = { ...state.debugParams, ...params };
         localStorage.setItem('debugParams', JSON.stringify(newParams));
         return { debugParams: newParams };
       }),
+      
+      setPeakVelocity: (peakVelocity) => {
+        if (peakVelocity > get().peakVelocity) {
+          set({ peakVelocity });
+        }
+      },
       
       incrementCombo: () => set((state) => {
         const newCombo = state.currentCombo + 1;
@@ -795,6 +867,8 @@ export const useGameStore = create<GameStore>()(
     };
   })
 );
+
+
 
 
 
