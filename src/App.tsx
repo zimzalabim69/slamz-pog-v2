@@ -6,11 +6,13 @@ import { Showcase } from './components/ui/Showcase';
 import { StartScreen } from './components/ui/StartScreen';
 import { CRTOverlay } from './components/ui/CRTOverlay';
 import { Canvas } from '@react-three/fiber';
+import { ENABLE_ANTIALIAS, CANVAS_DPR } from './utils/devicePerformance';
 import { useGameStore } from './store/useGameStore';
 import { DebugPanel } from './components/ui/DebugPanel';
 import { PauseMenu } from './components/ui/PauseMenu';
 import { PerfectHit } from './components/ui/PerfectHit';
 import { SessionSummary } from './components/ui/SessionSummary';
+
 
 // ============================================================
 // WEBGL DETECTION & ERROR BOUNDARY
@@ -101,9 +103,10 @@ function App() {
       <WebGLErrorBoundary>
         <Canvas 
           shadows={false}
+          dpr={CANVAS_DPR}
           style={{ background: '#050510' }}
           gl={{
-            antialias: true,
+            antialias: ENABLE_ANTIALIAS,
             alpha: false,
             powerPreference: "high-performance",
             failIfMajorPerformanceCaveat: false,
