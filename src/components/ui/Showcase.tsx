@@ -6,13 +6,22 @@
 import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { drawPogToCanvas } from '../../utils/TextureGenerator';
+import { playJackpotFanfare } from '../../systems/audio';
 import './Showcase.css';
 
 export function Showcase() {
+  const gameState = useGameStore((s) => s.gameState);
   const currentShowcase = useGameStore((s) => s.currentShowcase);
   const advanceShowcase = useGameStore((s) => s.advanceShowcase);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotationRef = useRef(0);
+
+  // Trigger celebratory fanfare exactly once per item
+  useEffect(() => {
+    if (gameState === 'ROUND_JACKPOT' && currentShowcase) {
+      playJackpotFanfare();
+    }
+  }, [currentShowcase, gameState]);
 
   useEffect(() => {
     if (!currentShowcase || !canvasRef.current) return;
@@ -49,7 +58,7 @@ export function Showcase() {
   }, [currentShowcase]);
 
   useEffect(() => {
-    if (!currentShowcase) return;
+    if (!currentShowcase || gameState !== 'ROUND_JACKPOT') return;
 
     const handleSpace = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
@@ -60,9 +69,9 @@ export function Showcase() {
 
     window.addEventListener('keydown', handleSpace);
     return () => window.removeEventListener('keydown', handleSpace);
-  }, [currentShowcase, advanceShowcase]);
+  }, [currentShowcase, advanceShowcase, gameState]);
 
-  if (!currentShowcase) return null;
+  if (gameState !== 'ROUND_JACKPOT' || !currentShowcase) return null;
 
   const { theme, rarity, setName, setColor, marketValue } = currentShowcase;
 
