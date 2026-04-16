@@ -215,7 +215,6 @@ export function Slammer() {
       colliders={false}
       mass={debugParams.slammerMass}
       restitution={debugParams.slammerRestitution}
-      collisionDamping={0}
       position={[0, 8, 0]}
     >
       <CylinderCollider args={[0.72, 0.2]} />

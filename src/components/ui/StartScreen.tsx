@@ -10,6 +10,7 @@ import { StartSmoke } from './StartSmoke';
 import { ArcadeCabinet } from './ArcadeCabinet';
 import { SlamzWraith } from '../game/SlamzWraith';
 import { Canvas, useThree } from '@react-three/fiber';
+import { ENABLE_ANTIALIAS, CANVAS_DPR } from '../../utils/devicePerformance';
 import { Environment } from '@react-three/drei';
 import './StartScreen.css';
 
@@ -80,7 +81,7 @@ export const StartScreen: React.FC = () => {
   const [hasStartedAudio, setHasStartedAudio] = useState(false);  
   // Lightning state: tracks active bolts and their positions
   const [activeBolt, setActiveBolt] = useState<{ x1: number, y1: number, x2: number, y2: number } | null>(null);
-  const lightningTimer = useRef<NodeJS.Timeout | null>(null);
+  const lightningTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Fractal Lightning Strike Logic
   const triggerLightning = useCallback(() => {
@@ -175,7 +176,8 @@ export const StartScreen: React.FC = () => {
       <div className="logo-container-3d">
         <Canvas 
           frameloop="demand"
-          gl={{ outputColorSpace: THREE.SRGBColorSpace }}
+          dpr={CANVAS_DPR}
+          gl={{ outputColorSpace: THREE.SRGBColorSpace, antialias: ENABLE_ANTIALIAS }}
           camera={{ position: [0, 0, 8], fov: 35 }}
           style={{ 
             position: 'absolute',

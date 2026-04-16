@@ -21,9 +21,6 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
   const rb = useRef<RapierRigidBody>(null);
   const debugParams = useGameStore((state) => state.debugParams);
   
-  // Runtime tracking for manual drift
-  const currentPos = useRef(new THREE.Vector3());
-  const currentRot = useRef(new THREE.Quaternion());
 
   const materials = useMemo(() => {
     const mat = getMaterialFromRegistry('pog', 'metal', theme, rarity);

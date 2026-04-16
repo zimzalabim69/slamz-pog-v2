@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 
 export function Ring({ position, args, color, opacity }: {
   position?: [number, number, number];

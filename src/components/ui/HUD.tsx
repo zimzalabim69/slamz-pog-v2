@@ -12,7 +12,6 @@ export function HUD() {
   const currentAtmosphere = useGameStore((s) => s.currentAtmosphere);
   const cycleAtmosphere   = useGameStore((s) => s.cycleAtmosphere);
   const currentShowcase   = useGameStore((s) => s.currentShowcase);
-  const advanceShowcase   = useGameStore((s) => s.advanceShowcase);
   const lastSlamText      = useGameStore((s) => s.lastSlamText);
   const resetStack        = useGameStore((s) => s.resetStack);
   const toggleBinder      = useGameStore((s) => s.toggleBinder);
@@ -154,54 +153,6 @@ export function HUD() {
           pointerEvents: 'none', whiteSpace: 'nowrap'
         }}>
           {lastSlamText}
-        </div>
-      )}
-
-      {/* ── SHOWCASE OVERLAY ──────────────────────────────── */}
-      {gameState === 'SHOWCASE' && currentShowcase && (
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(0,0,0,0.75)',
-          pointerEvents: 'auto'
-        }}
-          onClick={() => advanceShowcase()}
-        >
-          {/* SET NAME top */}
-          <div style={{ position: 'absolute', top: '12%', width: '100%', textAlign: 'center' }}>
-            <div style={{ fontSize: '12px', letterSpacing: '5px', color: currentShowcase?.setColor || '#00ff00', textShadow: `0 0 10px ${currentShowcase?.setColor || '#00ff00'}` }}>
-              {currentShowcase?.setName || 'MYSTERY POG'}
-            </div>
-            <div style={{ fontSize: '52px', fontWeight: 900, color: '#fff', textShadow: '4px 4px 0 #ff0055', marginTop: '10px', letterSpacing: '2px' }}>
-              {currentShowcase?.theme?.replace(/_/g, ' ').toUpperCase() || 'MYSTERY'}
-            </div>
-          </div>
-
-          {/* LEFT stats box */}
-          <div style={{
-            position: 'absolute', left: '8%', top: '50%', transform: 'translateY(-50%)',
-            background: 'rgba(0,0,0,0.8)',
-            border: `2px solid ${currentShowcase.setColor}`,
-            padding: '20px', borderRadius: '4px',
-            boxShadow: `0 0 30px ${currentShowcase.setColor}55`
-          }}>
-            <div style={{ fontSize: '9px', color: currentShowcase.setColor, marginBottom: '5px' }}>COLLECTOR DATA</div>
-            <div style={{ fontSize: '9px', opacity: 0.7 }}>RARITY LEVEL</div>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '12px' }}>{currentShowcase.rarity.toUpperCase()}</div>
-            <div style={{ fontSize: '9px', opacity: 0.7 }}>MARKET VALUE</div>
-            <div style={{ fontSize: '24px', color: '#ffff00', fontWeight: 900 }}>
-              {currentShowcase.marketValue.toLocaleString()} 🄿
-            </div>
-          </div>
-
-          {/* Bottom hint */}
-          <div style={{
-            position: 'absolute', bottom: '10%', width: '100%', textAlign: 'center',
-            color: '#ffff00', fontSize: '13px', letterSpacing: '2px',
-            animation: 'pulse 1.5s infinite'
-          }}>
-            CLICK OR [SPACE] TO CONTINUE
-          </div>
         </div>
       )}
 

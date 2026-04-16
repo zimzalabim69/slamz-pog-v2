@@ -45,7 +45,6 @@ interface PogParticle {
   bounces: number;
 }
 
-const GRAVITY = -40;
 const PARTICLE_COUNT = 25;
 const GROUND_Y = -6;
 const DAMPING = 0.55;

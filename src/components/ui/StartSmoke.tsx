@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '../../store/useGameStore';
@@ -50,7 +50,6 @@ interface SmokePuff {
 }
 
 const LAYER_MAX = 30;
-const SETTLE_TIME = 5; // seconds — match RenderController
 
 function createPuffs(count: number, heightVariance: number): SmokePuff[] {
   const puffs: SmokePuff[] = [];

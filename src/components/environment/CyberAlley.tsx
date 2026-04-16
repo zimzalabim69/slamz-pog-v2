@@ -83,20 +83,6 @@ export function CyberAlley() {
 
   if (!isEnabled) return null;
 
-  // Read cabinet positioning from debug params
-  const cabinetPositions: [number, number, number][] = [
-    [debugParams.arcadeCabinetPositionX, debugParams.arcadeCabinetPositionY, debugParams.arcadeCabinetPositionZ],
-    [-12, 0, -2],
-    [12, 0, -8],
-    [12, 0, -2]
-  ];
-
-  const cabinetRotations: [number, number, number][] = [
-    [0, debugParams.arcadeCabinetRotationY, 0],
-    [0, 0, 0],
-    [0, Math.PI, 0],
-    [0, Math.PI, 0]
-  ];
 
   // Only show arcade cabinets on medium/high quality (934k tris is heavy) AND if visible
   const showArcades = qualityLevel !== 'low' && debugParams.arcadeCabinetVisible;

@@ -20,7 +20,6 @@ export function CinematicSlam() {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const originalPosRef = useRef(new THREE.Vector3());
   const orbitData = useRef({ angle: 0 });
-  const trackingFrameRef = useRef(0);
   
   useEffect(() => {
     // We start the timeline when the engine's isCinematicActive flag is true

@@ -33,7 +33,6 @@ const PhysicsInnerScene = React.memo(() => {
  * interference from the physics solver.
  */
 export function PhysicsWorld() {
-  const isCinematicActive = useGameStore((state) => state.isCinematicActive);
   const bulletTimeActive = useGameStore((state) => state.bulletTimeActive);
 
   return (

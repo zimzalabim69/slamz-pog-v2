@@ -1,6 +1,5 @@
 import { Grid } from '@react-three/drei';
 import { useGameStore } from '../../store/useGameStore';
-import * as THREE from 'three';
 
 /**
  * IMPACT LAB SCENE

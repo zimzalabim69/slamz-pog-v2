@@ -1,9 +1,9 @@
-﻿import { useFrame } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { useRapier } from '@react-three/rapier';
 import { useGameStore } from '../store/useGameStore';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { playImpactSound, playCaptureSound } from '../systems/audio';
+import { playImpactSound } from '../systems/audio';
 import { getSetForTheme } from '../constants/setDefinitions';
 import { cinematicEngine } from '../systems/CinematicEngine';
 
@@ -26,7 +26,6 @@ export function GameController() {
   const setHitStopActive = useGameStore((s) => s.triggerHitStop);
   const setImpactFlashActive = useGameStore((s) => s.triggerImpactFlash);
   const setGameState  = useGameStore((s) => s.setGameState);
-  const updateTimer = useGameStore((s) => s.updateTimer);
   const stats         = useGameStore((s) => s.stats);
   const updateStats   = useGameStore((s) => s.updateStats);
   const removePog     = useGameStore((s) => s.removePog);
@@ -37,7 +36,6 @@ export function GameController() {
   const cycleAtmosphere = useGameStore((s) => s.cycleAtmosphere);
   const setSlamText   = useGameStore((s) => s.setSlamText);
   const currentShowcase = useGameStore((s) => s.currentShowcase);
-  const addFaceUpPog  = useGameStore((s) => s.addFaceUpPog);
   const endPracticeSession = useGameStore((s) => s.endPracticeSession);
   const resetCombo    = useGameStore((s) => s.resetCombo);
 

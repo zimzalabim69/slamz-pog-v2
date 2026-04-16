@@ -1,7 +1,6 @@
 import { useGameStore } from '../../store/useGameStore';
 import { SCENE_PRESETS } from '../../constants/game';
 import { useTexture } from '@react-three/drei';
-import { SlamzWraith } from './SlamzWraith';
 import * as THREE from 'three';
 
 export function Arena() {

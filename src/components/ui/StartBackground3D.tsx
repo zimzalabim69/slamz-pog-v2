@@ -7,7 +7,6 @@ import { useGameStore } from '../../store/useGameStore';
 export function StartBackground3D() {
   const groupRef = useRef<THREE.Group>(null);
   const debugParams = useGameStore((state) => state.debugParams);
-  const applied = useRef(false);
 
   // Load the background GLB
   const { scene } = useGLTF('/assets/slamz_logo_bg.glb');
