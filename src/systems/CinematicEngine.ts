@@ -11,6 +11,18 @@ import { useGameStore } from '../store/useGameStore';
  */
 class CinematicEngine {
   public isCinematicActive: boolean = false;
+  public justEndedAt: number = 0; // Timestamp of last handOff (ms since epoch)
+  public readonly GRACE_PERIOD_MS: number = 500; // Grace period after handOff for settle detection
+
+  /**
+   * Returns true if we're within the post-handoff grace period.
+   * During this window, settle detection should be suppressed to prevent
+   * false-positives from residual bullet-time micro-velocities.
+   */
+  public isInGracePeriod(): boolean {
+    if (this.justEndedAt === 0) return false;
+    return (Date.now() - this.justEndedAt) < this.GRACE_PERIOD_MS;
+  }
 
   /**
    * VOLCANIC TRIGGER: Shifts environment to Zero-G/Slow-Mo and applies impulses.
@@ -112,6 +124,7 @@ class CinematicEngine {
     console.log('[ENGINE] 🌍 FULL RELEASE - DAMPING CLEARED - POGS FREE');
     
     this.isCinematicActive = false;
+    this.justEndedAt = Date.now(); // Start grace period for settle detector
   }
 
   /**
@@ -119,6 +132,7 @@ class CinematicEngine {
    */
   public reset() {
     this.isCinematicActive = false;
+    this.justEndedAt = 0; // Clear grace period on full reset
     useGameStore.setState({ 
         bulletTimeActive: false,
         globalDampingScale: 0

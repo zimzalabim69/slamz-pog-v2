@@ -113,6 +113,12 @@ export interface DebugParams {
   arcadeCabinetPositionZ: number;
   arcadeCabinetRotationY: number;
   arcadeCabinetVisible: boolean;
+  arcadeBackScale: number;
+  arcadeBackPositionX: number;
+  arcadeBackPositionY: number;
+  arcadeBackPositionZ: number;
+  arcadeBackRotationY: number;
+  arcadeBackVisible: boolean;
   
   // Bullet Time Cinematic Scene
   cinematicWindupDuration: number;
@@ -121,6 +127,8 @@ export interface DebugParams {
   cinematicRevealDuration: number;
   cinematicOrbitRadius: number;
   cinematicOrbitHeight: number;
+  cinematicDynamicZoomMultiplier: number;
+  cinematicDynamicZoomMaxScale: number;
   cinematicTimeScaleSlow: number;
   cinematicTimeScaleFreeze: number;
   
@@ -284,6 +292,12 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   arcadeCabinetPositionZ: 5,
   arcadeCabinetRotationY: 0,
   arcadeCabinetVisible: true,
+  arcadeBackScale: 0.1,
+  arcadeBackPositionX: 10,
+  arcadeBackPositionY: -5,
+  arcadeBackPositionZ: 5,
+  arcadeBackRotationY: 0,
+  arcadeBackVisible: true,
   
   // Bullet Time Cinematic Scene
   cinematicWindupDuration: 2,
@@ -292,6 +306,8 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   cinematicRevealDuration: 2,
   cinematicOrbitRadius: 8,
   cinematicOrbitHeight: 2.5,
+  cinematicDynamicZoomMultiplier: 2.5,
+  cinematicDynamicZoomMaxScale: 1.5,
   cinematicTimeScaleSlow: 0.08,
   cinematicTimeScaleFreeze: 0.01,
   

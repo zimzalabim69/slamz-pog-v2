@@ -75,29 +75,37 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
   const gameState = useGameStore((state) => state.gameState);
   const globalDampingScale = useGameStore((state) => state.globalDampingScale);
   
-  useEffect(() => {
+  // Track cinematic state changes with a manual update loop
+  useFrame(() => {
     if (!rb.current) return;
     
     // In Volcanic mode, POGs stay Dynamic during the Bullet Time orbit
     if (cinematicEngine.isCinematicActive) {
-      rb.current.setBodyType(0, true); // 0 = Dynamic
+      if (rb.current.bodyType() !== 0) {
+        rb.current.setBodyType(0, true); // 0 = Dynamic
+      }
       return;
     }
 
+    // After cinematic ends, follow gameState
     if (gameState === 'SLAMMED') {
-      rb.current.setBodyType(0, true); // 0 = Dynamic
-    } else if (gameState === 'AIMING' || gameState === 'RESETTING') {
-      rb.current.setBodyType(2, true); // 2 = KinematicPositionBased
+      if (rb.current.bodyType() !== 0) {
+        rb.current.setBodyType(0, true); // 0 = Dynamic
+      }
+    } else if (gameState === 'AIMING') {
+      if (rb.current.bodyType() !== 2) {
+        rb.current.setBodyType(2, true); // 2 = KinematicPositionBased
+      }
     }
-  }, [gameState]);
+  });
 
   // VOLCANIC DAMPING & VELOCITY GOVERNOR LOOP
   const setPeakVelocity = useGameStore((state) => state.setPeakVelocity);
   
-  useFrame(() => {
+        useFrame(() => {
     if (!rb.current) return;
 
-    // 1. DAMPING (Slow-Mo Simulation)
+    // VOLCANIC DAMPING (Slow-Mo Simulation during cinematic)
     if (cinematicEngine.isCinematicActive && globalDampingScale > 0) {
       rb.current.setLinearDamping(globalDampingScale);
       rb.current.setAngularDamping(globalDampingScale);
@@ -106,31 +114,23 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
       rb.current.setAngularDamping(debugParams.pogAngularDamping);
     }
 
-    // 2. VELOCITY GOVERNOR (The Brakes)
+    // Peak velocity tracking
     const linvel = rb.current.linvel();
     const velocityMagnitude = Math.sqrt(linvel.x ** 2 + linvel.y ** 2 + linvel.z ** 2);
     
-    // Report Peak for HUD Meter
     if (velocityMagnitude > 0.01) {
       setPeakVelocity(velocityMagnitude);
     }
 
-    if (velocityMagnitude > debugParams.pogMaxVelocity) {
-      // Apply "Jelly Brakes" (Massive Damping)
-      rb.current.setLinearDamping(20.0); 
-      rb.current.setAngularDamping(20.0);
-      
-      // Forcefully clamp the vector
-      const scale = debugParams.pogMaxVelocity / velocityMagnitude;
+    // Velocity cap ONLY during cinematic (prevents nuclear launch during bullet time)
+    // Once cinematic ends, let physics run naturally
+    if (cinematicEngine.isCinematicActive && velocityMagnitude > debugParams.pogMaxVelocity * 1.5) {
+      const scale = (debugParams.pogMaxVelocity * 1.5) / velocityMagnitude;
       rb.current.setLinvel({
         x: linvel.x * scale,
         y: linvel.y * scale,
         z: linvel.z * scale
       }, true);
-    } else if (!cinematicEngine.isCinematicActive) {
-      // Restore normal damping when within limits
-      rb.current.setLinearDamping(debugParams.pogLinearDamping);
-      rb.current.setAngularDamping(debugParams.pogAngularDamping);
     }
   });
 
@@ -158,7 +158,10 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
 
 Pog.displayName = 'Pog';
 
-Pog.displayName = 'Pog';
+
+
+
+
 
 
 

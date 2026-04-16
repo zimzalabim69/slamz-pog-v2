@@ -997,6 +997,26 @@ export function DebugPanel() {
               />
 
               <EnhancedSlider
+                label="Dynamic Zoom Mult"
+                value={debugParams.cinematicDynamicZoomMultiplier}
+                min={1}
+                max={5}
+                step={0.1}
+                onChange={(value) => updateParam('cinematicDynamicZoomMultiplier', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
+                label="Dynamic Zoom Max Scale"
+                value={debugParams.cinematicDynamicZoomMaxScale}
+                min={1}
+                max={3}
+                step={0.05}
+                onChange={(value) => updateParam('cinematicDynamicZoomMaxScale', value)}
+                decimals={2}
+              />
+
+              <EnhancedSlider
                 label="Slow Motion Scale"
                 value={debugParams.cinematicTimeScaleSlow}
                 min={0.01}
@@ -1329,7 +1349,7 @@ export function DebugPanel() {
 
         {activeTab === 'arcadeCabinet' && (
           <div className="debug-section">
-            <h3>ARCADE CABINET</h3>
+            <h3>ARCADE FRONT (Slamz_Arcade.glb)</h3>
             
             <BooleanToggle
               label="Visible"
@@ -1340,9 +1360,9 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Scale"
               value={debugParams.arcadeCabinetScale}
-              min={0.1}
-              max={3}
-              step={0.1}
+              min={0.05}
+              max={5}
+              step={0.05}
               onChange={(value) => updateParam('arcadeCabinetScale', value)}
               decimals={2}
             />
@@ -1350,9 +1370,9 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position X"
               value={debugParams.arcadeCabinetPositionX}
-              min={-10}
-              max={10}
-              step={0.5}
+              min={-20}
+              max={20}
+              step={0.25}
               onChange={(value) => updateParam('arcadeCabinetPositionX', value)}
               decimals={2}
             />
@@ -1360,9 +1380,9 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position Y"
               value={debugParams.arcadeCabinetPositionY}
-              min={-5}
-              max={10}
-              step={0.5}
+              min={-10}
+              max={15}
+              step={0.25}
               onChange={(value) => updateParam('arcadeCabinetPositionY', value)}
               decimals={2}
             />
@@ -1370,9 +1390,9 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position Z"
               value={debugParams.arcadeCabinetPositionZ}
-              min={-20}
-              max={5}
-              step={0.5}
+              min={-25}
+              max={15}
+              step={0.25}
               onChange={(value) => updateParam('arcadeCabinetPositionZ', value)}
               decimals={2}
             />
@@ -1384,6 +1404,64 @@ export function DebugPanel() {
               max={3.14}
               step={0.1}
               onChange={(value) => updateParam('arcadeCabinetRotationY', value)}
+              decimals={2}
+            />
+
+            <h3 style={{ marginTop: '24px' }}>ARCADE BACK (Slamz_Arcade_Back.glb)</h3>
+
+            <BooleanToggle
+              label="Visible"
+              value={debugParams.arcadeBackVisible}
+              onChange={(value) => updateParam('arcadeBackVisible', value as any)}
+            />
+
+            <EnhancedSlider
+              label="Scale"
+              value={debugParams.arcadeBackScale}
+              min={0.05}
+              max={5}
+              step={0.05}
+              onChange={(value) => updateParam('arcadeBackScale', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position X"
+              value={debugParams.arcadeBackPositionX}
+              min={-20}
+              max={20}
+              step={0.25}
+              onChange={(value) => updateParam('arcadeBackPositionX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Y"
+              value={debugParams.arcadeBackPositionY}
+              min={-10}
+              max={15}
+              step={0.25}
+              onChange={(value) => updateParam('arcadeBackPositionY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Z"
+              value={debugParams.arcadeBackPositionZ}
+              min={-25}
+              max={15}
+              step={0.25}
+              onChange={(value) => updateParam('arcadeBackPositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Y"
+              value={debugParams.arcadeBackRotationY}
+              min={-3.14}
+              max={3.14}
+              step={0.1}
+              onChange={(value) => updateParam('arcadeBackRotationY', value)}
               decimals={2}
             />
           </div>

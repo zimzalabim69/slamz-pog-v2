@@ -111,8 +111,15 @@ export function CinematicSlam() {
         onUpdate: () => {
           const bounds = getPogBounds();
           
-          // Dynamically adjust orbit radius based on spread
-          const dynamicRadius = Math.max(radius, bounds.maxDist * 2.5);
+          // Dynamically adjust orbit radius based on spread.
+          // CLAMPED: never exceed configured radius * maxScale to prevent runaway pogs
+          // from yanking the camera into the next zip code.
+          const zoomMult = debugParams.cinematicDynamicZoomMultiplier;
+          const zoomMaxScale = debugParams.cinematicDynamicZoomMaxScale;
+          const dynamicRadius = Math.min(
+            Math.max(radius, bounds.maxDist * zoomMult),
+            radius * zoomMaxScale
+          );
           
           camera.position.x = Math.cos(orbitData.current.angle) * dynamicRadius;
           camera.position.z = Math.sin(orbitData.current.angle) * dynamicRadius;

@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { playImpactSound, playCaptureSound } from '../systems/audio';
 import { getSetForTheme } from '../constants/setDefinitions';
+import { cinematicEngine } from '../systems/CinematicEngine';
 
 const WORLD_UP = new THREE.Vector3(0, 1, 0);
 
@@ -15,6 +16,8 @@ export function GameController() {
   const hasProcessedSlam = useRef(false);
   const hitStopFrames = useRef<number>(0);
   const settleStartTime = useRef<number>(0);
+  const sustainedSettleTicks = useRef<number>(0); // Consecutive fixed-timestep ticks all pogs have been below threshold
+  const SUSTAINED_SETTLE_THRESHOLD = 20; // ~0.33s at 60Hz fixed-timestep — must stay settled this long
 
   const gameState  = useGameStore((s) => s.gameState);
   const hitStopActive = useGameStore((s) => s.hitStopActive);
@@ -48,7 +51,7 @@ export function GameController() {
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [resetStack, cycleAtmosphere, advanceShowcase]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Mark slam start ───────────────────────────────────────
   useEffect(() => {
@@ -56,6 +59,7 @@ export function GameController() {
       slamStartTime.current = Date.now();
       settleStartTime.current = Date.now();
       hasProcessedSlam.current = false;
+      sustainedSettleTicks.current = 0; // Reset sustained-settle counter for new slam
 
       // Track total slams
       updateStats({ totalSlams: stats.totalSlams + 1 });
@@ -78,7 +82,6 @@ export function GameController() {
       } else {
         setSlamText('WEAK...');
       }
-      setSlamText(null);
     }
   }, [gameState]);
 
@@ -117,6 +120,16 @@ export function GameController() {
     const elapsed = Date.now() - slamStartTime.current;
     const forceReset = elapsed > 5000;
 
+    // RACE-CONDITION GUARD: Suppress settle detection during bullet-time and the
+    // post-handoff grace period. The 0.98 damping during cinematic artificially
+    // flattens velocities below the settle threshold, which would cause false
+    // positives the instant damping clears (before gravity has time to re-accelerate).
+    // forceReset still wins — we don't want to hang forever if cinematic misbehaves.
+    if (!forceReset && (cinematicEngine.isCinematicActive || cinematicEngine.isInGracePeriod())) {
+      sustainedSettleTicks.current = 0;
+      return;
+    }
+
     let allSettled = true;
     if (!forceReset) {
       world.forEachRigidBody((body) => {
@@ -125,15 +138,28 @@ export function GameController() {
           const av = body.angvel();
           const speedSq = lv.x ** 2 + lv.y ** 2 + lv.z ** 2;
           const angSq   = av.x ** 2 + av.y ** 2 + av.z ** 2;
-          if (speedSq > 0.0025 || angSq > 0.0025) allSettled = false; // ~0.05 threshold like v1
+          if (speedSq > 0.01 || angSq > 0.01) allSettled = false; // ~0.05 threshold like v1
         }
       });
     }
 
-    if (!allSettled && !forceReset) return;
+    // SUSTAINED-SETTLE CHECK: require N consecutive fixed-timestep ticks below
+    // threshold before declaring victory. A single lucky frame of low velocity
+    // (e.g. from residual bullet-time damping or a pog passing zero-crossing
+    // on its way up/down) is not enough. forceReset bypasses this.
+    if (!forceReset) {
+      if (allSettled) {
+        sustainedSettleTicks.current++;
+        if (sustainedSettleTicks.current < SUSTAINED_SETTLE_THRESHOLD) return;
+      } else {
+        sustainedSettleTicks.current = 0;
+        return;
+      }
+    }
+
     hasProcessedSlam.current = true;
     const settleTime = Date.now() - settleStartTime.current;
-    console.log(`[PHYSICS] 🏁 All bodies settled in ${settleTime}ms (Threshold: 0.0025)`);
+    console.log(`[PHYSICS] 🏁 All bodies settled in ${settleTime}ms (Threshold: 0.01)`);
     
     // Trigger hit-stop on impact
     setHitStopActive();
@@ -273,3 +299,5 @@ export function GameController() {
 
   return null;
 }
+
+

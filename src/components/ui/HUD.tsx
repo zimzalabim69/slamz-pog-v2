@@ -17,6 +17,8 @@ export function HUD() {
   const resetStack        = useGameStore((s) => s.resetStack);
   const toggleBinder      = useGameStore((s) => s.toggleBinder);
   const toggleAchievements = useGameStore((s) => s.toggleAchievements);
+  const peakVelocity       = useGameStore((s) => s.peakVelocity);
+  const pogMaxVelocity     = useGameStore((s) => s.debugParams.pogMaxVelocity);
 
   const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
 
@@ -30,7 +32,7 @@ export function HUD() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [toggleBinder, toggleAchievements]);
 
-  // Hide HUD during showcase
+  // Hide HUD during showcase (after all hooks)
   if (currentShowcase) return null;
 
   return (
@@ -60,10 +62,10 @@ export function HUD() {
             <div style={{ 
               fontSize: '18px', 
               fontWeight: 900, 
-              color: useGameStore.getState().peakVelocity > useGameStore.getState().debugParams.pogMaxVelocity * 0.95 ? '#ff0044' : '#fff',
+              color: peakVelocity > pogMaxVelocity * 0.95 ? '#ff0044' : '#fff',
               fontFamily: '"Share Tech Mono", monospace' 
             }}>
-              {useGameStore((s) => s.peakVelocity).toFixed(2)} <span style={{ fontSize: '10px', opacity: 0.5 }}>m/s</span>
+              {peakVelocity.toFixed(2)} <span style={{ fontSize: '10px', opacity: 0.5 }}>m/s</span>
             </div>
           </div>
 
@@ -271,3 +273,5 @@ export function HUD() {
     </div>
   );
 }
+
+

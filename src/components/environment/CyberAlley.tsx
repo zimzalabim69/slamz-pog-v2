@@ -21,19 +21,22 @@ function makeNeonSignTexture(text: string, bgColor: string, textColor: string) {
 const SIGN_TEX_OPEN = makeNeonSignTexture('OPEN 24H', '#0a000a', '#ff007c');
 const SIGN_TEX_SLAMZ = makeNeonSignTexture('SLAMZ', '#000a0a', '#00e5ff');
 
-// Preload the arcade model
+// Preload both arcade models
 useGLTF.preload('/assets/Slamz_Arcade.glb');
+useGLTF.preload('/assets/Slamz_Arcade_Back.glb');
 
-function ArcadeCabinet({ 
+function ArcadeModel({ 
+  url,
   position, 
   rotation, 
   scale 
 }: { 
+  url: string;
   position: [number, number, number]; 
   rotation: [number, number, number];
   scale: number;
 }) {
-  const { scene } = useGLTF('/assets/Slamz_Arcade.glb');
+  const { scene } = useGLTF(url);
   
   return (
     <group position={position} rotation={rotation} scale={scale}>
@@ -114,12 +117,31 @@ export function CyberAlley() {
         <meshStandardMaterial color="#1a1012" roughness={0.9} />
       </mesh>
 
-      {/* SLAMZ ARCADE CABINETS */}
+      {/* SLAMZ ARCADE - FRONT (Slamz_Arcade.glb) */}
       {showArcades && (
-        <ArcadeCabinet 
-          position={cabinetPositions[0]} 
-          rotation={cabinetRotations[0]} 
+        <ArcadeModel 
+          url="/assets/Slamz_Arcade.glb"
+          position={[
+            debugParams.arcadeCabinetPositionX,
+            debugParams.arcadeCabinetPositionY,
+            debugParams.arcadeCabinetPositionZ
+          ]} 
+          rotation={[0, debugParams.arcadeCabinetRotationY, 0]} 
           scale={debugParams.arcadeCabinetScale}
+        />
+      )}
+
+      {/* SLAMZ ARCADE - BACK (Slamz_Arcade_Back.glb) */}
+      {qualityLevel !== 'low' && debugParams.arcadeBackVisible && (
+        <ArcadeModel 
+          url="/assets/Slamz_Arcade_Back.glb"
+          position={[
+            debugParams.arcadeBackPositionX,
+            debugParams.arcadeBackPositionY,
+            debugParams.arcadeBackPositionZ
+          ]} 
+          rotation={[0, debugParams.arcadeBackRotationY, 0]} 
+          scale={debugParams.arcadeBackScale}
         />
       )}
 
