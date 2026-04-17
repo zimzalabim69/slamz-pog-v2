@@ -79,7 +79,7 @@ export function Experience() {
           maxPolarAngle={Math.PI / 2.1}
           minDistance={5}
           maxDistance={25}
-          target={[0, 0, 0]}
+          target={[0, debugParams.floorPositionY || -0.01, 0]}
         />
       )}
       <PerformanceMonitor />

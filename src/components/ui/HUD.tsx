@@ -18,6 +18,7 @@ export function HUD() {
   const toggleAchievements = useGameStore((s) => s.toggleAchievements);
   const peakVelocity       = useGameStore((s) => s.peakVelocity);
   const pogMaxVelocity     = useGameStore((s) => s.debugParams.pogMaxVelocity);
+  const pogsOnMat          = useGameStore((s) => s.pogsOnMat);
 
   const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
 
@@ -71,8 +72,13 @@ export function HUD() {
           {gameState !== 'START_SCREEN' && (
             <>
               <div style={{ fontSize: '24px', fontWeight: 900, margin: '4px 0' }}>{gameState}</div>
-              <div style={{ fontSize: '10px', color: '#00ffcc', marginTop: '8px' }}>
-                POGS WON: <span style={{ color: '#fff', fontSize: '14px' }}>{stats.pogsWon}</span>
+              <div style={{ display: 'flex', gap: '20px' }}>
+                <div style={{ fontSize: '10px', color: '#00ffcc', marginTop: '8px' }}>
+                  POGS WON: <span style={{ color: '#fff', fontSize: '14px' }}>{stats.pogsWon}</span>
+                </div>
+                <div style={{ fontSize: '10px', color: '#ff00cc', marginTop: '8px' }}>
+                  ON MAT: <span style={{ color: '#fff', fontSize: '14px' }}>{pogsOnMat}</span>
+                </div>
               </div>
             </>
           )}

@@ -3,6 +3,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGameStore } from '../../store/useGameStore';
 import { useGLTF, Clone } from '@react-three/drei';
+import { SlamzWraith } from '../game/SlamzWraith';
 
 function makeNeonSignTexture(text: string, bgColor: string, textColor: string) {
   const canvas = document.createElement('canvas');
@@ -24,6 +25,7 @@ const SIGN_TEX_SLAMZ = makeNeonSignTexture('SLAMZ', '#000a0a', '#00e5ff');
 // Preload both arcade models
 useGLTF.preload('/assets/Slamz_Arcade.glb');
 useGLTF.preload('/assets/Slamz_Arcade_Back.glb');
+useGLTF.preload('/assets/Slamz_Pro_Tour_Arcade.glb');
 
 function ArcadeModel({ 
   url,
@@ -129,6 +131,25 @@ export function CyberAlley() {
           rotation={[0, debugParams.arcadeBackRotationY, 0]} 
           scale={debugParams.arcadeBackScale}
         />
+      )}
+
+      {/* SLAMZ PRO TOUR ARCADE (Slamz_Pro_Tour_Arcade.glb) — Arena centerpiece */}
+      {qualityLevel !== 'low' && debugParams.proTourVisible && (
+        <ArcadeModel
+          url="/assets/Slamz_Pro_Tour_Arcade.glb"
+          position={[
+            debugParams.proTourPositionX,
+            debugParams.proTourPositionY,
+            debugParams.proTourPositionZ
+          ]}
+          rotation={[0, debugParams.proTourRotationY, 0]}
+          scale={debugParams.proTourScale}
+        />
+      )}
+
+      {/* ARENA WRAITH — floating player avatar */}
+      {qualityLevel !== 'low' && debugParams.wraithArenaVisible && (
+        <SlamzWraith context="arena" />
       )}
 
       {/* NEON SIGNS */}

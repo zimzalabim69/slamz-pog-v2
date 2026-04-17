@@ -146,6 +146,7 @@ export const StartScreen: React.FC = () => {
       className={`start-screen ${zooming ? 'zooming' : ''} ${isShaking ? 'screen-shake' : ''}`} 
       onClick={handleStart}
     >
+      <h1 className="sr-only">SLAMZ PRO-TOUR | VIBEJAM 2026</h1>
       <div className="energy-grid" />
       <div className="raster-warp" />
       <div className="crt-overlay" />

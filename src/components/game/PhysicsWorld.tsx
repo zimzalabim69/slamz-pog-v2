@@ -8,6 +8,7 @@ import { GameController } from '../GameController';
 
 import { CinematicSlam } from '../CinematicSlam';
 import { CollisionTuningSuite } from './CollisionTuningSuite';
+import { Boundary } from './Boundary';
 
 /**
  * PHYSICS INNER SCENE
@@ -22,6 +23,7 @@ const PhysicsInnerScene = React.memo(() => {
       <GameController />
       <CinematicSlam />
       <CollisionTuningSuite />
+      <Boundary />
     </>
   );
 });
@@ -37,7 +39,7 @@ export function PhysicsWorld() {
 
   return (
     <Physics 
-      gravity={bulletTimeActive ? [0, 0, 0] : [0, -16, 0]} 
+      gravity={bulletTimeActive ? [0, -5, 0] : [0, -45, 0]} 
       timeStep={1 / 60}
       paused={false} // NEVER PAUSE in Volcanic Mode
     >

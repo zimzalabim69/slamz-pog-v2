@@ -39,15 +39,28 @@ class CinematicEngine {
     
     this.isCinematicActive = true;
     
-    // 1. Shift Environment to 'Bullet Time'
+    // 1. Shift Environment to 'Bullet Time' & FREEZE for anticipation
     useGameStore.setState({ 
       bulletTimeActive: true,
-      globalDampingScale: 0.98 // ULTRA-THICK AIR (Containment)
+      globalDampingScale: 1.0 // ABSOLUTE FREEZE
     });
 
+    // 2. Schedule the "Explosion" release after freezeDuration
+    const freezeDuration = (debugParams.cinematicFreezeDuration || 0.8) * 1000;
+    
+    setTimeout(() => {
+      if (this.isCinematicActive) {
+        useGameStore.setState({
+          globalDampingScale: 0.15 // RELEASE: Some air resistance for "weighty" feel
+        });
+        console.log('[ENGINE] 💥 EXPLOSION RELEASED');
+      }
+    }, freezeDuration);
+
     const impactSpeed = (impactPower / 100) * debugParams.powerChargeSpeed;
-    // CALIBRATION: Reduced base force to 'Teenage Boy' levels (90s Accuracy)
-    const forceBase = slammerMass * impactSpeed * debugParams.slamForceMultiplier * 0.12;
+    // CALIBRATION: Massive reduction for 0.1 mass regulation pogs.
+    // Aiming for impulses in the 1.0 - 5.0 range rather than 35.0+.
+    const forceBase = slammerMass * impactSpeed * debugParams.slamForceMultiplier * 0.015;
 
     world.forEachRigidBody((body: RapierRigidBody) => {
       const ud = body.userData as any;
@@ -70,7 +83,11 @@ class CinematicEngine {
           
           // 1. Air Wedge Effect (Upward + Radial Lift)
           const airLift = forceBase * decline * debugParams.eruptionUpwardMultiplier;
-          const radialPush = forceBase * decline * 0.15; // HEAVILY BIASED UPWARD
+          
+          // TIGHTENING: Radial push now scales more aggressively.
+          // Mid-power hits stay clustered; Ultra hits (80%+) explode outward.
+          const powerFactor = Math.pow(impactPower / 100, 2.5); // Steeper curve
+          const radialPush = forceBase * decline * 0.08 * powerFactor; // Lower baseline
           
           body.applyImpulse({
             x: dirX * radialPush,

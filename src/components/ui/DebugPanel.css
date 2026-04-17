@@ -26,7 +26,7 @@
   position: fixed;
   top: 20px;
   right: 10px;
-  width: 400px;
+  width: 520px;
   max-height: calc(100vh - 40px);
   background: rgba(10, 10, 15, 0.95);
   border: 2px solid #00ffcc;
@@ -83,23 +83,23 @@
   overflow: hidden;
   padding: 0;
   flex-wrap: wrap;
-  min-height: 40px;
+  min-height: 32px;
 }
 
 .debug-panel-tabs button {
   flex: 1;
-  min-width: 100px;
-  padding: 10px 8px;
+  min-width: 72px;
+  padding: 6px 6px;
   background: rgba(0, 255, 204, 0.15);
   border: 1px solid rgba(0, 255, 204, 0.4);
   color: #00ffcc;
   font-family: 'Courier New', monospace;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: bold;
   cursor: pointer;
   transition: none;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   line-height: 1.2;
   text-align: center;
 }
@@ -263,7 +263,7 @@
   }
   
   .debug-panel-tabs button {
-    font-size: 9px;
-    padding: 8px 4px;
+    font-size: 8px;
+    padding: 5px 3px;
   }
 }

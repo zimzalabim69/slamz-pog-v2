@@ -123,5 +123,6 @@ Full details: [docs/cowork-workflow.md](docs/cowork-workflow.md)
 | Session just started | Call `getHandoffNote` to pick up prior context (workspace-scoped). **Caution:** the `onInstructionsLoaded` automation hook may have auto-overwritten the note at session start — if the content looks generic or templated, treat it as stale and consult any persistent session log your project maintains (e.g. `docs/session-log.md`) for authoritative history. |
 | Bridge restarted | First connected client receives a "restored from checkpoint" notification |
 | Preparing for Cowork | Run `/mcp__bridge__cowork` in regular chat first — Cowork has no MCP access |
-| Multi-workspace | Notes are workspace-scoped; switching workspaces won't overwrite each other's notes |
+| multi-workspace | notes are workspace-scoped; switching workspaces won't overwrite each other's notes |
+| **New Session/Onboarding** | **READ SLAMZ_HANDOFF.md FIRST** for the project "Source of Truth" |
 <!-- claude-ide-bridge:end -->

@@ -131,7 +131,7 @@ export function Slammer() {
       window.removeEventListener('AUTO_SLAM_TRIGGER', handleAutoSlam);
       window.removeEventListener('RESET_SLAMMER_TRIGGER', handleResetEvent);
     };
-  }, [gameState, setGameState, setPower, debugParams, triggerFogPulse, forceReset]);
+  }, [gameState, setGameState, setPower, debugParams, triggerFogPulse, forceReset, currentSlammerType]);
 
   // RESET ON STATE CHANGE (Fallthrough check)
   useEffect(() => {
@@ -139,6 +139,9 @@ export function Slammer() {
       forceReset();
     }
   }, [gameState, forceReset]);
+
+  // DERIVED DATA
+  const slammerData = (SLAMMER_TYPES as any)[currentSlammerType] || SLAMMER_TYPES.standard;
 
   // MAIN GAME LOOP (Physics Aiming + Tension Zoom + Impact)
   useFrame((_, delta) => {
@@ -213,13 +216,13 @@ export function Slammer() {
       ref={rb}
       type="kinematicPosition"
       colliders={false}
-      mass={debugParams.slammerMass}
+      mass={slammerData.mass}
       restitution={debugParams.slammerRestitution}
       position={[0, 8, 0]}
     >
-      <CylinderCollider args={[0.72, 0.2]} />
+      <CylinderCollider args={[0.125, 0.8125]} />
       <mesh ref={mesh}>
-        <cylinderGeometry args={[0.72, 0.72, 0.18, 24]} />
+        <cylinderGeometry args={[0.8125, 0.8125, 0.25, 32]} />
         <meshStandardMaterial ref={materialRef} />
       </mesh>
     </RigidBody>

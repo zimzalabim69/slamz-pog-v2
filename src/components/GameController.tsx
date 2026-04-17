@@ -190,13 +190,23 @@ export function GameController() {
       }
     }
 
-    // â”€â”€ FACE-UP DETECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â”€â”€ FACE-UP DETECTION + POGS-ON-MAT COUNT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const faceUpPogs: string[] = [];
+    let pogsOnMatCount = 0;
+    const MAT_RADIUS = 6.0;
 
     world.forEachRigidBody((body) => {
       const userData = body.userData as any;
       if (typeof userData?.name !== 'string' || !userData.name.startsWith('pog-')) return;
 
+      // 1. Position-based "On Mat" check
+      const pos = body.translation();
+      const distFromCenter = Math.sqrt(pos.x ** 2 + pos.z ** 2);
+      if (distFromCenter <= MAT_RADIUS) {
+        pogsOnMatCount++;
+      }
+
+      // 2. Face-up detection
       const rot = body.rotation();
       _quat.set(rot.x, rot.y, rot.z, rot.w);
       _vec3.copy(WORLD_UP).applyQuaternion(_quat);
@@ -217,12 +227,12 @@ export function GameController() {
             marketValue: values[pogData.rarity] ?? 50,
           }]);
           updateStats({ totalSlams: state.stats.totalSlams + 1, pogsWon: state.stats.pogsWon + 1 });
-          // SILENT: playCaptureSound() removed to build tension for final summary
         }
       }
     });
 
-    // Update face-up POGs tracking
+    // Update state
+    useGameStore.getState().setPogsOnMat(pogsOnMatCount);
     useGameStore.getState().setFaceUpPogs(faceUpPogs);
     
     // Combo system: increment combo if POGs were flipped, reset if none

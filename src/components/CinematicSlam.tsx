@@ -20,6 +20,7 @@ export function CinematicSlam() {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const originalPosRef = useRef(new THREE.Vector3());
   const orbitData = useRef({ angle: 0 });
+  const lookAtTarget = useRef(new THREE.Vector3());
   
   useEffect(() => {
     // We start the timeline when the engine's isCinematicActive flag is true
@@ -46,8 +47,9 @@ export function CinematicSlam() {
         }
       });
       
-      // Helper: Calculate bounding box of all pogs
-      const getPogBounds = () => {
+      // Helper: Calculate the "Soft Weighted Density Center"
+      // Uses a Gaussian kernel to find the most meaningful focus point in a scattering cloud.
+      const getPogDensityCenter = () => {
         const positions: THREE.Vector3[] = [];
         world.forEachRigidBody((body: any) => {
           const ud = body.userData as any;
@@ -57,25 +59,42 @@ export function CinematicSlam() {
           }
         });
         
-        if (positions.length === 0) {
-          return { center: impactPoint, maxDist: 8 };
-        }
+        if (positions.length === 0) return { center: impactPoint, maxDist: 4 };
+
+        const sigmaSq = 16.0; // 4.0 units standard deviation
+        let totalWeight = 0;
+        const weightedCenter = new THREE.Vector3();
         
-        // Calculate center and max distance
-        const center = new THREE.Vector3();
-        positions.forEach(p => center.add(p));
-        center.divideScalar(positions.length);
-        
-        let maxDist = 0;
-        positions.forEach(p => {
-          const dist = p.distanceTo(center);
-          if (dist > maxDist) maxDist = dist;
+        // 1. Calculate weights based on local density
+        const weights = positions.map(p => {
+          let w = 0;
+          positions.forEach(other => {
+            const d2 = p.distanceToSquared(other);
+            w += Math.exp(-d2 / (2 * sigmaSq));
+          });
+          return w;
         });
-        
-        return { center, maxDist: Math.max(maxDist, 4) }; // Min 4 units
+
+        // 2. Compute weighted average
+        positions.forEach((p, i) => {
+          const w = weights[i];
+          weightedCenter.addScaledVector(p, w);
+          totalWeight += w;
+        });
+        weightedCenter.divideScalar(totalWeight);
+
+        // 3. Frame the clump (weighted average distance)
+        let weightedSpread = 0;
+        positions.forEach((p, i) => {
+          const w = weights[i];
+          const d = p.distanceTo(weightedCenter);
+          weightedSpread += d * (w / totalWeight);
+        });
+
+        return { center: weightedCenter, maxDist: Math.max(weightedSpread * 2.5, 3.5) };
       };
-      
-      // PHASE 1: WINDUP - SMART PULL BACK based on pog spread
+
+      // PHASE 1: WINDUP - SMART PULL BACK
       const radius = debugParams.cinematicOrbitRadius;
       const height = debugParams.cinematicOrbitHeight;
       
@@ -86,33 +105,35 @@ export function CinematicSlam() {
         z: radius + 6,
         ease: 'expo.out',
         onUpdate: () => {
-          // Dynamic framing - track the pog cloud center
-          const bounds = getPogBounds();
-          camera.lookAt(bounds.center);
+          const bounds = getPogDensityCenter();
+          lookAtTarget.current.lerp(bounds.center, 0.08); // Ultra-smooth lerp
+          camera.lookAt(lookAtTarget.current);
         }
       }, 0);
       
-      // PHASE 2: LITERAL FREEZE - Camera holds but keeps tracking
+      // PHASE 2: LITERAL FREEZE
       tl.to({}, { 
         duration: debugParams.cinematicFreezeDuration,
         onUpdate: () => {
-          const bounds = getPogBounds();
-          camera.lookAt(bounds.center);
+          const bounds = getPogDensityCenter();
+          lookAtTarget.current.lerp(bounds.center, 0.08);
+          camera.lookAt(lookAtTarget.current);
         }
       }, tl.duration());
       
-      // PHASE 3: BULLET TIME ORBIT - Track while orbiting
+      // PHASE 3: BULLET TIME ORBIT
       orbitData.current.angle = 0;
       tl.to(orbitData.current, {
         angle: Math.PI * 2,
         duration: debugParams.cinematicOrbitDuration,
         ease: 'power2.inOut',
         onUpdate: () => {
-          const bounds = getPogBounds();
+          const bounds = getPogDensityCenter();
           
-          // Dynamically adjust orbit radius based on spread.
-          // CLAMPED: never exceed configured radius * maxScale to prevent runaway pogs
-          // from yanking the camera into the next zip code.
+          // Smoothed focus point
+          lookAtTarget.current.lerp(bounds.center, 0.08);
+          
+          // Dynamically adjust orbit radius based on clump density spread.
           const zoomMult = debugParams.cinematicDynamicZoomMultiplier;
           const zoomMaxScale = debugParams.cinematicDynamicZoomMaxScale;
           const dynamicRadius = Math.min(
@@ -122,8 +143,8 @@ export function CinematicSlam() {
           
           camera.position.x = Math.cos(orbitData.current.angle) * dynamicRadius;
           camera.position.z = Math.sin(orbitData.current.angle) * dynamicRadius;
-          camera.position.y = height + bounds.center.y; // Track vertical center
-          camera.lookAt(bounds.center);
+          camera.position.y = height + lookAtTarget.current.y; 
+          camera.lookAt(lookAtTarget.current);
         }
       }, tl.duration());
       

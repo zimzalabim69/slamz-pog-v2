@@ -145,9 +145,9 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
       angularDamping={debugParams.pogAngularDamping}
       canSleep
     >
-      <CylinderCollider args={[0.045, 0.55]} />
+      <CylinderCollider args={[0.0245, 0.814]} />
       <mesh material={materials} scale={debugParams.pogScale}>
-        <cylinderGeometry args={[0.55, 0.55, 0.09, 20]} />
+        <cylinderGeometry args={[0.814, 0.814, 0.049, 32]} />
       </mesh>
     </RigidBody>
   );

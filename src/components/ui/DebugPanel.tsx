@@ -8,7 +8,7 @@ import './DebugPanel.css';
 import './EnhancedSlider.css';
 import './BooleanToggle.css';
 
-type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime' | 'tuning' | 'arcadeCabinet' | 'wraith' | 'json';
+type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime' | 'tuning' | 'arcadeCabinet' | 'proTour' | 'wraith' | 'wraithArena' | 'json';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -142,10 +142,22 @@ export function DebugPanel() {
           ARCADE CABINET
         </button>
         <button 
+          className={activeTab === 'proTour' ? 'active' : ''} 
+          onClick={() => setActiveTab('proTour')}
+        >
+          🕹️ PRO TOUR
+        </button>
+        <button 
           className={activeTab === 'wraith' ? 'active' : ''} 
           onClick={() => setActiveTab('wraith')}
         >
           👻 PLAYER WRAITH
+        </button>
+        <button 
+          className={activeTab === 'wraithArena' ? 'active' : ''} 
+          onClick={() => setActiveTab('wraithArena')}
+        >
+          🌀 ARENA WRAITH
         </button>
         <button 
           className={activeTab === 'json' ? 'active' : ''} 
@@ -1612,6 +1624,130 @@ export function DebugPanel() {
               max={Math.PI * 2}
               step={0.1}
               onChange={(value) => updateParam('wraithRotationY', value)}
+              decimals={2}
+            />
+          </div>
+        )}
+
+        {activeTab === 'proTour' && (
+          <div className="debug-section">
+            <h3>SLAMZ PRO TOUR ARCADE (Slamz_Pro_Tour_Arcade.glb)</h3>
+
+            <BooleanToggle
+              label="Visible"
+              value={debugParams.proTourVisible}
+              onChange={(value) => updateParam('proTourVisible', value as any)}
+            />
+
+            <EnhancedSlider
+              label="Scale"
+              value={debugParams.proTourScale}
+              min={0.05}
+              max={5}
+              step={0.05}
+              onChange={(value) => updateParam('proTourScale', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position X"
+              value={debugParams.proTourPositionX}
+              min={-20}
+              max={20}
+              step={0.25}
+              onChange={(value) => updateParam('proTourPositionX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Y"
+              value={debugParams.proTourPositionY}
+              min={-10}
+              max={15}
+              step={0.25}
+              onChange={(value) => updateParam('proTourPositionY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Z"
+              value={debugParams.proTourPositionZ}
+              min={-25}
+              max={15}
+              step={0.25}
+              onChange={(value) => updateParam('proTourPositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Y"
+              value={debugParams.proTourRotationY}
+              min={-3.14}
+              max={3.14}
+              step={0.1}
+              onChange={(value) => updateParam('proTourRotationY', value)}
+              decimals={2}
+            />
+          </div>
+        )}
+
+        {activeTab === 'wraithArena' && (
+          <div className="debug-section">
+            <h3>ARENA WRAITH (Cyber Alley instance)</h3>
+
+            <BooleanToggle
+              label="Visible"
+              value={debugParams.wraithArenaVisible}
+              onChange={(value) => updateParam('wraithArenaVisible', value as any)}
+            />
+
+            <EnhancedSlider
+              label="Scale"
+              value={debugParams.wraithArenaScale}
+              min={0.05}
+              max={5}
+              step={0.05}
+              onChange={(value) => updateParam('wraithArenaScale', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position X"
+              value={debugParams.wraithArenaPositionX}
+              min={-20}
+              max={20}
+              step={0.25}
+              onChange={(value) => updateParam('wraithArenaPositionX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Y"
+              value={debugParams.wraithArenaPositionY}
+              min={-10}
+              max={15}
+              step={0.25}
+              onChange={(value) => updateParam('wraithArenaPositionY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Z"
+              value={debugParams.wraithArenaPositionZ}
+              min={-25}
+              max={15}
+              step={0.25}
+              onChange={(value) => updateParam('wraithArenaPositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Y"
+              value={debugParams.wraithArenaRotationY}
+              min={-3.14}
+              max={3.14}
+              step={0.1}
+              onChange={(value) => updateParam('wraithArenaRotationY', value)}
               decimals={2}
             />
           </div>

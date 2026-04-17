@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import type { GameState, CollectionItem, SessionStats, PogData, GameMode, SessionScore, PracticeSession } from '../types/game';
 import { PROCEDURAL_THEMES, ASSET_THEMES } from '../constants/pogData';
@@ -173,12 +173,28 @@ export interface DebugParams {
   cinematicBounceCount: number;
   cinematicBounceDamping: number;
 
-  // Wraith (Player)
+  // Wraith (Player) — Start Screen instance
   wraithPositionX: number;
   wraithPositionY: number;
   wraithPositionZ: number;
   wraithScale: number;
   wraithRotationY: number;
+
+  // Wraith — Arena instance (Cyber Alley)
+  wraithArenaVisible: boolean;
+  wraithArenaPositionX: number;
+  wraithArenaPositionY: number;
+  wraithArenaPositionZ: number;
+  wraithArenaScale: number;
+  wraithArenaRotationY: number;
+
+  // Pro Tour Arcade (Slamz_Pro_Tour_Arcade.glb) — Arena prop
+  proTourVisible: boolean;
+  proTourPositionX: number;
+  proTourPositionY: number;
+  proTourPositionZ: number;
+  proTourScale: number;
+  proTourRotationY: number;
 
   // New Physics Governance
   pogMaxVelocity: number;
@@ -186,20 +202,20 @@ export interface DebugParams {
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   // Physics - Pog
-  pogMass: 0.25,
-  pogRestitution: 0.05,
-  pogFriction: 2,
+  pogMass: 0.1,         // Regulation cardboard weight
+  pogRestitution: 0.35,  // Regulation cardstock bounce
+  pogFriction: 1.2,      // Carpet friction
   pogLinearDamping: 0.8,
   pogAngularDamping: 1.0,
   
   // Physics - Slammer
-  slammerMass: 1.2,
-  slammerRestitution: 0.45,
+  slammerMass: 3.5,     // Heavier metal slammer (35:1 vs pogs)
+  slammerRestitution: 0.35,
   slammerFriction: 0.2,
-  slamBaseForce: -49,
-  slamPowerMultiplier: -0.85,
-  slamForceMultiplier: 0.25,
-  shatterRadius: 0.1,
+  slamBaseForce: -80,   // Increased for larger scale
+  slamPowerMultiplier: -1.2,
+  slamForceMultiplier: 0.35,
+  shatterRadius: 1.0,   // Radius in inches
   shatterForceMin: 0,
   shatterForceMax: 0,
   
@@ -301,34 +317,34 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   
   // Bullet Time Cinematic Scene
   cinematicWindupDuration: 2,
-  cinematicFreezeDuration: 0.2,
+  cinematicFreezeDuration: 0.8, // Increased for "Anticipation" feel
   cinematicOrbitDuration: 4,
   cinematicRevealDuration: 2,
-  cinematicOrbitRadius: 8,
-  cinematicOrbitHeight: 2.5,
+  cinematicOrbitRadius: 12,     // Scaled for inches
+  cinematicOrbitHeight: 5,      // Scaled for inches
   cinematicDynamicZoomMultiplier: 2.5,
   cinematicDynamicZoomMaxScale: 1.5,
-  cinematicTimeScaleSlow: 0.08,
-  cinematicTimeScaleFreeze: 0.01,
+  cinematicTimeScaleSlow: 0.05,  // Slower for more detail
+  cinematicTimeScaleFreeze: 0.001,
   
   // Comet Zoom Effects
-  cinematicCometApproachSpeed: 50,
-  cinematicCometStartDistance: 30,
-  cinematicCometEndDistance: 2,
+  cinematicCometApproachSpeed: 80,
+  cinematicCometStartDistance: 50,
+  cinematicCometEndDistance: 5,
   cinematicCometFOVPunch: 120,
-  cinematicCometShakeIntensity: 0.8,
+  cinematicCometShakeIntensity: 1.2,
   
   // Pog Explosion & Scatter (Eruption Suite)
-  cinematicExplosionForce: 15,
-  cinematicScatterRadius: 8,
-  cinematicScatterHeight: 6,
-  cinematicPogRotationSpeed: 8,
-  cinematicPogFloatDuration: 1.5,
+  cinematicExplosionForce: 25,
+  cinematicScatterRadius: 10,   // Regulation Mat Spread
+  cinematicScatterHeight: 8,
+  cinematicPogRotationSpeed: 12,
+  cinematicPogFloatDuration: 2.0,
   
   // NEW: Collision Eruption Tuning
-  eruptionUpwardMultiplier: 0.3,
-  eruptionRadius: 3,
-  eruptionTorqueMultiplier: 0.15,
+  eruptionUpwardMultiplier: 0.45,
+  eruptionRadius: 6.0,          // 12" Pad Coverage (6" radius)
+  eruptionTorqueMultiplier: 0.25,
   autoSlamPower: 100,
   
   // Dramatic Transitions
@@ -352,12 +368,28 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   cinematicBounceCount: 2,
   cinematicBounceDamping: 0.6,
   
-  // Wraith (Player)
+  // Wraith (Player) — Start Screen instance
   wraithPositionX: 0,
   wraithPositionY: 5.1,
   wraithPositionZ: -53.6,
   wraithScale: 15,
   wraithRotationY: 0,
+
+  // Wraith — Arena instance (Cyber Alley)
+  wraithArenaVisible: true,
+  wraithArenaPositionX: 5,
+  wraithArenaPositionY: 4,
+  wraithArenaPositionZ: -6,
+  wraithArenaScale: 0.8,
+  wraithArenaRotationY: -0.3,
+
+  // Pro Tour Arcade (Slamz_Pro_Tour_Arcade.glb) — Arena prop
+  proTourVisible: true,
+  proTourPositionX: 0,
+  proTourPositionY: 0,
+  proTourPositionZ: -13,
+  proTourScale: 1,
+  proTourRotationY: 0,
 
   // New Physics Governance
   pogMaxVelocity: 15.0
@@ -433,6 +465,7 @@ export interface GameStore {
   isCinematicActive: boolean;
   bulletTimeActive: boolean;
   globalDampingScale: number;
+  pogsOnMat: number; // Scoreboard tracking
 
   // Actions
   initPogs: () => void;
@@ -480,6 +513,7 @@ export interface GameStore {
   triggerPerfectHit: () => void;
   setBulletTimeScale: (scale: number) => void;
   setIsCinematicActive: (active: boolean) => void;
+  setPogsOnMat: (count: number) => void;
   
   // Diagnostic Actions
   setPeakVelocity: (velocity: number) => void;
@@ -589,6 +623,7 @@ export const useGameStore = create<GameStore>()(
       isCinematicActive: false,
       bulletTimeActive: false,
       globalDampingScale: 0,
+      pogsOnMat: 0,
       peakVelocity: 0,
 
       // Actions
@@ -879,13 +914,11 @@ export const useGameStore = create<GameStore>()(
       }),
 
       setBulletTimeScale: (bulletTimeScale: number) => set({ bulletTimeScale }),
-      setIsCinematicActive: (isCinematicActive: boolean) => set({ isCinematicActive }),
+      setIsCinematicActive: (isCinematicActive) => set({ isCinematicActive }),
+      setPogsOnMat: (pogsOnMat) => set({ pogsOnMat }),
     };
   })
 );
-
-
-
 
 
 
