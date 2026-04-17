@@ -14,31 +14,6 @@ export const SPAWN_FLOOR = 0.045;
  * These values ensure 1:1 visual parity with the Vibejam 2026 project.
  */
 export const SCENE_PRESETS = {
-  DEFAULT: {
-    id: 'DEFAULT',
-    name: 'BACKLIGHT TABLE',
-    bgColor: '#080010',
-    fogColor: '#050010',
-    fogNear: 8,
-    fogFar: 45,
-    ambientColor: '#110033',
-    ambientIntensity: 0.1,
-    spotColor: '#8800ff',
-    spotIntensity: 18,
-    spotPosition: [12, 18, 5] as [number, number, number],
-    pointColor: '#ff00ff',
-    pointIntensity: 80,
-    pointPosition: [-10, 8, 5] as [number, number, number],
-    floorColor: '#050010',
-    floorEmissive: '#4400aa',
-    floorEmissiveIntensity: 1.5,
-    bloomStrength: 0.8,
-    bloomRadius: 0.4,
-    bloomThreshold: 0.85,
-    pogEmissiveScale: 1.0,
-    scanlines: 0.5,
-    chromaticAberration: 0.002
-  },
   CYBER_ALLEY: {
     id: 'CYBER_ALLEY',
     name: 'CYBER-ALLEYWAY',
@@ -66,6 +41,4 @@ export const SCENE_PRESETS = {
   }
 };
 
-export type ScenePreset = typeof SCENE_PRESETS.DEFAULT;
-
-export const SCENE_ORDER = ['DEFAULT', 'CYBER_ALLEY'] as const;
+export type ScenePreset = typeof SCENE_PRESETS.CYBER_ALLEY;

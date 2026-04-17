@@ -11,8 +11,7 @@ const _scale = new THREE.Vector3();
 const _euler = new THREE.Euler();
 
 export function ArenaDecor() {
-  const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
-  const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
+  const preset = SCENE_PRESETS.CYBER_ALLEY;
   
   const matTexture = useTexture('/assets/slamz_mat.png');
   // Removed tiling to prevent affecting the shared texture in the main Arena
@@ -54,35 +53,5 @@ export function ArenaDecor() {
     pogRef.current.instanceMatrix.needsUpdate = true;
   }, [pogTransforms]);
 
-  // Instanced outer mats — 8 mats in 1 draw call
-  const matRef = useRef<THREE.InstancedMesh>(null);
-  const matGeo = useMemo(() => new THREE.PlaneGeometry(8, 8), []);
-  const matMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-    map: matTexture,
-    transparent: true,
-    opacity: 0.4,
-    color: preset.floorEmissive,
-  }), [matTexture, preset.floorEmissive]);
-
-  useEffect(() => {
-    if (!matRef.current) return;
-    for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2;
-      const radius = 16;
-      _position.set(Math.cos(angle) * radius, 0.01, Math.sin(angle) * radius);
-      _euler.set(-Math.PI / 2, 0, 0);
-      _quaternion.setFromEuler(_euler);
-      _scale.setScalar(1);
-      _matrix.compose(_position, _quaternion, _scale);
-      matRef.current.setMatrixAt(i, _matrix);
-    }
-    matRef.current.instanceMatrix.needsUpdate = true;
-  }, []);
-
-  return (
-    <group>
-      <instancedMesh ref={pogRef} args={[pogGeo, pogMat, 12]} />
-      <instancedMesh ref={matRef} args={[matGeo, matMaterial, 8]} />
-    </group>
-  );
+  return null;
 }

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import type { GameState, CollectionItem, SessionStats, PogData, GameMode, SessionScore, PracticeSession } from '../types/game';
 import { PROCEDURAL_THEMES, ASSET_THEMES } from '../constants/pogData';
-import { SCENE_ORDER, SCENE_PRESETS } from '../constants/game';
+import { SCENE_PRESETS } from '../constants/game';
 import { SetManager } from '../systems/SetManager';
 
 export interface DebugParams {
@@ -106,19 +106,16 @@ export interface DebugParams {
   arenaAmbientIntensity: number;
   floorPositionY: number;
   
-  // Arcade Cabinet
-  arcadeCabinetScale: number;
-  arcadeCabinetPositionX: number;
-  arcadeCabinetPositionY: number;
-  arcadeCabinetPositionZ: number;
-  arcadeCabinetRotationY: number;
-  arcadeCabinetVisible: boolean;
-  arcadeBackScale: number;
-  arcadeBackPositionX: number;
-  arcadeBackPositionY: number;
-  arcadeBackPositionZ: number;
-  arcadeBackRotationY: number;
-  arcadeBackVisible: boolean;
+  // Arena Room (Whole-room GLB in Cyber Alley)
+  arenaRoomAsset: string;
+  arenaRoomScale: number;
+  arenaRoomPositionX: number;
+  arenaRoomPositionY: number;
+  arenaRoomPositionZ: number;
+  arenaRoomRotationX: number;
+  arenaRoomRotationY: number;
+  arenaRoomRotationZ: number;
+  arenaRoomVisible: boolean;
   
   // Bullet Time Cinematic Scene
   cinematicWindupDuration: number;
@@ -188,7 +185,80 @@ export interface DebugParams {
   wraithArenaScale: number;
   wraithArenaRotationY: number;
 
-  // Pro Tour Arcade (Slamz_Pro_Tour_Arcade.glb) — Arena prop
+
+  // New Physics Governance
+  pogMaxVelocity: number;
+
+  // Arena Logo (slamz_logo.glb in Cyber Alley)
+  arenaLogoScale: number;
+  arenaLogoPositionX: number;
+  arenaLogoPositionY: number;
+  arenaLogoPositionZ: number;
+  arenaLogoRotationX: number;
+  arenaLogoRotationY: number;
+  arenaLogoRotationZ: number;
+  arenaLogoVisible: boolean;
+
+  // Game Over Arcade (Game_Over_Arcade.glb in Cyber Alley)
+  gameOverArcadeScale: number;
+  gameOverArcadePositionX: number;
+  gameOverArcadePositionY: number;
+  gameOverArcadePositionZ: number;
+  gameOverArcadeRotationX: number;
+  gameOverArcadeRotationY: number;
+  gameOverArcadeRotationZ: number;
+  gameOverArcadeVisible: boolean;
+
+  // Arena Floor Skin (Overlay GLB)
+  arenaFloorSkinAsset: string;
+  arenaFloorSkinScale: number;
+  arenaFloorSkinPositionX: number;
+  arenaFloorSkinPositionY: number;
+  arenaFloorSkinPositionZ: number;
+  arenaFloorSkinRotationX: number;
+  arenaFloorSkinRotationY: number;
+  arenaFloorSkinRotationZ: number;
+  arenaFloorSkinVisible: boolean;
+
+  // Arena Lighting Suite (New!)
+  arenaDirLightPositionX: number;
+  arenaDirLightPositionY: number;
+  arenaDirLightPositionZ: number;
+  arenaDirLightIntensity: number;
+
+  arenaSpotLightPositionX: number;
+  arenaSpotLightPositionY: number;
+  arenaSpotLightPositionZ: number;
+  arenaSpotLightIntensity: number;
+
+  arenaPointLightPositionX: number;
+  arenaPointLightPositionY: number;
+  arenaPointLightPositionZ: number;
+  arenaPointLightIntensity: number;
+
+  arenaPoint2LightPositionX: number;
+  arenaPoint2LightPositionY: number;
+  arenaPoint2LightPositionZ: number;
+  arenaPoint2LightIntensity: number;
+
+  arenaShowLightHelpers: boolean;
+
+  // Dual Arcade Props
+  arcadeCabinetScale: number;
+  arcadeCabinetPositionX: number;
+  arcadeCabinetPositionY: number;
+  arcadeCabinetPositionZ: number;
+  arcadeCabinetRotationY: number;
+  arcadeCabinetVisible: boolean;
+
+  arcadeBackScale: number;
+  arcadeBackPositionX: number;
+  arcadeBackPositionY: number;
+  arcadeBackPositionZ: number;
+  arcadeBackRotationY: number;
+  arcadeBackVisible: boolean;
+
+  // 3D Pro Tour Landmark
   proTourVisible: boolean;
   proTourPositionX: number;
   proTourPositionY: number;
@@ -196,203 +266,228 @@ export interface DebugParams {
   proTourScale: number;
   proTourRotationY: number;
 
-  // New Physics Governance
-  pogMaxVelocity: number;
+  // Battle Area Landmark
+  battleAreaVisible: boolean;
+  battleAreaScale: number;
+  battleAreaPositionX: number;
+  battleAreaPositionY: number;
+  battleAreaPositionZ: number;
+  battleAreaRotationX: number;
+  battleAreaRotationY: number;
+  battleAreaRotationZ: number;
+
+  // Physical Ground Debug (Option A Controls)
+  groundPhysicalOffset: number;
+  showGroundCollider: boolean;
+  floorVisible: boolean;
 }
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
-  // Physics - Pog
-  pogMass: 0.1,         // Regulation cardboard weight
-  pogRestitution: 0.35,  // Regulation cardstock bounce
-  pogFriction: 1.2,      // Carpet friction
-  pogLinearDamping: 0.8,
-  pogAngularDamping: 1.0,
-  
-  // Physics - Slammer
-  slammerMass: 3.5,     // Heavier metal slammer (35:1 vs pogs)
-  slammerRestitution: 0.35,
-  slammerFriction: 0.2,
-  slamBaseForce: -80,   // Increased for larger scale
-  slamPowerMultiplier: -1.2,
-  slamForceMultiplier: 0.35,
-  shatterRadius: 1.0,   // Radius in inches
-  shatterForceMin: 0,
-  shatterForceMax: 0,
-  
-  // Visual - Slammer
-  slammerOpacity: 0.75,
-  slammerScaleBoost: 0.15,
-  slammerEmissiveIntensity: 1.5,
-  
-  // Visual - Pog
-  pogScale: 1,
-  pogRotationSpeed: 0.002,
-  pogMetalness: 0.3,
-  pogRoughness: 0.7,
-  
-  // Camera
-  baseFOV: 49,
-  punchFOV: 65,
-  fovLerpSpeed: 0.15,
-  
-  // Fog
-  fogDensity: 0.035,
-  fogNear: 1,
-  fogFar: 50,
-  
-  // Gameplay
-  powerChargeSpeed: 240,
-  slamDelay: 200,
-  
-  // Start Screen - Logo 3D
-  logoScale: 11.6,
-  logoPositionX: -0.2,
-  logoPositionY: 0,
-  logoPositionZ: -31.5,
-  logoRotationX: 0,
-  logoRotationY: 0.14,
-  logoRotationZ: 0,
-  
-  // Start Screen - Background 3D
-  bgScale: 49.91,
-  bgPositionX: 0,
-  bgPositionY: 9,
-  bgPositionZ: -121,
-  bgRotationX: 0,
-  bgRotationY: 0,
-  bgRotationZ: 0,
-  
-  // Start Screen - Fog
-  startFogDensity: 0.004,
-  startFogColorR: 0,
-  startFogColorG: 0.45,
-  startFogColorB: 0.98,
-  
-  // Start Screen - Smoke Ground Layer
-  smokeGroundColorR: 0.25,
-  smokeGroundColorG: 0.03,
-  smokeGroundColorB: 0.71,
-  smokeGroundOpacity: 0.83,
-  smokeGroundSpeed: 2,
-  smokeGroundCount: 30,
-  smokeGroundSize: 50,
-  smokeGroundSpread: 32,
-  smokeGroundHeight: -6.5,
-  
-  // Start Screen - Smoke Mid Wisps Layer
-  smokeMidColorR: 0,
-  smokeMidColorG: 0,
-  smokeMidColorB: 0.8,
-  smokeMidOpacity: 0.34,
-  smokeMidSpeed: 0.28,
-  smokeMidCount: 30,
-  smokeMidSize: 41,
-  smokeMidSpread: 33,
-  smokeMidHeight: 3,
-  
-  // Start Screen - Button
-  buttonScale: 1.4,
-  buttonPositionX: 0,
-  buttonPositionY: 94,
-  buttonFontSize: 20,
-  
-  // Arena
-  arenaLightIntensity: 1,
-  arenaAmbientIntensity: 0.5,
-  floorPositionY: 0,
-  
-  // Arcade Cabinet
-  arcadeCabinetScale: 0.1,
-  arcadeCabinetPositionX: -10,
-  arcadeCabinetPositionY: -5,
-  arcadeCabinetPositionZ: 5,
-  arcadeCabinetRotationY: 0,
-  arcadeCabinetVisible: true,
-  arcadeBackScale: 0.1,
-  arcadeBackPositionX: 10,
-  arcadeBackPositionY: -5,
-  arcadeBackPositionZ: 5,
-  arcadeBackRotationY: 0,
-  arcadeBackVisible: true,
-  
-  // Bullet Time Cinematic Scene
-  cinematicWindupDuration: 2,
-  cinematicFreezeDuration: 0.8, // Increased for "Anticipation" feel
-  cinematicOrbitDuration: 4,
-  cinematicRevealDuration: 2,
-  cinematicOrbitRadius: 12,     // Scaled for inches
-  cinematicOrbitHeight: 5,      // Scaled for inches
-  cinematicDynamicZoomMultiplier: 2.5,
-  cinematicDynamicZoomMaxScale: 1.5,
-  cinematicTimeScaleSlow: 0.05,  // Slower for more detail
-  cinematicTimeScaleFreeze: 0.001,
-  
-  // Comet Zoom Effects
-  cinematicCometApproachSpeed: 80,
-  cinematicCometStartDistance: 50,
-  cinematicCometEndDistance: 5,
-  cinematicCometFOVPunch: 120,
-  cinematicCometShakeIntensity: 1.2,
-  
-  // Pog Explosion & Scatter (Eruption Suite)
-  cinematicExplosionForce: 25,
-  cinematicScatterRadius: 10,   // Regulation Mat Spread
-  cinematicScatterHeight: 8,
-  cinematicPogRotationSpeed: 12,
-  cinematicPogFloatDuration: 2.0,
-  
-  // NEW: Collision Eruption Tuning
-  eruptionUpwardMultiplier: 0.45,
-  eruptionRadius: 6.0,          // 12" Pad Coverage (6" radius)
-  eruptionTorqueMultiplier: 0.25,
-  autoSlamPower: 100,
-  
-  // Dramatic Transitions
-  cinematicTransitionSpeed: 2,
-  cinematicImpactFlashIntensity: 3,
-  cinematicMotionBlurStrength: 0.7,
-  
-  // Pog Lock-on Tracking
-  cinematicLockOnEnabled: true,
-  cinematicLockOnDuration: 3,
-  cinematicLockOnOrbitRadius: 4,
-  cinematicLockOnOrbitSpeed: 1.5,
-  cinematicLockOnHeightOffset: 1,
-  cinematicLockOnSmoothFactor: 0.8,
-  
-  // Synchronized Falling & Rest
-  cinematicSyncFallDuration: 2.5,
-  cinematicSyncFallSpeed: 0.3,
-  cinematicSyncRestDelay: 1,
-  cinematicFinalFaceUpChance: 0.5,
-  cinematicBounceCount: 2,
-  cinematicBounceDamping: 0.6,
-  
-  // Wraith (Player) — Start Screen instance
-  wraithPositionX: 0,
-  wraithPositionY: 5.1,
-  wraithPositionZ: -53.6,
-  wraithScale: 15,
-  wraithRotationY: 0,
-
-  // Wraith — Arena instance (Cyber Alley)
-  wraithArenaVisible: true,
-  wraithArenaPositionX: 5,
-  wraithArenaPositionY: 4,
-  wraithArenaPositionZ: -6,
-  wraithArenaScale: 0.8,
-  wraithArenaRotationY: -0.3,
-
-  // Pro Tour Arcade (Slamz_Pro_Tour_Arcade.glb) — Arena prop
-  proTourVisible: true,
-  proTourPositionX: 0,
-  proTourPositionY: 0,
-  proTourPositionZ: -13,
-  proTourScale: 1,
-  proTourRotationY: 0,
-
-  // New Physics Governance
-  pogMaxVelocity: 15.0
+  "pogMass": 6.95,
+  "pogRestitution": 0.05,
+  "pogFriction": 1,
+  "pogLinearDamping": 0.15,
+  "pogAngularDamping": 0.25,
+  "slammerMass": 2.2,
+  "slammerRestitution": 0.45,
+  "slammerFriction": 0.2,
+  "slamBaseForce": -49,
+  "slamPowerMultiplier": -0.85,
+  "slamForceMultiplier": 0.25,
+  "shatterRadius": 0.1,
+  "shatterForceMin": 0,
+  "shatterForceMax": 0,
+  "slammerOpacity": 0.75,
+  "slammerScaleBoost": 0.15,
+  "slammerEmissiveIntensity": 1.5,
+  "pogScale": 1,
+  "pogRotationSpeed": 0.002,
+  "pogMetalness": 0.3,
+  "pogRoughness": 0.7,
+  "baseFOV": 49,
+  "punchFOV": 65,
+  "fovLerpSpeed": 0.15,
+  "fogDensity": 0.035,
+  "fogNear": 1,
+  "fogFar": 50,
+  "powerChargeSpeed": 240,
+  "slamDelay": 200,
+  "logoScale": 11.6,
+  "logoPositionX": -0.2,
+  "logoPositionY": 0,
+  "logoPositionZ": -31.5,
+  "logoRotationX": 0,
+  "logoRotationY": 0.14,
+  "logoRotationZ": 0,
+  "bgScale": 49.91,
+  "bgPositionX": 0,
+  "bgPositionY": 9,
+  "bgPositionZ": -121,
+  "bgRotationX": 0,
+  "bgRotationY": 0,
+  "bgRotationZ": 0,
+  "startFogDensity": 0.004,
+  "startFogColorR": 0,
+  "startFogColorG": 0.45,
+  "startFogColorB": 0.98,
+  "smokeGroundColorR": 0.25,
+  "smokeGroundColorG": 0.03,
+  "smokeGroundColorB": 0.71,
+  "smokeGroundOpacity": 0.83,
+  "smokeGroundSpeed": 2,
+  "smokeGroundCount": 30,
+  "smokeGroundSize": 50,
+  "smokeGroundSpread": 32,
+  "smokeGroundHeight": -6.5,
+  "smokeMidColorR": 0,
+  "smokeMidColorG": 0,
+  "smokeMidColorB": 0.8,
+  "smokeMidOpacity": 0.34,
+  "smokeMidSpeed": 0.28,
+  "smokeMidCount": 30,
+  "smokeMidSize": 41,
+  "smokeMidSpread": 33,
+  "smokeMidHeight": 3,
+  "buttonScale": 1.4,
+  "buttonPositionX": 0,
+  "buttonPositionY": 94,
+  "buttonFontSize": 20,
+  "arenaLightIntensity": 1,
+  "arenaAmbientIntensity": 0.5,
+  "floorPositionY": 0,
+  "arenaRoomAsset": "slamz_logo_bg.glb",
+  "arenaRoomScale": 0.1,
+  "arenaRoomPositionX": -15,
+  "arenaRoomPositionY": 0,
+  "arenaRoomPositionZ": -50,
+  "arenaRoomRotationX": 0,
+  "arenaRoomRotationY": 0,
+  "arenaRoomRotationZ": 0,
+  "arenaRoomVisible": true,
+  "cinematicWindupDuration": 2,
+  "cinematicFreezeDuration": 0.2,
+  "cinematicOrbitDuration": 4,
+  "cinematicRevealDuration": 2,
+  "cinematicOrbitRadius": 8,
+  "cinematicOrbitHeight": 2.5,
+  "cinematicDynamicZoomMultiplier": 2.5,
+  "cinematicDynamicZoomMaxScale": 1.5,
+  "cinematicTimeScaleSlow": 0.08,
+  "cinematicTimeScaleFreeze": 0.01,
+  "cinematicTimeScaleNormal": 1,
+  "cinematicCometApproachSpeed": 50,
+  "cinematicCometStartDistance": 30,
+  "cinematicCometEndDistance": 2,
+  "cinematicCometFOVPunch": 120,
+  "cinematicCometShakeIntensity": 0.8,
+  "cinematicExplosionForce": 15,
+  "cinematicScatterRadius": 8,
+  "cinematicScatterHeight": 6,
+  "cinematicPogRotationSpeed": 8,
+  "cinematicPogFloatDuration": 1.5,
+  "eruptionUpwardMultiplier": 1.4,
+  "eruptionRadius": 3,
+  "eruptionTorqueMultiplier": 0.15,
+  "autoSlamPower": 100,
+  "cinematicTransitionSpeed": 2,
+  "cinematicImpactFlashIntensity": 3,
+  "cinematicMotionBlurStrength": 0.7,
+  "cinematicLockOnEnabled": true,
+  "cinematicLockOnDuration": 3,
+  "cinematicLockOnOrbitRadius": 4,
+  "cinematicLockOnOrbitSpeed": 1.5,
+  "cinematicLockOnHeightOffset": 1,
+  "cinematicLockOnSmoothFactor": 0.8,
+  "cinematicSyncFallDuration": 2.5,
+  "cinematicSyncFallSpeed": 0.3,
+  "cinematicSyncRestDelay": 1,
+  "cinematicFinalFaceUpChance": 0.5,
+  "cinematicBounceCount": 2,
+  "cinematicBounceDamping": 0.6,
+  "wraithPositionX": 0.1,
+  "wraithPositionY": 5.1,
+  "wraithPositionZ": -53.6,
+  "wraithScale": 15.0,
+  "wraithRotationY": 0,
+  "wraithArenaVisible": true,
+  "wraithArenaPositionX": -26,
+  "wraithArenaPositionY": 16.75,
+  "wraithArenaPositionZ": 0.25,
+  "wraithArenaScale": 15,
+  "wraithArenaRotationY": 3.98,
+  "pogMaxVelocity": 1,
+  "arenaLogoScale": 22.1,
+  "arenaLogoPositionX": -20.5,
+  "arenaLogoPositionY": 24.5,
+  "arenaLogoPositionZ": 34.75,
+  "arenaLogoRotationX": 0,
+  "arenaLogoRotationY": 2.65,
+  "arenaLogoRotationZ": 0,
+  "arenaLogoVisible": true,
+  "gameOverArcadeScale": 45.4,
+  "gameOverArcadePositionX": 6,
+  "gameOverArcadePositionY": 33.4,
+  "gameOverArcadePositionZ": -15,
+  "gameOverArcadeRotationX": 0,
+  "gameOverArcadeRotationY": -0.524,
+  "gameOverArcadeRotationZ": 0,
+  "gameOverArcadeVisible": true,
+  "arenaFloorSkinAsset": "Slamz_Rug.glb",
+  "arenaFloorSkinScale": 75.3,
+  "arenaFloorSkinPositionX": -36.25,
+  "arenaFloorSkinPositionY": -4.03,
+  "arenaFloorSkinPositionZ": -44.5,
+  "arenaFloorSkinRotationX": 0,
+  "arenaFloorSkinRotationY": -0.024,
+  "arenaFloorSkinRotationZ": 0,
+  "arenaFloorSkinVisible": true,
+  "arenaDirLightPositionX": 10,
+  "arenaDirLightPositionY": 50,
+  "arenaDirLightPositionZ": 10,
+  "arenaDirLightIntensity": 0.6,
+  "arenaSpotLightPositionX": -8,
+  "arenaSpotLightPositionY": 14,
+  "arenaSpotLightPositionZ": 2,
+  "arenaSpotLightIntensity": 46,
+  "arenaPointLightPositionX": 3,
+  "arenaPointLightPositionY": 12,
+  "arenaPointLightPositionZ": -3,
+  "arenaPointLightIntensity": 500,
+  "arenaPoint2LightPositionX": 0,
+  "arenaPoint2LightPositionY": 14,
+  "arenaPoint2LightPositionZ": -15,
+  "arenaPoint2LightIntensity": 128,
+  "arenaShowLightHelpers": false,
+  "arcadeCabinetScale": 0.1,
+  "arcadeCabinetPositionX": -10,
+  "arcadeCabinetPositionY": -5,
+  "arcadeCabinetPositionZ": 5,
+  "arcadeCabinetRotationY": 0,
+  "arcadeCabinetVisible": true,
+  "arcadeBackScale": 0.1,
+  "arcadeBackPositionX": 10,
+  "arcadeBackPositionY": -5,
+  "arcadeBackPositionZ": 5,
+  "arcadeBackRotationY": 0,
+  "arcadeBackVisible": true,
+  "proTourVisible": true,
+  "proTourPositionX": 0.25,
+  "proTourPositionY": 3.5,
+  "proTourPositionZ": -12.75,
+  "proTourScale": 3.65,
+  "proTourRotationY": 0,
+  "battleAreaVisible": true,
+  "battleAreaScale": 6.47,
+  "battleAreaPositionX": 0,
+  "battleAreaPositionY": 0.05,
+  "battleAreaPositionZ": 0,
+  "battleAreaRotationX": -1.58,
+  "battleAreaRotationY": 0,
+  "battleAreaRotationZ": 0,
+  "groundPhysicalOffset": 0.265,
+  "showGroundCollider": false,
+  "floorVisible": false,
+  "bloomStrength": 1.2
 };
 
 export interface ShowcaseItem {
@@ -409,7 +504,6 @@ export interface GameStore {
   powerDirection: number;
   collection: any;
   stats: SessionStats;
-  currentAtmosphere: string;
   pogs: PogData[];
   showcaseQueue: ShowcaseItem[];
   currentShowcase: ShowcaseItem | null;
@@ -425,6 +519,7 @@ export interface GameStore {
   fogPulseTrigger: number;
   fogColor: string;
   debugLogoMode: boolean;
+  physicsDebug: boolean;
   
   // Debug params
   // NEW: Collision Tuning Suite
@@ -474,8 +569,6 @@ export interface GameStore {
   setPowerDirection: (dir: number) => void;
   addToCollection: (item: CollectionItem) => void;
   updateStats: (updates: Partial<SessionStats>) => void;
-  setAtmosphere: (env: string) => void;
-  cycleAtmosphere: () => void;
   setPogs: (pogs: PogData[]) => void;
   removePog: (id: string) => void;
   resetStack: () => void;
@@ -514,6 +607,8 @@ export interface GameStore {
   setBulletTimeScale: (scale: number) => void;
   setIsCinematicActive: (active: boolean) => void;
   setPogsOnMat: (count: number) => void;
+  
+  togglePhysicsDebug: () => void;
   
   // Diagnostic Actions
   setPeakVelocity: (velocity: number) => void;
@@ -558,7 +653,6 @@ export const useGameStore = create<GameStore>()(
         pogsWon: 0,
         bestCombo: 0,
       },
-      currentAtmosphere: SCENE_ORDER[0],
       pogs: [],
       showcaseQueue: [],
       currentShowcase: null,
@@ -574,6 +668,7 @@ export const useGameStore = create<GameStore>()(
       fogPulseTrigger: 0,
       fogColor: '#00ffcc',
       debugLogoMode: false,
+      physicsDebug: false,
       
       // NEW: Tuning Suite
       autoSlamActive: false,
@@ -652,22 +747,6 @@ export const useGameStore = create<GameStore>()(
         stats: { ...state.stats, ...updates }
       })),
 
-      setAtmosphere: (currentAtmosphere) => {
-        const { setManager } = get();
-        setManager.onSceneVisited(currentAtmosphere);
-        const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
-        set({ currentAtmosphere, fogColor: preset.pointColor });
-      },
-
-      cycleAtmosphere: () => set((state) => {
-        const currentIndex = SCENE_ORDER.indexOf(state.currentAtmosphere as any);
-        const nextIndex = (currentIndex + 1) % SCENE_ORDER.length;
-        const nextEnv = SCENE_ORDER[nextIndex];
-        state.setManager.onSceneVisited(nextEnv);
-        const preset = (SCENE_PRESETS as any)[nextEnv] || SCENE_PRESETS.DEFAULT;
-        return { currentAtmosphere: nextEnv, fogColor: preset.pointColor };
-      }),
-
       setPogs: (pogs) => set({ pogs }),
 
       removePog: (id) => set((state) => ({
@@ -703,7 +782,7 @@ export const useGameStore = create<GameStore>()(
               id: `pog_pool_${i}`,
               theme,
               rarity,
-              position: [jitterX, -0.01 + 0.045 + i * 0.09, jitterZ] as [number, number, number],
+              position: [jitterX, 0.25 + i * 0.09, jitterZ] as [number, number, number],
               rotation: [0, Math.random() * Math.PI * 2, 0] as [number, number, number],
             });
           }
@@ -728,11 +807,13 @@ export const useGameStore = create<GameStore>()(
               theme = PROCEDURAL_THEMES[Math.floor(Math.random() * PROCEDURAL_THEMES.length)];
             }
 
+            const floorY = get().debugParams.floorPositionY;
+
             return {
               ...pog,
               theme,
               rarity,
-              position: [jitterX, -0.01 + 0.045 + i * 0.09, jitterZ] as [number, number, number],
+              position: [jitterX, 0.35 + i * 0.09, jitterZ] as [number, number, number],
               rotation: [0, Math.random() * Math.PI * 2, 0] as [number, number, number],
             };
           });
@@ -849,6 +930,7 @@ export const useGameStore = create<GameStore>()(
       }),
 
       setFogColor: (fogColor: string) => set({ fogColor }),
+      togglePhysicsDebug: () => set((state) => ({ physicsDebug: !state.physicsDebug })),
       setDebugLogoMode: (debugLogoMode: boolean) => set({ debugLogoMode }),
       triggerFogPulse: () => set((state) => ({ fogPulseTrigger: state.fogPulseTrigger + 1 })),
       setDebugParams: (params: Partial<DebugParams>) => set((state) => {

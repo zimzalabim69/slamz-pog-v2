@@ -70,7 +70,13 @@ export function Slammer() {
 
   // INPUT LISTENERS (Merged & Stable)
   useEffect(() => {
-    const handleMouseDown = () => {
+    const handleMouseDown = (e: MouseEvent) => {
+      // Only LMB (0) should trigger slams; RMB (2) is reserved for free-cam
+      if (e.button !== 0) return;
+      
+      // Prevent click-through if hitting the debug panel
+      if ((e.target as HTMLElement)?.closest('.debug-panel')) return;
+
       if (gameState === 'AIMING') {
         isCharging.current = true;
         powerRef.current = 0;
@@ -79,7 +85,9 @@ export function Slammer() {
       }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      if (e.button !== 0) return;
+
       if (gameState === 'POWERING' && isCharging.current) {
         isCharging.current = false;
         const finalPower = powerRef.current;
@@ -174,7 +182,7 @@ export function Slammer() {
         if (currentTension > 0) setCameraTension(Math.max(0, currentTension - delta * 2));
 
         const pos = rb.current.translation();
-        if (pos.y < 1.1) {
+        if (pos.y < debugParams.floorPositionY + 1.1) {
             impactProcessed.current = true;
             const currentPower = slamPowerRef.current;
             const impactPos = rb.current.translation();

@@ -5,10 +5,9 @@ import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 
 export function Effects() {
-  const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
   const gameState = useGameStore((state) => state.gameState);
   const qualityLevel = useGameStore((state) => state.qualityLevel);
-  const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
+  const preset = SCENE_PRESETS.CYBER_ALLEY;
   const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
 
   if (qualityLevel === 'low' || gameState === 'RESETTING' || gameState === 'SESSION_SUMMARY') {

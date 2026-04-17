@@ -10,7 +10,6 @@ export const DesktopControls = () => {
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
   const resetStack = useGameStore((state) => state.resetStack);
-  const cycleAtmosphere = useGameStore((state) => state.cycleAtmosphere);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -20,9 +19,6 @@ export const DesktopControls = () => {
       if (key === 'r') {
         resetStack();
       }
-      if (key === 'e') {
-        cycleAtmosphere();
-      }
       if (key === ' ' && gameState === 'SHOWCASE') {
         setGameState('AIMING');
       }
@@ -30,7 +26,7 @@ export const DesktopControls = () => {
 
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [gameState, setGameState, resetStack, cycleAtmosphere]);
+  }, [gameState, setGameState, resetStack]);
 
   // Desktop controls are mostly keyboard-based, no UI needed
   return null;

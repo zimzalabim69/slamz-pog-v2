@@ -33,18 +33,17 @@ export function GameController() {
   const enqueueShowcase = useGameStore((s) => s.enqueueShowcase);
   const advanceShowcase = useGameStore((s) => s.advanceShowcase);
   const resetStack    = useGameStore((s) => s.resetStack);
-  const cycleAtmosphere = useGameStore((s) => s.cycleAtmosphere);
   const setSlamText   = useGameStore((s) => s.setSlamText);
   const currentShowcase = useGameStore((s) => s.currentShowcase);
   const endPracticeSession = useGameStore((s) => s.endPracticeSession);
   const resetCombo    = useGameStore((s) => s.resetCombo);
+  const debugParams   = useGameStore((s) => s.debugParams);
 
   // â”€â”€ Keyboard shortcuts [R], [E], [Space] â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
       if (key === 'r') resetStack();
-      if (key === 'e') cycleAtmosphere();
       if (e.code === 'Space' && gameState === 'ROUND_JACKPOT') {
         advanceShowcase();
       }
@@ -193,7 +192,7 @@ export function GameController() {
     // â”€â”€ FACE-UP DETECTION + POGS-ON-MAT COUNT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const faceUpPogs: string[] = [];
     let pogsOnMatCount = 0;
-    const MAT_RADIUS = 6.0;
+    const MAT_RADIUS = debugParams.battleAreaScale;
 
     world.forEachRigidBody((body) => {
       const userData = body.userData as any;

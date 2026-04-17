@@ -19,8 +19,15 @@ interface PogProps {
 
 export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) => {
   const rb = useRef<RapierRigidBody>(null);
-  const debugParams = useGameStore((state) => state.debugParams);
-  
+  const mass = useGameStore((state) => state.debugParams.pogMass);
+  const friction = useGameStore((state) => state.debugParams.pogFriction);
+  const restitution = useGameStore((state) => state.debugParams.pogRestitution);
+  const linearDampingDefault = useGameStore((state) => state.debugParams.pogLinearDamping);
+  const angularDampingDefault = useGameStore((state) => state.debugParams.pogAngularDamping);
+  const pogScale = useGameStore((state) => state.debugParams.pogScale);
+  const pogMetalness = useGameStore((state) => state.debugParams.pogMetalness);
+  const pogRoughness = useGameStore((state) => state.debugParams.pogRoughness);
+  const pogMaxVelocity = useGameStore((state) => state.debugParams.pogMaxVelocity);
 
   const materials = useMemo(() => {
     const mat = getMaterialFromRegistry('pog', 'metal', theme, rarity);
@@ -30,23 +37,23 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
     );
 
     materialList.forEach((material) => {
-      material.metalness = debugParams.pogMetalness;
-      material.roughness = debugParams.pogRoughness;
+      material.metalness = pogMetalness;
+      material.roughness = pogRoughness;
       material.depthWrite = true;
       material.depthTest = true;
     });
 
     return mat;
-  }, [theme, rarity, debugParams.pogMetalness, debugParams.pogRoughness]);
+  }, [theme, rarity, pogMetalness, pogRoughness]);
   
   const userData = useMemo(() => ({ name: `pog-${id}`, theme, rarity, 'pog-id': id }), [id, theme, rarity]);
 
   useEffect(() => {
     if (rb.current) {
-      rb.current.setLinearDamping(debugParams.pogLinearDamping);
-      rb.current.setAngularDamping(debugParams.pogAngularDamping);
+      rb.current.setLinearDamping(linearDampingDefault);
+      rb.current.setAngularDamping(angularDampingDefault);
     }
-  }, [debugParams.pogLinearDamping, debugParams.pogAngularDamping]);
+  }, [linearDampingDefault, angularDampingDefault]);
 
   useEffect(() => {
     if (rb.current) {
@@ -107,8 +114,8 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
       rb.current.setLinearDamping(globalDampingScale);
       rb.current.setAngularDamping(globalDampingScale);
     } else {
-      rb.current.setLinearDamping(debugParams.pogLinearDamping);
-      rb.current.setAngularDamping(debugParams.pogAngularDamping);
+      rb.current.setLinearDamping(linearDampingDefault);
+      rb.current.setAngularDamping(angularDampingDefault);
     }
 
     // Peak velocity tracking
@@ -121,12 +128,12 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
 
     // Velocity cap ONLY during cinematic (prevents nuclear launch during bullet time)
     // Once cinematic ends, let physics run naturally
-    if (cinematicEngine.isCinematicActive && velocityMagnitude > debugParams.pogMaxVelocity * 1.5) {
-      const scale = (debugParams.pogMaxVelocity * 1.5) / velocityMagnitude;
+    if (cinematicEngine.isCinematicActive && velocityMagnitude > pogMaxVelocity * 1.5) {
+      const scaleVal = (pogMaxVelocity * 1.5) / velocityMagnitude;
       rb.current.setLinvel({
-        x: linvel.x * scale,
-        y: linvel.y * scale,
-        z: linvel.z * scale
+        x: linvel.x * scaleVal,
+        y: linvel.y * scaleVal,
+        z: linvel.z * scaleVal
       }, true);
     }
   });
@@ -138,15 +145,16 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
       position={position} 
       rotation={[Math.PI, 0, 0]}
       colliders={false}
-      mass={debugParams.pogMass}
-      restitution={debugParams.pogRestitution}
-      friction={debugParams.pogFriction}
-      linearDamping={debugParams.pogLinearDamping}
-      angularDamping={debugParams.pogAngularDamping}
+      mass={mass}
+      restitution={restitution}
+      friction={friction}
+      linearDamping={linearDampingDefault}
+      angularDamping={angularDampingDefault}
+      ccd={true} // <--- PER-BODY CCD ENABLED
       canSleep
     >
       <CylinderCollider args={[0.0245, 0.814]} />
-      <mesh material={materials} scale={debugParams.pogScale}>
+      <mesh material={materials} scale={pogScale} renderOrder={20}>
         <cylinderGeometry args={[0.814, 0.814, 0.049, 32]} />
       </mesh>
     </RigidBody>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { PerspectiveCamera, OrbitControls } from '@react-three/drei';
+import { PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
 import { useGameStore } from '../store/useGameStore';
 import { SCENE_PRESETS } from '../constants/game';
 import * as THREE from 'three';
@@ -12,14 +12,19 @@ import { ArcadeMode } from './scenes/ArcadeMode';
 import { ImpactLab } from './scenes/ImpactLab';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { AdaptiveQuality } from './AdaptiveQuality';
+import { Physics } from '@react-three/rapier';
+import { LevaController } from './LevaController';
 
 export function Experience() {
-  const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
   const sceneMode = useGameStore((state) => state.sceneMode);
-  const cameraTension = useGameStore((state) => state.cameraTension);
+  // Removed reactive cameraTension to prevent re-renders
   const isCinematicActive = useGameStore((state) => state.isCinematicActive);
+  const bulletTimeActive = useGameStore((state) => state.bulletTimeActive);
   const debugParams = useGameStore((state) => state.debugParams);
-  const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
+  const physicsDebug = useGameStore((state) => state.physicsDebug);
+  const togglePhysicsDebug = useGameStore((state) => state.togglePhysicsDebug);
+  
+  const preset = SCENE_PRESETS.CYBER_ALLEY;
   const orbitRef = React.useRef<any>(null);
   const cameraRef = React.useRef<any>(null);
 
@@ -29,6 +34,17 @@ export function Experience() {
     }
   }, []);
 
+  // KEYBOARD SHORTCUTS
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'd') {
+        togglePhysicsDebug();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [togglePhysicsDebug]);
+
   return (
     <>
       <PerspectiveCamera
@@ -37,14 +53,18 @@ export function Experience() {
         position={[0, 8, 6]}
         fov={50}
         onUpdate={(cam) => {
-          if (isCinematicActive) return; // LOCKDOWN: GSAP has control
+          if (useGameStore.getState().isCinematicActive) return; // LOCKDOWN: GSAP has control
           
-          const baseFOV = debugParams.baseFOV || 50;
-          const targetFOV = baseFOV - (cameraTension * 15);
+          // Use getState() to avoid reactive re-renders
+          const tension = useGameStore.getState().cameraTension;
+          const debug = useGameStore.getState().debugParams;
+          
+          const baseFOV = debug.baseFOV || 50;
+          const targetFOV = baseFOV - (tension * 15);
           cam.fov = THREE.MathUtils.lerp(cam.fov, targetFOV, 0.1);
 
-          if (cameraTension > 0.8) {
-            const shake = (cameraTension - 0.8) * 0.1;
+          if (tension > 0.8) {
+            const shake = (tension - 0.8) * 0.1;
             cam.position.x += (Math.random() - 0.5) * shake;
             cam.position.y += (Math.random() - 0.5) * shake;
           }
@@ -64,12 +84,24 @@ export function Experience() {
         ]} 
       />
 
-      {sceneMode === 'ARCADE' ? <ArcadeMode /> : <ImpactLab />}
-      <PhysicsWorld />
-      <Reticle />
-      <ImpactParticles />
       <Effects />
       <TimerUpdate />
+
+      <Physics 
+        gravity={bulletTimeActive ? [0, -2.5, 0] : [0, -16, 0]} 
+        timeStep={1 / 60}
+        numSolverIterations={12}
+        numInternalPgsIterations={4}
+        maxCcdSubsteps={2}
+        paused={false}
+        debug={physicsDebug}
+      >
+        {sceneMode === 'ARCADE' ? <ArcadeMode /> : <ImpactLab />}
+        <PhysicsWorld />
+      </Physics>
+
+      <Reticle />
+      <ImpactParticles />
 
       {!isCinematicActive && (
         <OrbitControls
@@ -77,13 +109,21 @@ export function Experience() {
           enablePan={false}
           mouseButtons={{ LEFT: undefined, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE }}
           maxPolarAngle={Math.PI / 2.1}
-          minDistance={5}
-          maxDistance={25}
+          minDistance={0.1}
+          maxDistance={10000}
           target={[0, debugParams.floorPositionY || -0.01, 0]}
         />
       )}
       <PerformanceMonitor />
       <AdaptiveQuality />
+      
+      {/* DEVELOPMENT TOOLS */}
+      {import.meta.env.DEV && (
+        <>
+          <Stats />
+          <LevaController />
+        </>
+      )}
     </>
   );
 }

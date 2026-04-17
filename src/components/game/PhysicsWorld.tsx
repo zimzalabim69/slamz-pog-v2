@@ -35,15 +35,5 @@ const PhysicsInnerScene = React.memo(() => {
  * interference from the physics solver.
  */
 export function PhysicsWorld() {
-  const bulletTimeActive = useGameStore((state) => state.bulletTimeActive);
-
-  return (
-    <Physics 
-      gravity={bulletTimeActive ? [0, -5, 0] : [0, -45, 0]} 
-      timeStep={1 / 60}
-      paused={false} // NEVER PAUSE in Volcanic Mode
-    >
-      <PhysicsInnerScene />
-    </Physics>
-  );
+  return <PhysicsInnerScene />;
 }

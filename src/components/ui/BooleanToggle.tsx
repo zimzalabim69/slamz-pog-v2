@@ -17,12 +17,12 @@ export const BooleanToggle: React.FC<BooleanToggleProps> = ({
 
   return (
     <div className="debug-control boolean-toggle">
-      <label>
+      <span className="toggle-label">
         {label}: <span className={`toggle-status ${value ? 'on' : 'off'}`}>
           {value ? 'ON' : 'OFF'}
         </span>
-      </label>
-      <div className="toggle-switch">
+      </span>
+      <label className="toggle-switch">
         <input
           type="checkbox"
           checked={value}
@@ -30,7 +30,7 @@ export const BooleanToggle: React.FC<BooleanToggleProps> = ({
           className="toggle-input"
         />
         <div className="toggle-slider"></div>
-      </div>
+      </label>
     </div>
   );
 };

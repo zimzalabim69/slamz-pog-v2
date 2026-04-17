@@ -51,7 +51,7 @@ class CinematicEngine {
     setTimeout(() => {
       if (this.isCinematicActive) {
         useGameStore.setState({
-          globalDampingScale: 0.15 // RELEASE: Some air resistance for "weighty" feel
+          globalDampingScale: 0.05 // RELEASE: Much lower damping for "pop"
         });
         console.log('[ENGINE] 💥 EXPLOSION RELEASED');
       }
@@ -60,7 +60,7 @@ class CinematicEngine {
     const impactSpeed = (impactPower / 100) * debugParams.powerChargeSpeed;
     // CALIBRATION: Massive reduction for 0.1 mass regulation pogs.
     // Aiming for impulses in the 1.0 - 5.0 range rather than 35.0+.
-    const forceBase = slammerMass * impactSpeed * debugParams.slamForceMultiplier * 0.015;
+    const forceBase = slammerMass * impactSpeed * debugParams.slamForceMultiplier * 0.035;
 
     world.forEachRigidBody((body: RapierRigidBody) => {
       const ud = body.userData as any;
@@ -89,6 +89,13 @@ class CinematicEngine {
           const powerFactor = Math.pow(impactPower / 100, 2.5); // Steeper curve
           const radialPush = forceBase * decline * 0.08 * powerFactor; // Lower baseline
           
+          // ANTI-CLIP KICK: Pro-active lift to ensure we aren't snagged in the mat
+          body.setTranslation({ 
+            x: pogPos.x, 
+            y: pogPos.y + 0.05, 
+            z: pogPos.z 
+          }, true);
+
           body.applyImpulse({
             x: dirX * radialPush,
             y: airLift,

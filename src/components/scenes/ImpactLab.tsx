@@ -1,5 +1,6 @@
-import { Grid } from '@react-three/drei';
 import { useGameStore } from '../../store/useGameStore';
+import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import { Grid } from '@react-three/drei';
 
 /**
  * IMPACT LAB SCENE
@@ -47,6 +48,11 @@ export function ImpactLab() {
           emissiveIntensity={0.2 * debugParams.arenaLightIntensity}
         />
       </mesh>
+      
+      {/* Invisible baseline collider for Lab mode stability */}
+      <RigidBody type="fixed" colliders={false} position={[0, floorY, 0]}>
+        <CuboidCollider args={[100, 0.1, 100]} position={[0, -0.05, 0]} />
+      </RigidBody>
 
       {/* LAB NOTATION */}
       <group position={[0, -0.02, 10]}>

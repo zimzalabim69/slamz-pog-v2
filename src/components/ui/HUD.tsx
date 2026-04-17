@@ -9,9 +9,6 @@ export function HUD() {
   const gameState    = useGameStore((s) => s.gameState);
   const power        = useGameStore((s) => s.power);
   const stats        = useGameStore((s) => s.stats);
-  const currentAtmosphere = useGameStore((s) => s.currentAtmosphere);
-  const cycleAtmosphere   = useGameStore((s) => s.cycleAtmosphere);
-  const currentShowcase   = useGameStore((s) => s.currentShowcase);
   const lastSlamText      = useGameStore((s) => s.lastSlamText);
   const resetStack        = useGameStore((s) => s.resetStack);
   const toggleBinder      = useGameStore((s) => s.toggleBinder);
@@ -20,7 +17,7 @@ export function HUD() {
   const pogMaxVelocity     = useGameStore((s) => s.debugParams.pogMaxVelocity);
   const pogsOnMat          = useGameStore((s) => s.pogsOnMat);
 
-  const preset = (SCENE_PRESETS as any)[currentAtmosphere] || SCENE_PRESETS.DEFAULT;
+  const currentShowcase   = useGameStore((s) => s.currentShowcase);
 
   // Keyboard shortcuts for [B] and [A]
   useEffect(() => {
@@ -48,8 +45,6 @@ export function HUD() {
       {/* ── HEADER ─────────────────────────────────────────── */}
       <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <div style={{ fontSize: '10px', color: '#ff00cc', letterSpacing: '2px' }}>VIBEJAM 2026: PRO-TOUR</div>
-          
           {/* DIAGNOSTIC VELOCITY METER */}
           <div style={{ 
             marginTop: '8px', 
@@ -86,21 +81,6 @@ export function HUD() {
 
         {gameState !== 'START_SCREEN' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', pointerEvents: 'auto' }}>
-            <button
-              onClick={() => cycleAtmosphere()}
-              style={{
-                background: 'rgba(0,0,0,0.5)',
-                border: `1px solid ${preset.spotColor}`,
-                color: preset.spotColor,
-                padding: '6px 14px', fontSize: '9px',
-                fontFamily: 'inherit', cursor: 'pointer',
-                textTransform: 'uppercase', letterSpacing: '2px',
-                boxShadow: `0 0 12px ${preset.spotColor}44`,
-                borderRadius: '2px', fontWeight: 'bold'
-              }}
-            >
-              ATMOSPHERE: {preset.name}
-            </button>
             <button
               onClick={() => resetStack()}
               style={{
@@ -202,7 +182,7 @@ export function HUD() {
             position: 'absolute', bottom: '20px', width: '100%',
             textAlign: 'center', fontSize: '9px', opacity: 0.5, letterSpacing: '2px'
           }}>
-            [LEFT CLICK] HOLD TO CHARGE | [E] ATMOSPHERE | [R] RESET
+            [LEFT CLICK] HOLD TO CHARGE | [R] RESET
           </div>
         </>
       )}

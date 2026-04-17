@@ -1,6 +1,5 @@
 import { useGameStore } from '../store/useGameStore';
 import { useTerminalStore } from '../store/useTerminalStore';
-import { SCENE_ORDER } from '../constants/game';
 
 interface CommandRegistry {
   [key: string]: {
@@ -29,20 +28,6 @@ export const commands: CommandRegistry = {
     description: 'Clear the terminal screen',
     execute: () => {
       useTerminalStore.getState().clearLogs();
-    }
-  },
-  env: {
-    description: 'Change environment atmosphere (Usage: env <ID>)',
-    execute: (args) => {
-      const id = args[0]?.toUpperCase();
-      if (!id) return `Available: ${SCENE_ORDER.join(', ')}`;
-      
-      const found = (SCENE_ORDER as any).includes(id);
-      if (found) {
-        useGameStore.getState().setAtmosphere(id);
-        return `Atmosphere shifted to ${id}.`;
-      }
-      return `Unknown atmosphere: ${id}. Try: ${SCENE_ORDER.join(', ')}`;
     }
   },
   stats: {

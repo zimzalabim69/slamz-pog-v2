@@ -8,14 +8,36 @@ import './DebugPanel.css';
 import './EnhancedSlider.css';
 import './BooleanToggle.css';
 
-type TabType = 'physics' | 'visual' | 'camera' | 'fog' | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime' | 'tuning' | 'arcadeCabinet' | 'proTour' | 'wraith' | 'wraithArena' | 'json';
+type TabType = 
+  | 'physics' | 'visual' | 'camera' | 'fog' 
+  | 'gameplay' | 'startScreen' | 'arena' | 'bulletTime' 
+  | 'tuning' | 'arenaRoom' | 'wraith' | 'wraithArena' 
+  | 'arenaLogo' | 'battleArea' | 'gameOverArcade' | 'floorSkin' | 'lighting' 
+  | 'json';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const debugParams = useGameStore((state) => state.debugParams);
   const setDebugParams = useGameStore((state) => state.setDebugParams);
   const autoSlamActive = useGameStore((state) => state.autoSlamActive);
+  const gameState = useGameStore((state) => state.gameState);
   const [activeTab, setActiveTab] = useState<TabType>('physics');
+
+  // Auto-switch tab if current one becomes hidden
+  useEffect(() => {
+    const isStart = gameState === 'START_SCREEN';
+    
+    // Start Screen uses: Logo, BG, Fog, Smoke, Start Button, Player Wraith, Pog Visuals, and Pog Explosion
+    const startTabs = ['startScreen', 'wraith', 'visual', 'bulletTime', 'json'];
+    // Gameplay (Arena) uses: All tabs
+    const arenaTabs = ['physics', 'visual', 'camera', 'fog', 'gameplay', 'arena', 'battleArea', 'bulletTime', 'tuning', 'arenaRoom', 'wraithArena', 'arenaLogo', 'gameOverArcade', 'floorSkin', 'lighting'];
+
+    if (isStart && !startTabs.includes(activeTab)) {
+      setActiveTab('startScreen');
+    } else if (!isStart && startTabs.includes(activeTab) && !arenaTabs.includes(activeTab) && activeTab !== 'json') {
+      setActiveTab('physics');
+    }
+  }, [gameState]);
 
   // Broadcast debug panel state to prevent game input
   useEffect(() => {
@@ -81,91 +103,29 @@ export function DebugPanel() {
       </div>
 
       <div className="debug-panel-tabs">
-        <button 
-          className={activeTab === 'physics' ? 'active' : ''} 
-          onClick={() => setActiveTab('physics')}
-        >
-          Physics
-        </button>
-        <button 
-          className={activeTab === 'visual' ? 'active' : ''} 
-          onClick={() => setActiveTab('visual')}
-        >
-          Visual
-        </button>
-        <button 
-          className={activeTab === 'camera' ? 'active' : ''} 
-          onClick={() => setActiveTab('camera')}
-        >
-          Camera
-        </button>
-        <button 
-          className={activeTab === 'fog' ? 'active' : ''} 
-          onClick={() => setActiveTab('fog')}
-        >
-          Fog
-        </button>
-        <button 
-          className={activeTab === 'gameplay' ? 'active' : ''} 
-          onClick={() => setActiveTab('gameplay')}
-        >
-          Gameplay
-        </button>
-        <button 
-          className={activeTab === 'startScreen' ? 'active' : ''} 
-          onClick={() => setActiveTab('startScreen')}
-        >
-          Start Screen
-        </button>
-        <button 
-          className={activeTab === 'arena' ? 'active' : ''} 
-          onClick={() => setActiveTab('arena')}
-        >
-          Arena
-        </button>
-        <button 
-          className={activeTab === 'bulletTime' ? 'active' : ''} 
-          onClick={() => setActiveTab('bulletTime')}
-        >
-          BULLET TIME
-        </button>
-        <button 
-          className={activeTab === 'tuning' ? 'active' : ''} 
-          onClick={() => setActiveTab('tuning')}
-        >
-          🛠️ TUNING
-        </button>
-        <button 
-          className={activeTab === 'arcadeCabinet' ? 'active' : ''} 
-          onClick={() => setActiveTab('arcadeCabinet')}
-        >
-          ARCADE CABINET
-        </button>
-        <button 
-          className={activeTab === 'proTour' ? 'active' : ''} 
-          onClick={() => setActiveTab('proTour')}
-        >
-          🕹️ PRO TOUR
-        </button>
-        <button 
-          className={activeTab === 'wraith' ? 'active' : ''} 
-          onClick={() => setActiveTab('wraith')}
-        >
-          👻 PLAYER WRAITH
-        </button>
-        <button 
-          className={activeTab === 'wraithArena' ? 'active' : ''} 
-          onClick={() => setActiveTab('wraithArena')}
-        >
-          🌀 ARENA WRAITH
-        </button>
-        <button 
-          className={activeTab === 'json' ? 'active' : ''} 
-          onClick={() => setActiveTab('json')}
-          style={{ border: '1px solid #00ffff', color: '#00ffff', fontWeight: 'bold' }}
-        >
-          📋 RAW JSON
-        </button>
+        <button className={activeTab === 'physics' ? 'active' : ''} onClick={() => setActiveTab('physics')}>PHYSIC</button>
+        <button className={activeTab === 'visual' ? 'active' : ''} onClick={() => setActiveTab('visual')}>VISUAL</button>
+        <button className={activeTab === 'camera' ? 'active' : ''} onClick={() => setActiveTab('camera')}>CAMERA</button>
+        <button className={activeTab === 'fog' ? 'active' : ''} onClick={() => setActiveTab('fog')}>FOG</button>
+        
+        <button className={activeTab === 'gameplay' ? 'active' : ''} onClick={() => setActiveTab('gameplay')}>GAME</button>
+        <button className={activeTab === 'startScreen' ? 'active' : ''} onClick={() => setActiveTab('startScreen')}>START</button>
+        <button className={activeTab === 'arena' ? 'active' : ''} onClick={() => setActiveTab('arena')}>ARENA</button>
+        <button className={activeTab === 'bulletTime' ? 'active' : ''} onClick={() => setActiveTab('bulletTime')}>CINEMA</button>
+        
+        <button className={activeTab === 'tuning' ? 'active' : ''} onClick={() => setActiveTab('tuning')}>ERUPT</button>
+        <button className={activeTab === 'arenaRoom' ? 'active' : ''} onClick={() => setActiveTab('arenaRoom')}>ROOM</button>
+        <button className={activeTab === 'wraith' ? 'active' : ''} onClick={() => setActiveTab('wraith')}>WR-ST</button>
+        <button className={activeTab === 'wraithArena' ? 'active' : ''} onClick={() => setActiveTab('wraithArena')}>WR-AR</button>
+        
+        <button className={activeTab === 'arenaLogo' ? 'active' : ''} onClick={() => setActiveTab('arenaLogo')}>LOGO</button>
+        <button className={activeTab === 'battleArea' ? 'active' : ''} onClick={() => setActiveTab('battleArea')}>BATTLE</button>
+        <button className={activeTab === 'gameOverArcade' ? 'active' : ''} onClick={() => setActiveTab('gameOverArcade')}>ARCADE</button>
+        <button className={activeTab === 'floorSkin' ? 'active' : ''} onClick={() => setActiveTab('floorSkin')}>FOOT</button>
+        <button className={activeTab === 'lighting' ? 'active' : ''} onClick={() => setActiveTab('lighting')}>LIGHTS</button>
+        
+        <button className={activeTab === 'props' ? 'active' : ''} onClick={() => setActiveTab('props')}>PROPS</button>
+        <button className={activeTab === 'json' ? 'active' : ''} onClick={() => setActiveTab('json')}>JSON</button>
       </div>
 
       <div className="debug-panel-content">
@@ -178,7 +138,7 @@ export function DebugPanel() {
                 label="Mass"
                 value={debugParams.pogMass}
                 min={0.1}
-                max={120}
+                max={360}
                 step={0.1}
                 onChange={(value) => updateParam('pogMass', value)}
                 decimals={2}
@@ -188,7 +148,7 @@ export function DebugPanel() {
                 label="Restitution (Bounce)"
                 value={debugParams.pogRestitution}
                 min={0}
-                max={1}
+                max={3}
                 step={0.05}
                 onChange={(value) => updateParam('pogRestitution', value)}
                 decimals={2}
@@ -198,7 +158,7 @@ export function DebugPanel() {
                 label="Friction"
                 value={debugParams.pogFriction}
                 min={0}
-                max={2}
+                max={6}
                 step={0.1}
                 onChange={(value) => updateParam('pogFriction', value)}
                 decimals={2}
@@ -208,7 +168,7 @@ export function DebugPanel() {
                 label="Linear Damping"
                 value={debugParams.pogLinearDamping}
                 min={0}
-                max={1}
+                max={3}
                 step={0.05}
                 onChange={(value) => updateParam('pogLinearDamping', value)}
                 decimals={2}
@@ -218,7 +178,7 @@ export function DebugPanel() {
                 label="Angular Damping"
                 value={debugParams.pogAngularDamping}
                 min={0}
-                max={1}
+                max={3}
                 step={0.05}
                 onChange={(value) => updateParam('pogAngularDamping', value)}
                 decimals={2}
@@ -228,7 +188,7 @@ export function DebugPanel() {
                 label="MAX VELOCITY (Brakes)"
                 value={debugParams.pogMaxVelocity}
                 min={1}
-                max={100}
+                max={300}
                 step={0.5}
                 onChange={(value) => updateParam('pogMaxVelocity', value)}
                 decimals={1}
@@ -243,7 +203,7 @@ export function DebugPanel() {
                 label="Mass"
                 value={debugParams.slammerMass}
                 min={0.5}
-                max={5}
+                max={15}
                 step={0.1}
                 onChange={(value) => updateParam('slammerMass', value)}
                 decimals={2}
@@ -253,7 +213,7 @@ export function DebugPanel() {
                 label="Restitution"
                 value={debugParams.slammerRestitution}
                 min={0}
-                max={1}
+                max={3}
                 step={0.05}
                 onChange={(value) => updateParam('slammerRestitution', value)}
                 decimals={2}
@@ -263,7 +223,7 @@ export function DebugPanel() {
                 label="Friction"
                 value={debugParams.slammerFriction}
                 min={0}
-                max={2}
+                max={6}
                 step={0.1}
                 onChange={(value) => updateParam('slammerFriction', value)}
                 decimals={2}
@@ -272,7 +232,7 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Base Slam Force"
                 value={debugParams.slamBaseForce}
-                min={-50}
+                min={-150}
                 max={0}
                 step={1}
                 onChange={(value) => updateParam('slamBaseForce', value)}
@@ -282,7 +242,7 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Power Multiplier"
                 value={debugParams.slamPowerMultiplier}
-                min={-1}
+                min={-3}
                 max={0}
                 step={0.05}
                 onChange={(value) => updateParam('slamPowerMultiplier', value)}
@@ -293,7 +253,7 @@ export function DebugPanel() {
                 label="Shatter Radius"
                 value={debugParams.shatterRadius}
                 min={0.1}
-                max={120}
+                max={360}
                 step={0.05}
                 onChange={(value) => updateParam('shatterRadius', value)}
                 decimals={2}
@@ -303,7 +263,7 @@ export function DebugPanel() {
                 label="Shatter Force Min"
                 value={debugParams.shatterForceMin}
                 min={0}
-                max={2}
+                max={6}
                 step={0.1}
                 onChange={(value) => updateParam('shatterForceMin', value)}
                 decimals={2}
@@ -313,7 +273,7 @@ export function DebugPanel() {
                 label="Shatter Force Max"
                 value={debugParams.shatterForceMax}
                 min={0}
-                max={3}
+                max={9}
                 step={0.1}
                 onChange={(value) => updateParam('shatterForceMax', value)}
                 decimals={2}
@@ -365,7 +325,7 @@ export function DebugPanel() {
                 label="Scale"
                 value={debugParams.pogScale}
                 min={0.5}
-                max={2}
+                max={6}
                 step={0.1}
                 onChange={(value) => updateParam('pogScale', value)}
                 decimals={2}
@@ -375,7 +335,7 @@ export function DebugPanel() {
                 label="Rotation Speed"
                 value={debugParams.pogRotationSpeed}
                 min={0}
-                max={0.02}
+                max={0.06}
                 step={0.001}
                 onChange={(value) => updateParam('pogRotationSpeed', value)}
                 decimals={3}
@@ -385,7 +345,7 @@ export function DebugPanel() {
                 label="Metalness"
                 value={debugParams.pogMetalness}
                 min={0}
-                max={1}
+                max={3}
                 step={0.05}
                 onChange={(value) => updateParam('pogMetalness', value)}
                 decimals={2}
@@ -395,7 +355,7 @@ export function DebugPanel() {
                 label="Roughness"
                 value={debugParams.pogRoughness}
                 min={0}
-                max={1}
+                max={3}
                 step={0.05}
                 onChange={(value) => updateParam('pogRoughness', value)}
                 decimals={2}
@@ -411,8 +371,8 @@ export function DebugPanel() {
             <EnhancedSlider
                 label="Base FOV"
                 value={debugParams.baseFOV}
-                min={30}
-                max={90}
+                min={10}
+                max={150}
                 step={1}
                 onChange={(value) => updateParam('baseFOV', value)}
                 decimals={0}
@@ -422,8 +382,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Punch FOV"
                 value={debugParams.punchFOV}
-                min={30}
-                max={120}
+                min={10}
+                max={170}
                 step={1}
                 onChange={(value) => updateParam('punchFOV', value)}
                 decimals={0}
@@ -434,7 +394,7 @@ export function DebugPanel() {
                 label="FOV Lerp Speed"
                 value={debugParams.fovLerpSpeed}
                 min={0.01}
-                max={0.5}
+                max={1.5}
                 step={0.01}
                 onChange={(value) => updateParam('fovLerpSpeed', value)}
                 decimals={2}
@@ -450,7 +410,7 @@ export function DebugPanel() {
                 label="Density"
                 value={debugParams.fogDensity}
                 min={0}
-                max={0.1}
+                max={0.3}
                 step={0.001}
                 onChange={(value) => updateParam('fogDensity', value)}
                 decimals={3}
@@ -460,7 +420,7 @@ export function DebugPanel() {
                 label="Near"
                 value={debugParams.fogNear}
                 min={0}
-                max={20}
+                max={60}
                 step={0.5}
                 onChange={(value) => updateParam('fogNear', value)}
                 decimals={1}
@@ -470,7 +430,7 @@ export function DebugPanel() {
                 label="Far"
                 value={debugParams.fogFar}
                 min={10}
-                max={200}
+                max={600}
                 step={5}
                 onChange={(value) => updateParam('fogFar', value)}
                 decimals={0}
@@ -486,7 +446,7 @@ export function DebugPanel() {
                 label="Power Charge Speed"
                 value={debugParams.powerChargeSpeed}
                 min={50}
-                max={500}
+                max={1500}
                 step={10}
                 onChange={(value) => updateParam('powerChargeSpeed', value)}
                 decimals={0}
@@ -496,7 +456,7 @@ export function DebugPanel() {
                 label="Slam Impact Delay (ms)"
                 value={debugParams.slamDelay}
                 min={0}
-                max={500}
+                max={1500}
                 step={50}
                 onChange={(value) => updateParam('slamDelay', value)}
                 decimals={0}
@@ -513,7 +473,7 @@ export function DebugPanel() {
                 label="Scale"
                 value={debugParams.logoScale}
                 min={0.1}
-                max={120}
+                max={360}
                 step={0.1}
                 onChange={(value) => updateParam('logoScale', value)}
                 decimals={2}
@@ -522,8 +482,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Position X"
                 value={debugParams.logoPositionX}
-                min={-200}
-                max={200}
+                min={-600}
+                max={600}
                 step={0.1}
                 onChange={(value) => updateParam('logoPositionX', value)}
                 decimals={2}
@@ -532,8 +492,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Position Y"
                 value={debugParams.logoPositionY}
-                min={-200}
-                max={200}
+                min={-600}
+                max={600}
                 step={0.1}
                 onChange={(value) => updateParam('logoPositionY', value)}
                 decimals={2}
@@ -542,8 +502,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Position Z"
                 value={debugParams.logoPositionZ}
-                min={-400}
-                max={400}
+                min={-1200}
+                max={1200}
                 step={0.1}
                 onChange={(value) => updateParam('logoPositionZ', value)}
                 decimals={2}
@@ -552,8 +512,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Rotation X"
                 value={debugParams.logoRotationX}
-                min={-12.56}
-                max={12.56}
+                min={-37.68}
+                max={37.68}
                 step={0.1}
                 onChange={(value) => updateParam('logoRotationX', value)}
                 decimals={2}
@@ -562,8 +522,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Rotation Y"
                 value={debugParams.logoRotationY}
-                min={-12.56}
-                max={12.56}
+                min={-37.68}
+                max={37.68}
                 step={0.1}
                 onChange={(value) => updateParam('logoRotationY', value)}
                 decimals={2}
@@ -572,8 +532,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Rotation Z"
                 value={debugParams.logoRotationZ}
-                min={-12.56}
-                max={12.56}
+                min={-37.68}
+                max={37.68}
                 step={0.1}
                 onChange={(value) => updateParam('logoRotationZ', value)}
                 decimals={2}
@@ -587,7 +547,7 @@ export function DebugPanel() {
                 label="Scale"
                 value={debugParams.bgScale}
                 min={0.01}
-                max={50}
+                max={150}
                 step={0.1}
                 onChange={(value) => updateParam('bgScale', value)}
                 decimals={2}
@@ -596,8 +556,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Position X"
                 value={debugParams.bgPositionX}
-                min={-200}
-                max={200}
+                min={-600}
+                max={600}
                 step={0.5}
                 onChange={(value) => updateParam('bgPositionX', value)}
                 decimals={2}
@@ -606,8 +566,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Position Y"
                 value={debugParams.bgPositionY}
-                min={-200}
-                max={200}
+                min={-600}
+                max={600}
                 step={0.5}
                 onChange={(value) => updateParam('bgPositionY', value)}
                 decimals={2}
@@ -616,8 +576,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Position Z"
                 value={debugParams.bgPositionZ}
-                min={-500}
-                max={100}
+                min={-1500}
+                max={300}
                 step={0.5}
                 onChange={(value) => updateParam('bgPositionZ', value)}
                 decimals={2}
@@ -626,8 +586,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Rotation X"
                 value={debugParams.bgRotationX}
-                min={-12.56}
-                max={12.56}
+                min={-37.68}
+                max={37.68}
                 step={0.1}
                 onChange={(value) => updateParam('bgRotationX', value)}
                 decimals={2}
@@ -636,8 +596,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Rotation Y"
                 value={debugParams.bgRotationY}
-                min={-12.56}
-                max={12.56}
+                min={-37.68}
+                max={37.68}
                 step={0.1}
                 onChange={(value) => updateParam('bgRotationY', value)}
                 decimals={2}
@@ -646,8 +606,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="Rotation Z"
                 value={debugParams.bgRotationZ}
-                min={-12.56}
-                max={12.56}
+                min={-37.68}
+                max={37.68}
                 step={0.1}
                 onChange={(value) => updateParam('bgRotationZ', value)}
                 decimals={2}
@@ -661,7 +621,7 @@ export function DebugPanel() {
                 label="Density"
                 value={debugParams.startFogDensity}
                 min={0}
-                max={0.1}
+                max={0.3}
                 step={0.0005}
                 onChange={(value) => updateParam('startFogDensity', value)}
                 decimals={4}
@@ -705,7 +665,7 @@ export function DebugPanel() {
                 label="Count"
                 value={debugParams.smokeGroundCount}
                 min={0}
-                max={30}
+                max={90}
                 step={1}
                 onChange={(value) => updateParam('smokeGroundCount', value)}
                 decimals={0}
@@ -725,7 +685,7 @@ export function DebugPanel() {
                 label="Size"
                 value={debugParams.smokeGroundSize}
                 min={1}
-                max={60}
+                max={180}
                 step={0.5}
                 onChange={(value) => updateParam('smokeGroundSize', value)}
                 decimals={1}
@@ -735,7 +695,7 @@ export function DebugPanel() {
                 label="Spread"
                 value={debugParams.smokeGroundSpread}
                 min={10}
-                max={200}
+                max={600}
                 step={1}
                 onChange={(value) => updateParam('smokeGroundSpread', value)}
                 decimals={0}
@@ -799,7 +759,7 @@ export function DebugPanel() {
                 label="Count"
                 value={debugParams.smokeMidCount}
                 min={0}
-                max={30}
+                max={90}
                 step={1}
                 onChange={(value) => updateParam('smokeMidCount', value)}
                 decimals={0}
@@ -819,7 +779,7 @@ export function DebugPanel() {
                 label="Size"
                 value={debugParams.smokeMidSize}
                 min={1}
-                max={60}
+                max={180}
                 step={0.5}
                 onChange={(value) => updateParam('smokeMidSize', value)}
                 decimals={1}
@@ -829,7 +789,7 @@ export function DebugPanel() {
                 label="Spread"
                 value={debugParams.smokeMidSpread}
                 min={10}
-                max={200}
+                max={600}
                 step={1}
                 onChange={(value) => updateParam('smokeMidSpread', value)}
                 decimals={0}
@@ -893,7 +853,7 @@ export function DebugPanel() {
                 label="Scale"
                 value={debugParams.buttonScale}
                 min={0.5}
-                max={3}
+                max={9}
                 step={0.1}
                 onChange={(value) => updateParam('buttonScale', value)}
                 decimals={2}
@@ -944,7 +904,7 @@ export function DebugPanel() {
                 label="Windup Duration"
                 value={debugParams.cinematicWindupDuration}
                 min={0.5}
-                max={5}
+                max={15}
                 step={0.1}
                 onChange={(value) => updateParam('cinematicWindupDuration', value)}
                 decimals={2}
@@ -955,7 +915,7 @@ export function DebugPanel() {
                 label="Freeze Duration"
                 value={debugParams.cinematicFreezeDuration}
                 min={0.1}
-                max={2}
+                max={6}
                 step={0.05}
                 onChange={(value) => updateParam('cinematicFreezeDuration', value)}
                 decimals={2}
@@ -966,7 +926,7 @@ export function DebugPanel() {
                 label="Orbit Duration"
                 value={debugParams.cinematicOrbitDuration}
                 min={1}
-                max={8}
+                max={24}
                 step={0.2}
                 onChange={(value) => updateParam('cinematicOrbitDuration', value)}
                 decimals={2}
@@ -977,7 +937,7 @@ export function DebugPanel() {
                 label="Reveal Duration"
                 value={debugParams.cinematicRevealDuration}
                 min={0.5}
-                max={5}
+                max={15}
                 step={0.1}
                 onChange={(value) => updateParam('cinematicRevealDuration', value)}
                 decimals={2}
@@ -992,7 +952,7 @@ export function DebugPanel() {
                 label="Orbit Radius"
                 value={debugParams.cinematicOrbitRadius}
                 min={2}
-                max={20}
+                max={60}
                 step={0.5}
                 onChange={(value) => updateParam('cinematicOrbitRadius', value)}
                 decimals={1}
@@ -1002,7 +962,7 @@ export function DebugPanel() {
                 label="Orbit Height"
                 value={debugParams.cinematicOrbitHeight}
                 min={0.5}
-                max={10}
+                max={30}
                 step={0.2}
                 onChange={(value) => updateParam('cinematicOrbitHeight', value)}
                 decimals={1}
@@ -1012,7 +972,7 @@ export function DebugPanel() {
                 label="Dynamic Zoom Mult"
                 value={debugParams.cinematicDynamicZoomMultiplier}
                 min={1}
-                max={5}
+                max={15}
                 step={0.1}
                 onChange={(value) => updateParam('cinematicDynamicZoomMultiplier', value)}
                 decimals={2}
@@ -1022,7 +982,7 @@ export function DebugPanel() {
                 label="Dynamic Zoom Max Scale"
                 value={debugParams.cinematicDynamicZoomMaxScale}
                 min={1}
-                max={3}
+                max={9}
                 step={0.05}
                 onChange={(value) => updateParam('cinematicDynamicZoomMaxScale', value)}
                 decimals={2}
@@ -1056,7 +1016,7 @@ export function DebugPanel() {
                 label="Approach Speed"
                 value={debugParams.cinematicCometApproachSpeed}
                 min={10}
-                max={100}
+                max={300}
                 step={1}
                 onChange={(value) => updateParam('cinematicCometApproachSpeed', value)}
                 decimals={1}
@@ -1066,7 +1026,7 @@ export function DebugPanel() {
                 label="Start Distance"
                 value={debugParams.cinematicCometStartDistance}
                 min={10}
-                max={50}
+                max={150}
                 step={1}
                 onChange={(value) => updateParam('cinematicCometStartDistance', value)}
                 decimals={1}
@@ -1076,7 +1036,7 @@ export function DebugPanel() {
                 label="End Distance"
                 value={debugParams.cinematicCometEndDistance}
                 min={0.5}
-                max={10}
+                max={30}
                 step={0.5}
                 onChange={(value) => updateParam('cinematicCometEndDistance', value)}
                 decimals={1}
@@ -1085,8 +1045,8 @@ export function DebugPanel() {
               <EnhancedSlider
                 label="FOV Punch"
                 value={debugParams.cinematicCometFOVPunch}
-                min={60}
-                max={150}
+                min={20}
+                max={180}
                 step={1}
                 onChange={(value) => updateParam('cinematicCometFOVPunch', value)}
                 decimals={0}
@@ -1097,7 +1057,7 @@ export function DebugPanel() {
                 label="Shake Intensity"
                 value={debugParams.cinematicCometShakeIntensity}
                 min={0}
-                max={2}
+                max={6}
                 step={0.1}
                 onChange={(value) => updateParam('cinematicCometShakeIntensity', value)}
                 decimals={2}
@@ -1111,7 +1071,7 @@ export function DebugPanel() {
                 label="Explosion Force"
                 value={debugParams.cinematicExplosionForce}
                 min={5}
-                max={50}
+                max={150}
                 step={1}
                 onChange={(value) => updateParam('cinematicExplosionForce', value)}
                 decimals={1}
@@ -1121,7 +1081,7 @@ export function DebugPanel() {
                 label="Scatter Radius"
                 value={debugParams.cinematicScatterRadius}
                 min={2}
-                max={20}
+                max={60}
                 step={1}
                 onChange={(value) => updateParam('cinematicScatterRadius', value)}
                 decimals={1}
@@ -1131,7 +1091,7 @@ export function DebugPanel() {
                 label="Scatter Height"
                 value={debugParams.cinematicScatterHeight}
                 min={1}
-                max={15}
+                max={45}
                 step={1}
                 onChange={(value) => updateParam('cinematicScatterHeight', value)}
                 decimals={1}
@@ -1141,7 +1101,7 @@ export function DebugPanel() {
                 label="Rotation Speed"
                 value={debugParams.cinematicPogRotationSpeed}
                 min={0}
-                max={20}
+                max={60}
                 step={1}
                 onChange={(value) => updateParam('cinematicPogRotationSpeed', value)}
                 decimals={1}
@@ -1151,7 +1111,7 @@ export function DebugPanel() {
                 label="Float Duration"
                 value={debugParams.cinematicPogFloatDuration}
                 min={1}
-                max={8}
+                max={24}
                 step={1}
                 onChange={(value) => updateParam('cinematicPogFloatDuration', value)}
                 decimals={1}
@@ -1166,7 +1126,7 @@ export function DebugPanel() {
                 label="Transition Speed"
                 value={debugParams.cinematicTransitionSpeed}
                 min={0.5}
-                max={5}
+                max={15}
                 step={0.2}
                 onChange={(value) => updateParam('cinematicTransitionSpeed', value)}
                 decimals={2}
@@ -1176,7 +1136,7 @@ export function DebugPanel() {
                 label="Impact Flash"
                 value={debugParams.cinematicImpactFlashIntensity}
                 min={0}
-                max={10}
+                max={30}
                 step={0.5}
                 onChange={(value) => updateParam('cinematicImpactFlashIntensity', value)}
                 decimals={1}
@@ -1186,7 +1146,7 @@ export function DebugPanel() {
                 label="Motion Blur"
                 value={debugParams.cinematicMotionBlurStrength}
                 min={0}
-                max={1}
+                max={3}
                 step={0.05}
                 onChange={(value) => updateParam('cinematicMotionBlurStrength', value)}
                 decimals={2}
@@ -1206,7 +1166,7 @@ export function DebugPanel() {
               label="Lock Duration"
               value={debugParams.cinematicLockOnDuration}
               min={1}
-              max={8}
+              max={24}
               step={0.5}
               onChange={(value) => updateParam('cinematicLockOnDuration', value)}
               decimals={1}
@@ -1217,7 +1177,7 @@ export function DebugPanel() {
               label="Orbit Radius"
               value={debugParams.cinematicLockOnOrbitRadius}
               min={1}
-              max={10}
+              max={30}
               step={0.5}
               onChange={(value) => updateParam('cinematicLockOnOrbitRadius', value)}
               decimals={1}
@@ -1227,7 +1187,7 @@ export function DebugPanel() {
               label="Orbit Speed"
               value={debugParams.cinematicLockOnOrbitSpeed}
               min={0.2}
-              max={5}
+              max={15}
               step={0.2}
               onChange={(value) => updateParam('cinematicLockOnOrbitSpeed', value)}
               decimals={2}
@@ -1237,7 +1197,7 @@ export function DebugPanel() {
               label="Height Offset"
               value={debugParams.cinematicLockOnHeightOffset}
               min={0}
-              max={5}
+              max={15}
               step={0.2}
               onChange={(value) => updateParam('cinematicLockOnHeightOffset', value)}
               decimals={1}
@@ -1261,7 +1221,7 @@ export function DebugPanel() {
               label="Fall Duration"
               value={debugParams.cinematicSyncFallDuration}
               min={0.5}
-              max={5}
+              max={15}
               step={0.2}
               onChange={(value) => updateParam('cinematicSyncFallDuration', value)}
               decimals={1}
@@ -1272,7 +1232,7 @@ export function DebugPanel() {
               label="Fall Speed"
               value={debugParams.cinematicSyncFallSpeed}
               min={0.1}
-              max={1}
+              max={3}
               step={0.05}
               onChange={(value) => updateParam('cinematicSyncFallSpeed', value)}
               decimals={2}
@@ -1282,7 +1242,7 @@ export function DebugPanel() {
               label="Rest Delay"
               value={debugParams.cinematicSyncRestDelay}
               min={0}
-              max={3}
+              max={9}
               step={0.2}
               onChange={(value) => updateParam('cinematicSyncRestDelay', value)}
               decimals={1}
@@ -1304,7 +1264,7 @@ export function DebugPanel() {
               label="Bounce Count"
               value={debugParams.cinematicBounceCount}
               min={0}
-              max={5}
+              max={15}
               step={1}
               onChange={(value) => updateParam('cinematicBounceCount', value)}
               decimals={0}
@@ -1331,7 +1291,7 @@ export function DebugPanel() {
               label="Directional Light"
               value={debugParams.arenaLightIntensity}
               min={0}
-              max={3}
+              max={9}
               step={0.1}
               onChange={(value) => updateParam('arenaLightIntensity', value)}
               decimals={1}
@@ -1341,7 +1301,7 @@ export function DebugPanel() {
               label="Ambient Light"
               value={debugParams.arenaAmbientIntensity}
               min={0}
-              max={2}
+              max={6}
               step={0.1}
               onChange={(value) => updateParam('arenaAmbientIntensity', value)}
               decimals={1}
@@ -1350,130 +1310,133 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Floor Y Position"
               value={debugParams.floorPositionY}
-              min={-2}
-              max={2}
+              min={-6}
+              max={6}
               step={0.05}
               onChange={(value) => updateParam('floorPositionY', value)}
               decimals={2}
             />
+
+            <EnhancedSlider
+              label="MAT PHYSICAL OFFSET"
+              value={debugParams.groundPhysicalOffset}
+              min={-0.5}
+              max={0.5}
+              step={0.005}
+              onChange={(value) => updateParam('groundPhysicalOffset', value)}
+              decimals={3}
+            />
+
+            <BooleanToggle
+              label="SHOW GROUND FIX (Visual)"
+              value={debugParams.showGroundCollider}
+              onChange={(value) => setDebugParams({ showGroundCollider: value })}
+            />
+
+            <BooleanToggle
+              label="ARENA FLOOR VISIBLE"
+              value={debugParams.floorVisible}
+              onChange={(value) => setDebugParams({ floorVisible: value })}
+            />
           </div>
         )}
 
-        {activeTab === 'arcadeCabinet' && (
+        {activeTab === 'arenaRoom' && (
           <div className="debug-section">
-            <h3>ARCADE FRONT (Slamz_Arcade.glb)</h3>
+            <h3>🏰 ARENA ROOM (Backdrop / Whole-room GLB)</h3>
             
+            <div className="debug-field">
+              <label>Asset URL</label>
+              <input 
+                type="text" 
+                value={debugParams.arenaRoomAsset}
+                onChange={(e) => updateParam('arenaRoomAsset' as any, e.target.value as any)}
+                style={{
+                  width: '100%',
+                  background: 'rgba(0,0,0,0.5)',
+                  border: '1px solid #333',
+                  color: '#fff',
+                  padding: '5px',
+                  fontFamily: 'monospace',
+                  fontSize: '11px',
+                  marginTop: '5px'
+                }}
+              />
+            </div>
+
             <BooleanToggle
               label="Visible"
-              value={debugParams.arcadeCabinetVisible}
-              onChange={(value) => updateParam('arcadeCabinetVisible', value as any)}
+              value={debugParams.arenaRoomVisible}
+              onChange={(value) => updateParam('arenaRoomVisible', value as any)}
             />
 
             <EnhancedSlider
               label="Scale"
-              value={debugParams.arcadeCabinetScale}
-              min={0.05}
-              max={5}
-              step={0.05}
-              onChange={(value) => updateParam('arcadeCabinetScale', value)}
-              decimals={2}
+              value={debugParams.arenaRoomScale}
+              min={0.1}
+              max={600}
+              step={0.5}
+              onChange={(value) => updateParam('arenaRoomScale', value)}
+              decimals={1}
             />
 
             <EnhancedSlider
               label="Position X"
-              value={debugParams.arcadeCabinetPositionX}
-              min={-20}
-              max={20}
-              step={0.25}
-              onChange={(value) => updateParam('arcadeCabinetPositionX', value)}
-              decimals={2}
+              value={debugParams.arenaRoomPositionX}
+              min={-300}
+              max={300}
+              step={0.5}
+              onChange={(value) => updateParam('arenaRoomPositionX', value)}
+              decimals={1}
             />
 
             <EnhancedSlider
               label="Position Y"
-              value={debugParams.arcadeCabinetPositionY}
-              min={-10}
-              max={15}
-              step={0.25}
-              onChange={(value) => updateParam('arcadeCabinetPositionY', value)}
-              decimals={2}
+              value={debugParams.arenaRoomPositionY}
+              min={-150}
+              max={150}
+              step={0.5}
+              onChange={(value) => updateParam('arenaRoomPositionY', value)}
+              decimals={1}
             />
 
             <EnhancedSlider
               label="Position Z"
-              value={debugParams.arcadeCabinetPositionZ}
-              min={-25}
-              max={15}
-              step={0.25}
-              onChange={(value) => updateParam('arcadeCabinetPositionZ', value)}
+              value={debugParams.arenaRoomPositionZ}
+              min={-600}
+              max={300}
+              step={0.5}
+              onChange={(value) => updateParam('arenaRoomPositionZ', value)}
+              decimals={1}
+            />
+
+            <EnhancedSlider
+              label="Rotation X"
+              value={debugParams.arenaRoomRotationX}
+              min={-Math.PI * 6}
+              max={Math.PI * 6}
+              step={0.1}
+              onChange={(value) => updateParam('arenaRoomRotationX', value)}
               decimals={2}
             />
 
             <EnhancedSlider
               label="Rotation Y"
-              value={debugParams.arcadeCabinetRotationY}
-              min={-3.14}
-              max={3.14}
+              value={debugParams.arenaRoomRotationY}
+              min={-Math.PI * 6}
+              max={Math.PI * 6}
               step={0.1}
-              onChange={(value) => updateParam('arcadeCabinetRotationY', value)}
-              decimals={2}
-            />
-
-            <h3 style={{ marginTop: '24px' }}>ARCADE BACK (Slamz_Arcade_Back.glb)</h3>
-
-            <BooleanToggle
-              label="Visible"
-              value={debugParams.arcadeBackVisible}
-              onChange={(value) => updateParam('arcadeBackVisible', value as any)}
-            />
-
-            <EnhancedSlider
-              label="Scale"
-              value={debugParams.arcadeBackScale}
-              min={0.05}
-              max={5}
-              step={0.05}
-              onChange={(value) => updateParam('arcadeBackScale', value)}
+              onChange={(value) => updateParam('arenaRoomRotationY', value)}
               decimals={2}
             />
 
             <EnhancedSlider
-              label="Position X"
-              value={debugParams.arcadeBackPositionX}
-              min={-20}
-              max={20}
-              step={0.25}
-              onChange={(value) => updateParam('arcadeBackPositionX', value)}
-              decimals={2}
-            />
-
-            <EnhancedSlider
-              label="Position Y"
-              value={debugParams.arcadeBackPositionY}
-              min={-10}
-              max={15}
-              step={0.25}
-              onChange={(value) => updateParam('arcadeBackPositionY', value)}
-              decimals={2}
-            />
-
-            <EnhancedSlider
-              label="Position Z"
-              value={debugParams.arcadeBackPositionZ}
-              min={-25}
-              max={15}
-              step={0.25}
-              onChange={(value) => updateParam('arcadeBackPositionZ', value)}
-              decimals={2}
-            />
-
-            <EnhancedSlider
-              label="Rotation Y"
-              value={debugParams.arcadeBackRotationY}
-              min={-3.14}
-              max={3.14}
+              label="Rotation Z"
+              value={debugParams.arenaRoomRotationZ}
+              min={-Math.PI * 6}
+              max={Math.PI * 6}
               step={0.1}
-              onChange={(value) => updateParam('arcadeBackRotationY', value)}
+              onChange={(value) => updateParam('arenaRoomRotationZ', value)}
               decimals={2}
             />
           </div>
@@ -1546,7 +1509,7 @@ export function DebugPanel() {
               label="Upward Kick (Y Multiplier)"
               value={debugParams.eruptionUpwardMultiplier}
               min={0}
-              max={10}
+              max={30}
               step={0.1}
               onChange={(value) => updateParam('eruptionUpwardMultiplier', value)}
               decimals={2}
@@ -1556,7 +1519,7 @@ export function DebugPanel() {
               label="Impact Radius"
               value={debugParams.eruptionRadius}
               min={0.1}
-              max={10}
+              max={30}
               step={0.1}
               onChange={(value) => updateParam('eruptionRadius', value)}
               decimals={2}
@@ -1566,7 +1529,7 @@ export function DebugPanel() {
               label="Spin Intensity (Torque)"
               value={debugParams.eruptionTorqueMultiplier}
               min={0}
-              max={1}
+              max={3}
               step={0.01}
               onChange={(value) => updateParam('eruptionTorqueMultiplier', value)}
               decimals={2}
@@ -1580,8 +1543,8 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position X"
               value={debugParams.wraithPositionX}
-              min={-50}
-              max={50}
+              min={-150}
+              max={150}
               step={0.1}
               onChange={(value) => updateParam('wraithPositionX', value)}
               decimals={2}
@@ -1590,8 +1553,8 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position Y"
               value={debugParams.wraithPositionY}
-              min={-10}
-              max={50}
+              min={-30}
+              max={150}
               step={0.1}
               onChange={(value) => updateParam('wraithPositionY', value)}
               decimals={2}
@@ -1600,8 +1563,8 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position Z"
               value={debugParams.wraithPositionZ}
-              min={-100}
-              max={50}
+              min={-300}
+              max={150}
               step={0.1}
               onChange={(value) => updateParam('wraithPositionZ', value)}
               decimals={2}
@@ -1611,7 +1574,7 @@ export function DebugPanel() {
               label="Scale"
               value={debugParams.wraithScale}
               min={0.1}
-              max={30}
+              max={90}
               step={0.1}
               onChange={(value) => updateParam('wraithScale', value)}
               decimals={2}
@@ -1620,8 +1583,8 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Rotation Y"
               value={debugParams.wraithRotationY}
-              min={-Math.PI * 2}
-              max={Math.PI * 2}
+              min={-Math.PI * 6}
+              max={Math.PI * 6}
               step={0.1}
               onChange={(value) => updateParam('wraithRotationY', value)}
               decimals={2}
@@ -1629,68 +1592,170 @@ export function DebugPanel() {
           </div>
         )}
 
-        {activeTab === 'proTour' && (
+
+        {activeTab === 'battleArea' && (
           <div className="debug-section">
-            <h3>SLAMZ PRO TOUR ARCADE (Slamz_Pro_Tour_Arcade.glb)</h3>
+            <h3>BATTLE AREA (Neon Asset at Center)</h3>
 
             <BooleanToggle
               label="Visible"
-              value={debugParams.proTourVisible}
-              onChange={(value) => updateParam('proTourVisible', value as any)}
+              value={debugParams.battleAreaVisible}
+              onChange={(value) => updateParam('battleAreaVisible', value as any)}
             />
 
             <EnhancedSlider
               label="Scale"
-              value={debugParams.proTourScale}
-              min={0.05}
-              max={5}
-              step={0.05}
-              onChange={(value) => updateParam('proTourScale', value)}
+              value={debugParams.battleAreaScale}
+              min={0.01}
+              max={100}
+              step={0.01}
+              onChange={(value) => updateParam('battleAreaScale', value)}
               decimals={2}
             />
 
             <EnhancedSlider
               label="Position X"
-              value={debugParams.proTourPositionX}
-              min={-20}
-              max={20}
-              step={0.25}
-              onChange={(value) => updateParam('proTourPositionX', value)}
+              value={debugParams.battleAreaPositionX}
+              min={-60}
+              max={60}
+              step={0.1}
+              onChange={(value) => updateParam('battleAreaPositionX', value)}
               decimals={2}
             />
 
             <EnhancedSlider
               label="Position Y"
-              value={debugParams.proTourPositionY}
-              min={-10}
-              max={15}
-              step={0.25}
-              onChange={(value) => updateParam('proTourPositionY', value)}
+              value={debugParams.battleAreaPositionY}
+              min={-30}
+              max={30}
+              step={0.05}
+              onChange={(value) => updateParam('battleAreaPositionY', value)}
               decimals={2}
             />
 
             <EnhancedSlider
               label="Position Z"
-              value={debugParams.proTourPositionZ}
-              min={-25}
-              max={15}
-              step={0.25}
-              onChange={(value) => updateParam('proTourPositionZ', value)}
+              value={debugParams.battleAreaPositionZ}
+              min={-60}
+              max={60}
+              step={0.1}
+              onChange={(value) => updateParam('battleAreaPositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation X"
+              value={debugParams.battleAreaRotationX}
+              min={-Math.PI * 2}
+              max={Math.PI * 2}
+              step={0.05}
+              onChange={(value) => updateParam('battleAreaRotationX', value)}
               decimals={2}
             />
 
             <EnhancedSlider
               label="Rotation Y"
-              value={debugParams.proTourRotationY}
-              min={-3.14}
-              max={3.14}
-              step={0.1}
-              onChange={(value) => updateParam('proTourRotationY', value)}
+              value={debugParams.battleAreaRotationY}
+              min={-Math.PI * 2}
+              max={Math.PI * 2}
+              step={0.05}
+              onChange={(value) => updateParam('battleAreaRotationY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Z"
+              value={debugParams.battleAreaRotationZ}
+              min={-Math.PI * 2}
+              max={Math.PI * 2}
+              step={0.05}
+              onChange={(value) => updateParam('battleAreaRotationZ', value)}
               decimals={2}
             />
           </div>
         )}
 
+        {activeTab === 'gameOverArcade' && (
+          <div className="debug-section">
+            <h3>GAME OVER ARCADE (Game_Over_Arcade.glb)</h3>
+
+            <BooleanToggle
+              label="Visible"
+              value={debugParams.gameOverArcadeVisible}
+              onChange={(value) => updateParam('gameOverArcadeVisible', value as any)}
+            />
+
+            <EnhancedSlider
+              label="Scale"
+              value={debugParams.gameOverArcadeScale}
+              min={0.05}
+              max={150}
+              step={0.05}
+              onChange={(value) => updateParam('gameOverArcadeScale', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position X"
+              value={debugParams.gameOverArcadePositionX}
+              min={-150}
+              max={150}
+              step={0.25}
+              onChange={(value) => updateParam('gameOverArcadePositionX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Y"
+              value={debugParams.gameOverArcadePositionY}
+              min={-30}
+              max={60}
+              step={0.1}
+              onChange={(value) => updateParam('gameOverArcadePositionY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Z"
+              value={debugParams.gameOverArcadePositionZ}
+              min={-150}
+              max={150}
+              step={0.25}
+              onChange={(value) => updateParam('gameOverArcadePositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation X"
+              value={debugParams.gameOverArcadeRotationX}
+              min={-Math.PI * 3}
+              max={Math.PI * 3}
+              step={0.1}
+              onChange={(value) => updateParam('gameOverArcadeRotationX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Y"
+              value={debugParams.gameOverArcadeRotationY}
+              min={-Math.PI * 3}
+              max={Math.PI * 3}
+              step={0.1}
+              onChange={(value) => updateParam('gameOverArcadeRotationY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Z"
+              value={debugParams.gameOverArcadeRotationZ}
+              min={-Math.PI * 3}
+              max={Math.PI * 3}
+              step={0.1}
+              onChange={(value) => updateParam('gameOverArcadeRotationZ', value)}
+              decimals={2}
+            />
+          </div>
+        )}
         {activeTab === 'wraithArena' && (
           <div className="debug-section">
             <h3>ARENA WRAITH (Cyber Alley instance)</h3>
@@ -1705,7 +1770,7 @@ export function DebugPanel() {
               label="Scale"
               value={debugParams.wraithArenaScale}
               min={0.05}
-              max={5}
+              max={15}
               step={0.05}
               onChange={(value) => updateParam('wraithArenaScale', value)}
               decimals={2}
@@ -1714,8 +1779,8 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position X"
               value={debugParams.wraithArenaPositionX}
-              min={-20}
-              max={20}
+              min={-60}
+              max={60}
               step={0.25}
               onChange={(value) => updateParam('wraithArenaPositionX', value)}
               decimals={2}
@@ -1724,8 +1789,8 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position Y"
               value={debugParams.wraithArenaPositionY}
-              min={-10}
-              max={15}
+              min={-30}
+              max={45}
               step={0.25}
               onChange={(value) => updateParam('wraithArenaPositionY', value)}
               decimals={2}
@@ -1734,8 +1799,8 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Position Z"
               value={debugParams.wraithArenaPositionZ}
-              min={-25}
-              max={15}
+              min={-75}
+              max={45}
               step={0.25}
               onChange={(value) => updateParam('wraithArenaPositionZ', value)}
               decimals={2}
@@ -1744,12 +1809,389 @@ export function DebugPanel() {
             <EnhancedSlider
               label="Rotation Y"
               value={debugParams.wraithArenaRotationY}
-              min={-3.14}
-              max={3.14}
+              min={-9.42}
+              max={9.42}
               step={0.1}
               onChange={(value) => updateParam('wraithArenaRotationY', value)}
               decimals={2}
             />
+          </div>
+        )}
+        {activeTab === 'arenaLogo' && (
+          <div className="debug-section">
+            <h3>ARENA LOGO (slamz_logo.glb in Cyber Alley)</h3>
+
+            <BooleanToggle
+              label="Visible"
+              value={debugParams.arenaLogoVisible}
+              onChange={(value) => updateParam('arenaLogoVisible', value as any)}
+            />
+
+            <EnhancedSlider
+              label="Scale"
+              value={debugParams.arenaLogoScale}
+              min={0.1}
+              max={450}
+              step={0.5}
+              onChange={(value) => updateParam('arenaLogoScale', value)}
+              decimals={1}
+            />
+
+            <EnhancedSlider
+              label="Position X"
+              value={debugParams.arenaLogoPositionX}
+              min={-150}
+              max={150}
+              step={0.25}
+              onChange={(value) => updateParam('arenaLogoPositionX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Y"
+              value={debugParams.arenaLogoPositionY}
+              min={-30}
+              max={150}
+              step={0.25}
+              onChange={(value) => updateParam('arenaLogoPositionY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Z"
+              value={debugParams.arenaLogoPositionZ}
+              min={-300}
+              max={150}
+              step={0.25}
+              onChange={(value) => updateParam('arenaLogoPositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation X"
+              value={debugParams.arenaLogoRotationX}
+              min={-Math.PI * 6}
+              max={Math.PI * 6}
+              step={0.1}
+              onChange={(value) => updateParam('arenaLogoRotationX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Y"
+              value={debugParams.arenaLogoRotationY}
+              min={-Math.PI * 6}
+              max={Math.PI * 6}
+              step={0.1}
+              onChange={(value) => updateParam('arenaLogoRotationY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Z"
+              value={debugParams.arenaLogoRotationZ}
+              min={-Math.PI * 6}
+              max={Math.PI * 6}
+              step={0.1}
+              onChange={(value) => updateParam('arenaLogoRotationZ', value)}
+              decimals={2}
+            />
+          </div>
+        )}
+
+        {activeTab === 'floorSkin' && (
+          <div className="debug-section">
+            <h3>ARENA FLOOR SKIN (Overlay GLB)</h3>
+
+            <div className="debug-section-field">
+              <label>Asset Path</label>
+              <input 
+                type="text" 
+                value={debugParams.arenaFloorSkinAsset} 
+                onChange={(e) => setDebugParams({ arenaFloorSkinAsset: e.target.value })}
+                style={{ 
+                  width: '100%', 
+                  background: 'rgba(0,0,0,0.3)', 
+                  border: '1px solid #333', 
+                  color: '#fff', 
+                  padding: '4px',
+                  fontFamily: 'monospace',
+                  fontSize: '11px'
+                }}
+              />
+            </div>
+
+            <BooleanToggle
+              label="Visible"
+              value={debugParams.arenaFloorSkinVisible}
+              onChange={(value) => setDebugParams({ arenaFloorSkinVisible: value })}
+            />
+
+            <EnhancedSlider
+              label="Scale"
+              value={debugParams.arenaFloorSkinScale}
+              min={0.05}
+              max={150}
+              step={0.05}
+              onChange={(value) => updateParam('arenaFloorSkinScale', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position X"
+              value={debugParams.arenaFloorSkinPositionX}
+              min={-150}
+              max={150}
+              step={0.25}
+              onChange={(value) => updateParam('arenaFloorSkinPositionX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Y"
+              value={debugParams.arenaFloorSkinPositionY}
+              min={-30}
+              max={60}
+              step={0.01}
+              onChange={(value) => updateParam('arenaFloorSkinPositionY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Position Z"
+              value={debugParams.arenaFloorSkinPositionZ}
+              min={-150}
+              max={150}
+              step={0.25}
+              onChange={(value) => updateParam('arenaFloorSkinPositionZ', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation X"
+              value={debugParams.arenaFloorSkinRotationX}
+              min={-Math.PI * 3}
+              max={Math.PI * 3}
+              step={0.1}
+              onChange={(value) => updateParam('arenaFloorSkinRotationX', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Y"
+              value={debugParams.arenaFloorSkinRotationY}
+              min={-Math.PI * 3}
+              max={Math.PI * 3}
+              step={0.1}
+              onChange={(value) => updateParam('arenaFloorSkinRotationY', value)}
+              decimals={2}
+            />
+
+            <EnhancedSlider
+              label="Rotation Z"
+              value={debugParams.arenaFloorSkinRotationZ}
+              min={-Math.PI * 3}
+              max={Math.PI * 3}
+              step={0.1}
+              onChange={(value) => updateParam('arenaFloorSkinRotationZ', value)}
+              decimals={2}
+            />
+          </div>
+        )}
+
+        {activeTab === 'lighting' && (
+          <div className="debug-section">
+            <h3>💡 LIGHTING EDITOR</h3>
+            
+            <BooleanToggle
+              label="Show Visual Helpers"
+              value={debugParams.arenaShowLightHelpers}
+              onChange={(value) => setDebugParams({ arenaShowLightHelpers: value })}
+            />
+
+            <div className="debug-group">
+              <h4 style={{ color: '#00ffcc', fontSize: '10px', marginTop: '10px' }}>DIRECTIONAL (KEY)</h4>
+              <EnhancedSlider label="Intensity" value={debugParams.arenaDirLightIntensity} min={0} max={30} step={0.1} onChange={(v) => updateParam('arenaDirLightIntensity', v)} />
+              <EnhancedSlider label="PosX" value={debugParams.arenaDirLightPositionX} min={-150} max={150} step={1} onChange={(v) => updateParam('arenaDirLightPositionX', v)} />
+              <EnhancedSlider label="PosY" value={debugParams.arenaDirLightPositionY} min={0} max={150} step={1} onChange={(v) => updateParam('arenaDirLightPositionY', v)} />
+              <EnhancedSlider label="PosZ" value={debugParams.arenaDirLightPositionZ} min={-150} max={150} step={1} onChange={(v) => updateParam('arenaDirLightPositionZ', v)} />
+            </div>
+
+            <div className="debug-group">
+              <h4 style={{ color: '#00ffcc', fontSize: '10px', marginTop: '10px' }}>SPOT (ATMOSPHERIC)</h4>
+              <EnhancedSlider label="Intensity" value={debugParams.arenaSpotLightIntensity} min={0} max={150} step={1} onChange={(v) => updateParam('arenaSpotLightIntensity', v)} />
+              <EnhancedSlider label="PosX" value={debugParams.arenaSpotLightPositionX} min={-150} max={150} step={1} onChange={(v) => updateParam('arenaSpotLightPositionX', v)} />
+              <EnhancedSlider label="PosY" value={debugParams.arenaSpotLightPositionY} min={0} max={150} step={1} onChange={(v) => updateParam('arenaSpotLightPositionY', v)} />
+              <EnhancedSlider label="PosZ" value={debugParams.arenaSpotLightPositionZ} min={-150} max={150} step={1} onChange={(v) => updateParam('arenaSpotLightPositionZ', v)} />
+            </div>
+
+            <div className="debug-group">
+              <h4 style={{ color: '#00ffcc', fontSize: '10px', marginTop: '10px' }}>POINT 1 (PRIMARY)</h4>
+              <EnhancedSlider label="Intensity" value={debugParams.arenaPointLightIntensity} min={0} max={500} step={1} onChange={(v) => updateParam('arenaPointLightIntensity', v)} />
+              <EnhancedSlider label="PosX" value={debugParams.arenaPointLightPositionX} min={-150} max={150} step={1} onChange={(v) => updateParam('arenaPointLightPositionX', v)} />
+              <EnhancedSlider label="PosY" value={debugParams.arenaPointLightPositionY} min={0} max={150} step={1} onChange={(v) => updateParam('arenaPointLightPositionY', v)} />
+              <EnhancedSlider label="PosZ" value={debugParams.arenaPointLightPositionZ} min={-150} max={150} step={1} onChange={(v) => updateParam('arenaPointLightPositionZ', v)} />
+            </div>
+
+            <div className="debug-group">
+              <h4 style={{ color: '#00ffcc', fontSize: '10px', marginTop: '10px' }}>POINT 2 (FILL)</h4>
+              <EnhancedSlider label="Intensity" value={debugParams.arenaPoint2LightIntensity} min={0} max={500} step={1} onChange={(v) => updateParam('arenaPoint2LightIntensity', v)} />
+              <EnhancedSlider label="PosX" value={debugParams.arenaPoint2LightPositionX} min={-150} max={150} step={1} onChange={(v) => updateParam('arenaPoint2LightPositionX', v)} />
+              <EnhancedSlider label="PosY" value={debugParams.arenaPoint2LightPositionY} min={0} max={150} step={1} onChange={(v) => updateParam('arenaPoint2LightPositionY', v)} />
+              <EnhancedSlider label="PosZ" value={debugParams.arenaPoint2LightPositionZ} min={-150} max={150} step={1} onChange={(v) => updateParam('arenaPoint2LightPositionZ', v)} />
+            </div>
+          </div>
+        )}
+        {activeTab === 'props' && (
+          <div className="debug-section">
+            <h3>ARENA PROPS</h3>
+            
+            <div className="debug-group">
+              <h4>MAIN CABINET</h4>
+              <BooleanToggle
+                label="Visible"
+                value={debugParams.arcadeCabinetVisible}
+                onChange={(v) => setDebugParams({ arcadeCabinetVisible: v })}
+              />
+              <EnhancedSlider
+                label="Scale"
+                value={debugParams.arcadeCabinetScale}
+                min={0.01}
+                max={2}
+                step={0.01}
+                onChange={(v) => setDebugParams({ arcadeCabinetScale: v })}
+              />
+              <EnhancedSlider
+                label="Position X"
+                value={debugParams.arcadeCabinetPositionX}
+                min={-100}
+                max={100}
+                step={0.1}
+                onChange={(v) => setDebugParams({ arcadeCabinetPositionX: v })}
+              />
+              <EnhancedSlider
+                label="Position Y"
+                value={debugParams.arcadeCabinetPositionY}
+                min={-30}
+                max={30}
+                step={0.1}
+                onChange={(v) => setDebugParams({ arcadeCabinetPositionY: v })}
+              />
+              <EnhancedSlider
+                label="Position Z"
+                value={debugParams.arcadeCabinetPositionZ}
+                min={-100}
+                max={100}
+                step={0.1}
+                onChange={(v) => setDebugParams({ arcadeCabinetPositionZ: v })}
+              />
+              <EnhancedSlider
+                label="Rotation Y"
+                value={debugParams.arcadeCabinetRotationY}
+                min={-Math.PI}
+                max={Math.PI}
+                step={0.01}
+                onChange={(v) => setDebugParams({ arcadeCabinetRotationY: v })}
+              />
+            </div>
+
+            <div className="debug-group">
+              <h4>BACK CABINET</h4>
+              <BooleanToggle
+                label="Visible"
+                value={debugParams.arcadeBackVisible}
+                onChange={(v) => setDebugParams({ arcadeBackVisible: v })}
+              />
+              <EnhancedSlider
+                label="Scale"
+                value={debugParams.arcadeBackScale}
+                min={0.01}
+                max={2}
+                step={0.01}
+                onChange={(v) => setDebugParams({ arcadeBackScale: v })}
+              />
+              <EnhancedSlider
+                label="Position X"
+                value={debugParams.arcadeBackPositionX}
+                min={-100}
+                max={100}
+                step={0.1}
+                onChange={(v) => setDebugParams({ arcadeBackPositionX: v })}
+              />
+              <EnhancedSlider
+                label="Position Y"
+                value={debugParams.arcadeBackPositionY}
+                min={-30}
+                max={30}
+                step={0.1}
+                onChange={(v) => setDebugParams({ arcadeBackPositionY: v })}
+              />
+              <EnhancedSlider
+                label="Position Z"
+                value={debugParams.arcadeBackPositionZ}
+                min={-100}
+                max={100}
+                step={0.1}
+                onChange={(v) => setDebugParams({ arcadeBackPositionZ: v })}
+              />
+              <EnhancedSlider
+                label="Rotation Y"
+                value={debugParams.arcadeBackRotationY}
+                min={-Math.PI}
+                max={Math.PI}
+                step={0.01}
+                onChange={(v) => setDebugParams({ arcadeBackRotationY: v })}
+              />
+            </div>
+
+            <div className="debug-group">
+              <h4>PRO-TOUR TEXT</h4>
+              <BooleanToggle
+                label="Visible"
+                value={debugParams.proTourVisible}
+                onChange={(v) => setDebugParams({ proTourVisible: v })}
+              />
+              <EnhancedSlider
+                label="Scale"
+                value={debugParams.proTourScale}
+                min={0.1}
+                max={50}
+                step={0.05}
+                onChange={(v) => setDebugParams({ proTourScale: v })}
+              />
+              <EnhancedSlider
+                label="Position X"
+                value={debugParams.proTourPositionX}
+                min={-100}
+                max={100}
+                step={0.1}
+                onChange={(v) => setDebugParams({ proTourPositionX: v })}
+              />
+              <EnhancedSlider
+                label="Position Y"
+                value={debugParams.proTourPositionY}
+                min={-30}
+                max={30}
+                step={0.1}
+                onChange={(v) => setDebugParams({ proTourPositionY: v })}
+              />
+              <EnhancedSlider
+                label="Position Z"
+                value={debugParams.proTourPositionZ}
+                min={-100}
+                max={100}
+                step={0.1}
+                onChange={(v) => setDebugParams({ proTourPositionZ: v })}
+              />
+              <EnhancedSlider
+                label="Rotation Y"
+                value={debugParams.proTourRotationY}
+                min={-Math.PI}
+                max={Math.PI}
+                step={0.01}
+                onChange={(v) => setDebugParams({ proTourRotationY: v })}
+              />
+            </div>
           </div>
         )}
 

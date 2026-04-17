@@ -221,6 +221,10 @@ export const StartScreen: React.FC = () => {
         </div>
       </div>
 
+      <div className="branding-footer">
+        VIBEJAM 2026: PRO-TOUR
+      </div>
+
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <defs>
           <filter id="rgb-split">

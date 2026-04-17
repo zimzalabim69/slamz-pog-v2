@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react'
 import wasm from 'vite-plugin-wasm'
 import topLevelAwait from 'vite-plugin-top-level-await'
 
+// DevTools for your game
+import reactScan from '@react-scan/vite-plugin-react-scan'
+
 const devHost = '127.0.0.1'
 const devPort = 4173
 
@@ -11,8 +14,15 @@ export default defineConfig({
     react(),
     wasm(),
     topLevelAwait(),
+
+    // React Scan → shows you which components are re-rendering too much (super useful for games!)
+    reactScan({
+      enable: true,   // you can change to false later if it causes issues
+    }),
   ],
+
   base: './',
+
   server: {
     host: devHost,
     port: devPort,
@@ -22,6 +32,7 @@ export default defineConfig({
       clientPort: devPort,
     },
   },
+
   build: {
     rollupOptions: {
       output: {

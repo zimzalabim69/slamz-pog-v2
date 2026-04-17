@@ -1,9 +1,27 @@
 import * as THREE from 'three';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, Suspense, Component, ReactNode } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGameStore } from '../../store/useGameStore';
-import { useGLTF, Clone } from '@react-three/drei';
+import { useGLTF, Text } from '@react-three/drei';
+import { RigidBody } from '@react-three/rapier';
 import { SlamzWraith } from '../game/SlamzWraith';
+
+/**
+ * Silent Error Boundary
+ * Prevents a single failing GLB load from crashing the entire Three.js context.
+ */
+class SilentErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: any) { console.warn('Asset load failed (silently caught):', error); }
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
 
 function makeNeonSignTexture(text: string, bgColor: string, textColor: string) {
   const canvas = document.createElement('canvas');
@@ -22,11 +40,6 @@ function makeNeonSignTexture(text: string, bgColor: string, textColor: string) {
 const SIGN_TEX_OPEN = makeNeonSignTexture('OPEN 24H', '#0a000a', '#ff007c');
 const SIGN_TEX_SLAMZ = makeNeonSignTexture('SLAMZ', '#000a0a', '#00e5ff');
 
-// Preload both arcade models
-useGLTF.preload('/assets/Slamz_Arcade.glb');
-useGLTF.preload('/assets/Slamz_Arcade_Back.glb');
-useGLTF.preload('/assets/Slamz_Pro_Tour_Arcade.glb');
-
 function ArcadeModel({ 
   url,
   position, 
@@ -40,18 +53,49 @@ function ArcadeModel({
 }) {
   const { scene } = useGLTF(url);
   
+  const cleanedScene = useMemo(() => {
+    const clone = scene.clone();
+    clone.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const name = child.name.toLowerCase();
+        
+        // Ensure everything is visible but calibrated
+        child.visible = true; 
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+        if (name.includes('neon') || name.includes('light') || name.includes('emissive')) {
+           if ((child as THREE.Mesh).material) {
+             const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
+             mat.emissiveIntensity = 2;
+           }
+        }
+      }
+    });
+    return clone;
+  }, [scene]);
+  
   return (
     <group position={position} rotation={rotation} scale={scale}>
-      <Clone object={scene} />
+      <primitive object={cleanedScene} />
     </group>
   );
 }
 
+// Wrapper to ensure ErrorBoundary catches useGLTF errors
+function SafeArcadeModel(props: any) {
+  return (
+    <SilentErrorBoundary>
+      <Suspense fallback={null}>
+        <ArcadeModel {...props} />
+      </Suspense>
+    </SilentErrorBoundary>
+  );
+}
+
 export function CyberAlley() {
-  const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
   const qualityLevel = useGameStore((state) => state.qualityLevel);
   const debugParams = useGameStore((state) => state.debugParams);
-  const isEnabled = currentAtmosphere === 'CYBER_ALLEY';
   
   const rainRef = useRef<THREE.Points>(null);
   const RAIN_COUNT = 500;
@@ -73,7 +117,7 @@ export function CyberAlley() {
   }, [rainPositions]);
 
   useFrame((_, delta) => {
-    if (!rainRef.current || !isEnabled) return;
+    if (!rainRef.current) return;
     const pos = rainRef.current.geometry.attributes.position as THREE.BufferAttribute;
     for (let i = 0; i < pos.count; i++) {
       let y = pos.getY(i) - 20 * delta;
@@ -83,67 +127,25 @@ export function CyberAlley() {
     pos.needsUpdate = true;
   });
 
-  if (!isEnabled) return null;
 
-
-  // Only show arcade cabinets on medium/high quality (934k tris is heavy) AND if visible
-  const showArcades = qualityLevel !== 'low' && debugParams.arcadeCabinetVisible;
 
   return (
     <group>
-      {/* WALLS */}
-      <mesh position={[0, 7, -15]}>
-        <planeGeometry args={[40, 14]} />
-        <meshStandardMaterial color="#1a1012" roughness={0.9} />
-      </mesh>
-      <mesh position={[-15, 7, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[30, 14]} />
-        <meshStandardMaterial color="#1a1012" roughness={0.9} />
-      </mesh>
-      <mesh position={[15, 7, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[30, 14]} />
-        <meshStandardMaterial color="#1a1012" roughness={0.9} />
-      </mesh>
-
-      {/* SLAMZ ARCADE - FRONT (Slamz_Arcade.glb) */}
-      {showArcades && (
-        <ArcadeModel 
-          url="/assets/Slamz_Arcade.glb"
+      {/* WHOLE ROOM BACKDROP */}
+      {debugParams.arenaRoomVisible && (
+        <SafeArcadeModel
+          url={`/assets/${debugParams.arenaRoomAsset}`}
           position={[
-            debugParams.arcadeCabinetPositionX,
-            debugParams.arcadeCabinetPositionY,
-            debugParams.arcadeCabinetPositionZ
-          ]} 
-          rotation={[0, debugParams.arcadeCabinetRotationY, 0]} 
-          scale={debugParams.arcadeCabinetScale}
-        />
-      )}
-
-      {/* SLAMZ ARCADE - BACK (Slamz_Arcade_Back.glb) */}
-      {qualityLevel !== 'low' && debugParams.arcadeBackVisible && (
-        <ArcadeModel 
-          url="/assets/Slamz_Arcade_Back.glb"
-          position={[
-            debugParams.arcadeBackPositionX,
-            debugParams.arcadeBackPositionY,
-            debugParams.arcadeBackPositionZ
-          ]} 
-          rotation={[0, debugParams.arcadeBackRotationY, 0]} 
-          scale={debugParams.arcadeBackScale}
-        />
-      )}
-
-      {/* SLAMZ PRO TOUR ARCADE (Slamz_Pro_Tour_Arcade.glb) — Arena centerpiece */}
-      {qualityLevel !== 'low' && debugParams.proTourVisible && (
-        <ArcadeModel
-          url="/assets/Slamz_Pro_Tour_Arcade.glb"
-          position={[
-            debugParams.proTourPositionX,
-            debugParams.proTourPositionY,
-            debugParams.proTourPositionZ
+            debugParams.arenaRoomPositionX,
+            debugParams.arenaRoomPositionY,
+            debugParams.arenaRoomPositionZ
           ]}
-          rotation={[0, debugParams.proTourRotationY, 0]}
-          scale={debugParams.proTourScale}
+          rotation={[
+            debugParams.arenaRoomRotationX,
+            debugParams.arenaRoomRotationY,
+            debugParams.arenaRoomRotationZ
+          ]}
+          scale={debugParams.arenaRoomScale}
         />
       )}
 
@@ -152,17 +154,106 @@ export function CyberAlley() {
         <SlamzWraith context="arena" />
       )}
 
-      {/* NEON SIGNS */}
-      <mesh position={[-4, 8.5, -14.9]}>
-        <planeGeometry args={[4, 1]} />
-        <meshBasicMaterial map={SIGN_TEX_OPEN} transparent />
-      </mesh>
-      <pointLight color="#ff007c" intensity={4} distance={10} position={[0, 9, -14]} />
 
-      <mesh position={[4, 9.5, -14.9]}>
-        <planeGeometry args={[4, 1]} />
-        <meshBasicMaterial map={SIGN_TEX_SLAMZ} transparent />
-      </mesh>
+      {/* GAME OVER ARCADE — Specific Prop */}
+      {debugParams.gameOverArcadeVisible && (
+        <SafeArcadeModel
+          url="/assets/Game_Over_Arcade.glb"
+          position={[
+            debugParams.gameOverArcadePositionX,
+            debugParams.gameOverArcadePositionY,
+            debugParams.gameOverArcadePositionZ
+          ]}
+          rotation={[
+            debugParams.gameOverArcadeRotationX,
+            debugParams.gameOverArcadeRotationY,
+            debugParams.gameOverArcadeRotationZ
+          ]}
+          scale={debugParams.gameOverArcadeScale}
+        />
+      )}
+
+      {/* 3D ARENA LOGO — Giant Landmark */}
+      {debugParams.arenaLogoVisible && (
+        <SafeArcadeModel
+          url="/assets/slamz_logo.glb"
+          position={[
+            debugParams.arenaLogoPositionX,
+            debugParams.arenaLogoPositionY,
+            debugParams.arenaLogoPositionZ
+          ]}
+          rotation={[
+            debugParams.arenaLogoRotationX,
+            debugParams.arenaLogoRotationY,
+            debugParams.arenaLogoRotationZ
+          ]}
+          scale={debugParams.arenaLogoScale}
+        />
+      )}
+
+      {/* BATTLE AREA — Neon Centerpiece — Pure Visual ONLY */}
+      {debugParams.battleAreaVisible && (
+        <SafeArcadeModel
+          url="/assets/Slamz_Neon_Battle_Area.glb"
+          position={[
+            debugParams.battleAreaPositionX,
+            debugParams.battleAreaPositionY,
+            debugParams.battleAreaPositionZ
+          ]}
+          rotation={[
+            debugParams.battleAreaRotationX,
+            debugParams.battleAreaRotationY,
+            debugParams.battleAreaRotationZ
+          ]}
+          scale={debugParams.battleAreaScale}
+        />
+      )}
+
+      {/* FLOOR SKIN — custom overlay */}
+      {debugParams.arenaFloorSkinVisible && (
+        <SafeArcadeModel
+          url={`/assets/${debugParams.arenaFloorSkinAsset}`}
+          position={[
+            debugParams.arenaFloorSkinPositionX,
+            debugParams.arenaFloorSkinPositionY,
+            debugParams.arenaFloorSkinPositionZ
+          ]}
+          rotation={[
+            debugParams.arenaFloorSkinRotationX,
+            debugParams.arenaFloorSkinRotationY,
+            debugParams.arenaFloorSkinRotationZ
+          ]}
+          scale={debugParams.arenaFloorSkinScale}
+        />
+      )}
+
+      {/* DUAL ARCADE CABINETS */}
+      {debugParams.arcadeCabinetVisible && (
+        <SafeArcadeModel
+          url="/assets/Slamz_Pro_Tour_Arcade.glb"
+          position={[
+            debugParams.arcadeCabinetPositionX,
+            debugParams.arcadeCabinetPositionY,
+            debugParams.arcadeCabinetPositionZ
+          ]}
+          rotation={[0, debugParams.arcadeCabinetRotationY, 0]}
+          scale={debugParams.arcadeCabinetScale}
+        />
+      )}
+
+      {debugParams.arcadeBackVisible && (
+        <SafeArcadeModel
+          url="/assets/Slamz_Pro_Tour_Arcade.glb"
+          position={[
+            debugParams.arcadeBackPositionX,
+            debugParams.arcadeBackPositionY,
+            debugParams.arcadeBackPositionZ
+          ]}
+          rotation={[0, debugParams.arcadeBackRotationY, 0]}
+          scale={debugParams.arcadeBackScale}
+        />
+      )}
+
 
       {/* RAIN */}
       <primitive object={new THREE.Points(rainGeo, new THREE.PointsMaterial({ 

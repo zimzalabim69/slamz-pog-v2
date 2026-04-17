@@ -200,6 +200,21 @@
   transition: background-color 0.4s ease-in;
 }
 
+.branding-footer {
+  position: absolute;
+  bottom: 20px;
+  font-size: 0.75rem;
+  color: #00ffff;
+  text-transform: uppercase;
+  letter-spacing: 12px;
+  font-weight: 900;
+  text-shadow: 0 0 10px #00ffff;
+  opacity: 0.6;
+  animation: flicker-in 3s infinite alternate;
+  pointer-events: none;
+  z-index: 100;
+}
+
 .arcade-meta {
   position: absolute;
   bottom: 12px;

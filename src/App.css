@@ -65,3 +65,28 @@
   z-index: 1;
   touch-action: none;
 }
+
+/* Leva UI Styling Fix - Force labels above sliders to prevent truncation */
+#leva__root {
+  z-index: 1000 !important;
+}
+
+#leva__root [class*="leva-"] {
+  --leva-sizes-controlWidth: 100% !important;
+}
+
+#leva__root [class*="leva-"] > div {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+}
+
+#leva__root [class*="leva-"] label {
+  width: 100% !important;
+  margin-bottom: 4px !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
+  color: #00e5ff !important; /* Cyberpunk cyan for legibility */
+  font-weight: bold !important;
+  font-size: 11px !important;
+}
