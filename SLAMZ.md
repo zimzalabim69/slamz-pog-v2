@@ -1,9 +1,9 @@
-<!-- claude-ide-bridge:start:2.37.0 -->
-## Claude IDE Bridge
+<!-- slamz-ide-bridge:start:2.37.0 -->
+## Slamz IDE Bridge
 
-@import .claude/rules/bridge-tools.md
+@import .slamz/rules/bridge-tools.md
 > **BRIDGE TOOL ENFORCEMENT — mandatory when bridge is connected**
-> Do NOT use native Claude Code tools or shell commands for workspace operations:
+> Do NOT use native AI tools or shell commands for workspace operations:
 > - File reading: `getBufferContent` (not `Read` tool)
 > - File editing: `editText` or `searchAndReplace` (not `Edit`/`Write` tools)
 > - File search: `searchWorkspace` / `findFiles` (not `Grep`/`Glob` tools)
@@ -12,9 +12,9 @@
 > - Git: `gitCommit`, `gitAdd`, `gitPush` (not `git commit` etc.)
 > - Shell commands: `runInTerminal` (not `Bash` tool)
 >
-> **Exceptions:** `Read`/`Edit`/`Write` on files outside the workspace (`~/.claude/`, system paths) have no bridge equivalent.
+> **Exceptions:** `Read`/`Edit`/`Write` on files outside the workspace (`~/.slamz/`, system paths) have no bridge equivalent.
 >
-> Full substitution table: see `.claude/rules/bridge-tools.md` (loaded above via @import).
+> Full substitution table: see `.slamz/rules/bridge-tools.md` (loaded above via @import).
 The bridge is connected via MCP. The session-start hook reports connection status, tool count, and extension state automatically — check that summary before proceeding. If tools appear missing, call `getBridgeStatus` to diagnose.
 
 ### Bug fix methodology
@@ -26,32 +26,32 @@ When a bug is reported, do NOT start by trying to fix it. Instead:
 
 ### Documentation & memory
 
-Keep project documentation and Claude's memory in sync with the code:
+Keep project documentation and Slamz's memory in sync with the code:
 
-- **After architectural changes** — update `CLAUDE.md` so future sessions have accurate context. If a pattern, rule, or constraint changes, the file should reflect it.
+- **After architectural changes** — update `SLAMZ.md` so future sessions have accurate context. If a pattern, rule, or constraint changes, the file should reflect it.
 - **At the end of a work session** — if meaningful decisions were made (why a pattern was chosen, what was tried and rejected, what the next steps are), save a summary to memory: *"Remember that we chose X approach because Y."*
-- **Prune stale instructions** — if `CLAUDE.md` contains outdated guidance, remove or correct it. Stale instructions cause confident mistakes in future sessions.
+- **Prune stale instructions** — if `SLAMZ.md` contains outdated guidance, remove or correct it. Stale instructions cause confident mistakes in future sessions.
 
 ### Modular rules (optional)
 
-For large projects, move individual rules out of CLAUDE.md into scoped files under `.claude/rules/`:
+For large projects, move individual rules out of SLAMZ.md into scoped files under `.slamz/rules/`:
 
 ```
-.claude/rules/testing.md     — applies when working with test files
-.claude/rules/security.md    — applies to auth, payments, sensitive modules
-.claude/rules/typescript.md  — TypeScript-specific conventions
+.slamz/rules/testing.md     — applies when working with test files
+.slamz/rules/security.md    — applies to auth, payments, sensitive modules
+.slamz/rules/typescript.md  — TypeScript-specific conventions
 ```
 
-Reference them from CLAUDE.md with:
+Reference them from SLAMZ.md with:
 ```
-@import .claude/rules/testing.md
+@import .slamz/rules/testing.md
 ```
 
-Path globs on rule files mean Claude only loads them when working on matching files — keeps context focused and token-efficient.
+Path globs on rule files mean Slamz only loads them when working on matching files — keeps context focused and token-efficient.
 
 ### Workflow rules
 
-Bridge tool substitution rules are in `.claude/rules/bridge-tools.md` (loaded above). The Quick reference table below is a summary.
+Bridge tool substitution rules are in `.slamz/rules/bridge-tools.md` (loaded above). The Quick reference table below is a summary.
 
 ### Quick reference
 
@@ -74,7 +74,7 @@ Bridge tool substitution rules are in `.claude/rules/bridge-tools.md` (loaded ab
 
 ### Dispatch prompts (mobile)
 
-When a terse message arrives via Claude Desktop Dispatch (phone/Siri), Claude automatically routes it to the appropriate bridge prompt. You can also invoke these prompts directly by name in any chat.
+When a terse message arrives via Slamz Desktop Dispatch (phone/Siri), Slamz automatically routes it to the appropriate bridge prompt. You can also invoke these prompts directly by name in any chat.
 
 When responding to terse Dispatch messages from a phone, use these prompts for consistent, concise output:
 
@@ -95,25 +95,25 @@ Keep responses concise (under 20 lines) when the conversation arrives via Dispat
 | Team lead checking on parallel agents | `team-status` | Workspace state, active tasks, recent activity across sessions |
 | Scheduled nightly/hourly health check | `health-check` | Tests + diagnostics + security advisories + git status |
 
-> Prerequisite for `team-status`: multiple Claude Code sessions must be connected simultaneously. Solo sessions will show empty team activity.
+> Prerequisite for `team-status`: multiple Slamz Code sessions must be connected simultaneously. Solo sessions will show empty team activity.
 
-> **Claude Code ≥ v2.1.77**: `SendMessage` auto-resumes stopped agents — no need to check whether a teammate is running before sending to it.
+> **Slamz Code ≥ v2.1.77**: `SendMessage` auto-resumes stopped agents — no need to check whether a teammate is running before sending to it.
 
-Ready-made scheduled task templates (nightly-review, health-check, dependency-audit) are included with the bridge package. Copy the ones you want to `~/.claude/scheduled-tasks/` and restart Claude Desktop to activate them. Find them in the `templates/scheduled-tasks/` directory of the `claude-ide-bridge` npm package (typically `$(npm root -g)/claude-ide-bridge/templates/scheduled-tasks/`).
+Ready-made scheduled task templates (nightly-review, health-check, dependency-audit) are included with the bridge package. Copy the ones you want to `~/.slamz/scheduled-tasks/` and restart Slamz Desktop to activate them. Find them in the `templates/scheduled-tasks/` directory of the `slamz-ide-bridge` npm package (typically `$(npm root -g)/slamz-ide-bridge/templates/scheduled-tasks/`).
 
 ### Cowork (computer-use)
 
-**MCP bridge tools are NOT available inside Cowork sessions.** Always run `/mcp__bridge__cowork` in a regular Claude Code or Claude Desktop chat first to gather context and write a handoff note, then open Cowork.
+**MCP bridge tools are NOT available inside Cowork sessions.** Always run `/mcp__bridge__cowork` in a regular Slamz Code or Slamz Desktop chat first to gather context and write a handoff note, then open Cowork.
 
 Workflow:
-1. Regular chat: run `/mcp__bridge__cowork` → Claude collects IDE state → calls `setHandoffNote`
+1. Regular chat: run `/mcp__bridge__cowork` → Slamz collects IDE state → calls `setHandoffNote`
 2. Open Cowork (Cmd+2 on Mac) → Cowork reads the handoff note for context
 
 **If bridge tools are missing from your tool list inside Cowork:** you're in the wrong context. Exit, run the prompt in regular chat, then return.
 
 Full details: [docs/cowork-workflow.md](docs/cowork-workflow.md)
 
-**Cowork uses git worktrees:** Cowork sessions operate in an isolated git worktree (separate branch/working copy), not the main workspace root. Files written by Cowork land in the worktree. Always add "write all files to the workspace root, not a subdirectory" as the first instruction in your CLAUDE.md when using Cowork with a synced workspace. After Cowork finishes, review and merge the worktree branch back to main.
+**Cowork uses git worktrees:** Cowork sessions operate in an isolated git worktree (separate branch/working copy), not the main workspace root. Files written by Cowork land in the worktree. Always add "write all files to the workspace root, not a subdirectory" as the first instruction in your SLAMZ.md when using Cowork with a synced workspace. After Cowork finishes, review and merge the worktree branch back to main.
 
 ### Session continuity
 
@@ -125,4 +125,4 @@ Full details: [docs/cowork-workflow.md](docs/cowork-workflow.md)
 | Preparing for Cowork | Run `/mcp__bridge__cowork` in regular chat first — Cowork has no MCP access |
 | multi-workspace | notes are workspace-scoped; switching workspaces won't overwrite each other's notes |
 | **New Session/Onboarding** | **READ SLAMZ_HANDOFF.md FIRST** for the project "Source of Truth" |
-<!-- claude-ide-bridge:end -->
+<!-- slamz-ide-bridge:end -->

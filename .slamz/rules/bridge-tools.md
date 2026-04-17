@@ -1,15 +1,15 @@
 <!-- bridge-tools v2.37.0 -->
 
-## Bridge Tool Overrides (claude-ide-bridge)
+## Bridge Tool Overrides (slamz-ide-bridge)
 
-> **These rules are active when the `claude-ide-bridge` MCP server is connected** (green in `/mcp`).  
+> **These rules are active when the `slamz-ide-bridge` MCP server is connected** (green in `/mcp`).  
 > If the bridge is not running, fall back to standard shell equivalents.
 
-### MANDATORY: Bridge MCP tools replace shell commands AND native Claude Code tools
+### MANDATORY: Bridge MCP tools replace shell commands AND native AI tools
 
-Do NOT use native Claude Code tools or shell commands for workspace operations. Call the MCP tool instead.
+Do NOT use native AI tools or shell commands for workspace operations. Call the MCP tool instead.
 
-#### File I/O — native Claude Code tools replaced by bridge
+#### File I/O — native AI tools replaced by bridge
 
 | ❌ Do NOT use | ✅ Call instead |
 |---|---|
@@ -19,7 +19,7 @@ Do NOT use native Claude Code tools or shell commands for workspace operations. 
 | `Glob` tool to find files | `findFiles` |
 | `Bash` for build/shell commands | `runInTerminal` |
 
-> **Exceptions:** `Read`/`Edit`/`Write` on files **outside** the workspace (`~/.claude/`, system paths, etc.) have no bridge equivalent — native tools are correct there.
+> **Exceptions:** `Read`/`Edit`/`Write` on files **outside** the workspace (`~/.slamz/`, system paths, etc.) have no bridge equivalent — native tools are correct there.
 
 #### Diagnostics & linting
 
