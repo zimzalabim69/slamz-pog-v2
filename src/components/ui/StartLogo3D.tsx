@@ -246,7 +246,7 @@ export function StartLogo3D() {
   const impactCoords = useRef({ x: 0, y: 0, z: 0 });
 
   // Load the GLB model
-  const { scene } = useGLTF('/assets/slamz_logo.glb');
+  const { scene } = useGLTF('/assets/glbs/slamz_logo.glb');
 
   // Wire materials to Debug Params
   useEffect(() => {
@@ -355,4 +355,4 @@ export function StartLogo3D() {
 }
 
 // Preload the model
-useGLTF.preload('/assets/slamz_logo.glb');
+useGLTF.preload('/assets/glbs/slamz_logo.glb');

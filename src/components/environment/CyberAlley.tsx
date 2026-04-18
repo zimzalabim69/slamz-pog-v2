@@ -127,7 +127,7 @@ export function CyberAlley() {
       {/* GAME OVER ARCADE — Specific Prop */}
       {debugParams.gameOverArcadeVisible && (
         <SafeArcadeModel
-          url="/assets/Game_Over_Arcade.glb"
+          url="/assets/glbs/Game_Over_Arcade.glb"
           position={[
             debugParams.gameOverArcadePositionX,
             debugParams.gameOverArcadePositionY,
@@ -145,7 +145,7 @@ export function CyberAlley() {
       {/* 3D ARENA LOGO — Giant Landmark */}
       {debugParams.arenaLogoVisible && (
         <SafeArcadeModel
-          url="/assets/slamz_logo.glb"
+          url="/assets/glbs/slamz_logo.glb"
           position={[
             debugParams.arenaLogoPositionX,
             debugParams.arenaLogoPositionY,
@@ -163,7 +163,7 @@ export function CyberAlley() {
       {/* BATTLE AREA — Neon Centerpiece — Pure Visual ONLY */}
       {debugParams.battleAreaVisible && (
         <SafeArcadeModel
-          url="/assets/Slamz_Neon_Battle_Area.glb"
+          url="/assets/glbs/Slamz_Neon_Battle_Area.glb"
           position={[
             debugParams.battleAreaPositionX,
             debugParams.battleAreaPositionY,
@@ -199,7 +199,7 @@ export function CyberAlley() {
       {/* DUAL ARCADE CABINETS */}
       {debugParams.arcadeCabinetVisible && (
         <SafeArcadeModel
-          url="/assets/Slamz_Pro_Tour_Arcade.glb"
+          url="/assets/glbs/Slamz_Pro_Tour_Arcade.glb"
           position={[
             debugParams.arcadeCabinetPositionX,
             debugParams.arcadeCabinetPositionY,
@@ -212,7 +212,7 @@ export function CyberAlley() {
 
       {debugParams.arcadeBackVisible && (
         <SafeArcadeModel
-          url="/assets/Slamz_Pro_Tour_Arcade.glb"
+          url="/assets/glbs/Slamz_Pro_Tour_Arcade.glb"
           position={[
             debugParams.arcadeBackPositionX,
             debugParams.arcadeBackPositionY,

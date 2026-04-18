@@ -52,9 +52,9 @@ export const initSystemLogger = () => {
 
       // If Context Lost is detected, trigger an emergency reboot flag
       if (message.includes('Context Lost')) {
-         originalError('[SYSTEM] GPU Context Crash Detected. Throttling and Reloading...');
+         originalError('[SYSTEM] GPU/Audio Context Crash Detected. Throttling and Reloading disabled to prevent loop.');
          // Instead of waiting, we immediately try to bounce the page to recover.
-         setTimeout(() => window.location.reload(), 1000);
+         // setTimeout(() => window.location.reload(), 1000);
       }
         
       const store = useTerminalStore.getState();

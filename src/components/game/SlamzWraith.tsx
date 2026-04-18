@@ -19,7 +19,7 @@ export function SlamzWraith({ context = 'start' }: SlamzWraithProps = {}) {
   const debugParams = useGameStore((state) => state.debugParams);
 
   // Load the Wraith GLB model
-  const { scene } = useGLTF('/assets/Slamz_Wraith.glb');
+  const { scene } = useGLTF('/assets/glbs/Slamz_Wraith.glb');
 
   useFrame((state) => {
     if (!groupRef.current) return;
@@ -60,4 +60,4 @@ export function SlamzWraith({ context = 'start' }: SlamzWraithProps = {}) {
 }
 
 // Preload the model
-useGLTF.preload('/assets/Slamz_Wraith.glb');
+useGLTF.preload('/assets/glbs/Slamz_Wraith.glb');

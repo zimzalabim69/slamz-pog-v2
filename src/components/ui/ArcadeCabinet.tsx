@@ -17,7 +17,7 @@ export const ArcadeCabinet: React.FC<ArcadeCabinetProps> = ({
   const debugParams = useGameStore((state) => state.debugParams);
   
   // Load the arcade cabinet model
-  const { scene } = useGLTF('/assets/Slamz_Pro_Tour_Arcade.glb');
+  const { scene } = useGLTF('/assets/glbs/Slamz_Pro_Tour_Arcade.glb');
   
   // Clone the scene to avoid shared state issues
   const cabinetRef = useRef<THREE.Group>(null);

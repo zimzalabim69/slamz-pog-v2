@@ -17,7 +17,7 @@ export const ArcadeStorefront: React.FC<ArcadeStorefrontProps> = ({
   const debugParams = useGameStore((state) => state.debugParams);
   
   // Load the new storefront model
-  const { scene } = useGLTF('/assets/Game_Over_Storefront.glb');
+  const { scene } = useGLTF('/assets/glbs/Game_Over_Storefront.glb');
   
   const storefrontRef = useRef<THREE.Group>(null);
   
