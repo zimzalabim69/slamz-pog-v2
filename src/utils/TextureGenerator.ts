@@ -203,10 +203,10 @@ function drawBackToCanvas(canvas: HTMLCanvasElement, rarity: string) {
     ctx.shadowBlur = 0;
 
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 96px Impact';
+    ctx.font = '900 96px Orbitron';
     ctx.textAlign = 'center';
     ctx.fillText('SLAMZ', Cx, Cy - 18);
-    ctx.font = 'bold 28px Impact';
+    ctx.font = '900 28px Orbitron';
     ctx.fillStyle = accent;
     ctx.fillText('PRO-TOUR', Cx, Cy + 52);
 }
@@ -244,7 +244,7 @@ function drawPogToCanvas(canvas: HTMLCanvasElement, type: string, variant: strin
         ctx.fillStyle = '#0a0a1a';
         ctx.fillRect(startX, startY, bgSize, bgSize);
         ctx.fillStyle = '#00ffcc';
-        ctx.font = 'bold 80px Impact';
+        ctx.font = '900 80px Orbitron';
         ctx.textAlign = 'center';
         ctx.fillText(theme.split('_')[1]?.toUpperCase() || '?', cx, cy);
     }

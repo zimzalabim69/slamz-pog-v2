@@ -87,6 +87,7 @@ function RenderController() {
 import { audioManager } from '../../utils/AudioManager';
 import { StartLogo3D } from './StartLogo3D';
 import { SlamzWraith } from '../game/SlamzWraith';
+import { DataRain } from './DataRain';
 
 export const StartScreen: React.FC = () => {
   const setGameState = useGameStore((state) => state.setGameState);
@@ -95,6 +96,7 @@ export const StartScreen: React.FC = () => {
   const [hasStartedAudio, setHasStartedAudio] = useState(false);  
 
   const handleStart = useCallback(async () => {
+
     if (zooming) return;
     if (!hasStartedAudio) {
       await audioManager.init();
@@ -117,23 +119,25 @@ export const StartScreen: React.FC = () => {
       className={`start-screen ${zooming ? 'zooming' : ''}`} 
       onClick={handleStart}
     >
+      <DataRain />
       <h1 className="sr-only">SLAMZ PRO-TOUR | VIBEJAM 2026</h1>
 
-      <div className="logo-container-3d">
+      <div className="logo-container-3d" style={{ background: 'transparent' }}>
         <Canvas 
-          frameloop="demand"
+          frameloop="always"
           dpr={CANVAS_DPR}
           gl={{ 
             outputColorSpace: THREE.SRGBColorSpace, 
             antialias: ENABLE_ANTIALIAS,
-            alpha: true, // Transparent context to let base App canvas layer show
+            alpha: true, 
             powerPreference: "high-performance"
-            // Removed preserveDrawingBuffer to prevent layer toggling bug
           }}
           camera={{ position: [0, 0, 8], fov: 35 }}
           onCreated={({ gl }) => {
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1.0;
+            // Force clear color to 0 alpha
+            gl.setClearColor(0x000000, 0);
           }}
           style={{ 
             position: 'absolute',

@@ -28,6 +28,9 @@ function Root() {
       console.log("BOOTHING SLAMZ CORE...");
       
       // 2. Race initialization against a safety timeout (10 seconds)
+      // Wait for fonts to be ready first to ensure Canvas drawing uses correct typography
+      await document.fonts.ready;
+      
       const initPromise = initializeTextureRegistry();
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error("Initialization Timeout")), 10000)

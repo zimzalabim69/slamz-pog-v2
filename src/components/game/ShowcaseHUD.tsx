@@ -101,19 +101,68 @@ export function ShowcaseHUD() {
                 <Plane args={[2.5, 0.5]} position={[0, 0, 0]}>
                     <meshBasicMaterial color="#000" />
                 </Plane>
-                <Text position={[0, 0, 0.1]} fontSize={0.25} color="white" fontStyle="italic" fontWeight={900}>NINJA TURDLES</Text>
+                <Text 
+                  position={[0, 0, 0.1]} 
+                  fontSize={0.25} 
+                  color="white" 
+                  font="https://fonts.gstatic.com/s/orbitron/v31/y97py_G97qS0kyJiYpwS.woff2"
+                  fontStyle="italic" 
+                  fontWeight={900}
+                >
+                  NINJA TURDLES
+                </Text>
             </group>
-            <Text position={[0, 0, 0.1]} fontSize={0.2} color="#00FFFF" fontStyle="italic">ULTIMATE_EDITION.exe</Text>
+            <Text 
+              position={[0, 0, 0.1]} 
+              fontSize={0.2} 
+              color="#00FFFF" 
+              font="https://fonts.gstatic.com/s/orbitron/v31/y97py_G97qS0kyJiYpwS.woff2"
+              fontStyle="italic"
+            >
+              ULTIMATE_EDITION.exe
+            </Text>
           </group>
 
           {/* DATA BOX */}
           <group position={[-uiWidth / 2 + 0.8, 1.0, -1]}>
-            <Text position={[0, 0.4, 0]} fontSize={0.15} color="#FACC15" anchorX="left">RATING:</Text>
-            <Text position={[0, 0, 0]} fontSize={0.5} color="#a3ff00" anchorX="left" fontWeight={900} fontStyle="italic">
+            <Text 
+              position={[0, 0.4, 0]} 
+              fontSize={0.15} 
+              color="#FACC15" 
+              font="https://fonts.gstatic.com/s/orbitron/v31/y97py_G97qS0kyJiYpwS.woff2"
+              anchorX="left"
+            >
+              RATING:
+            </Text>
+            <Text 
+              position={[0, 0, 0]} 
+              fontSize={0.5} 
+              color="#a3ff00" 
+              anchorX="left" 
+              font="https://fonts.gstatic.com/s/orbitron/v31/y97py_G97qS0kyJiYpwS.woff2"
+              fontWeight={900} 
+              fontStyle="italic"
+            >
                 {currentShowcase.rarity.toUpperCase()}
             </Text>
-            <Text position={[0, -0.6, 0]} fontSize={0.15} color="#FACC15" anchorX="left">VALUE:</Text>
-            <Text position={[0, -1.0, 0]} fontSize={0.8} color="#FF00FF" anchorX="left" fontWeight={900} fontStyle="italic">
+            <Text 
+              position={[0, -0.6, 0]} 
+              fontSize={0.15} 
+              color="#FACC15" 
+              font="https://fonts.gstatic.com/s/orbitron/v31/y97py_G97qS0kyJiYpwS.woff2"
+              anchorX="left"
+            >
+              VALUE:
+            </Text>
+            <Text 
+              position={[0, -1.0, 0]} 
+              fontSize={0.8} 
+              color="#FF00FF" 
+              anchorX="left" 
+              font="https://fonts.gstatic.com/s/orbitron/v31/y97py_G97qS0kyJiYpwS.woff2"
+              fontWeight={900} 
+              fontStyle="italic"
+            >
                 {currentShowcase.marketValue}
             </Text>
           </group>
@@ -125,14 +174,30 @@ export function ShowcaseHUD() {
             </Plane>
             <group position={[-uiWidth / 2 + 1.2, 0.1, 0.1]} rotation={[0, 0, -0.03]}>
                 <Plane args={[2.0, 0.4]}><meshBasicMaterial color="#000" /></Plane>
-                <Text position={[0, 0, 0.1]} fontSize={0.2} color="#FACC15" fontWeight={900} fontStyle="italic">SHOWCASE!!</Text>
+                <Text 
+                  position={[0, 0, 0.1]} 
+                  fontSize={0.2} 
+                  color="#FACC15" 
+                  font="https://fonts.gstatic.com/s/orbitron/v31/y97py_G97qS0kyJiYpwS.woff2"
+                  fontWeight={900} 
+                  fontStyle="italic"
+                >
+                  SHOWCASE!!
+                </Text>
             </group>
           </group>
 
           {/* VIBE JAM PILL */}
           <group position={[uiWidth / 2 - 1.2, -viewport.height / 2 + 0.8, 1]}>
             <Plane args={[1.8, 0.35]}><meshBasicMaterial color="white" /></Plane>
-            <Text position={[0, 0, 0.1]} fontSize={0.12} color="black">Vibe Jam 2026</Text>
+            <Text 
+              position={[0, 0, 0.1]} 
+              fontSize={0.12} 
+              color="black"
+              font="https://fonts.gstatic.com/s/sharetechmono/v15/J7aUxT8pSDB27uyO1V9K29f-0_07fIs.woff2"
+            >
+              Vibe Jam 2026
+            </Text>
           </group>
 
           {/* THE POG HERO */}

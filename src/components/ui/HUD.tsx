@@ -1,9 +1,9 @@
 import { useGameStore } from '../../store/useGameStore';
-import { SCENE_PRESETS } from '../../constants/game';
 import { Binder } from './Binder';
 import { Achievements, AchievementToast } from './Achievements';
 import { SlammerSelector } from './SlammerSelector';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import './HUD.css';
 
 export function HUD() {
   const gameState    = useGameStore((s) => s.gameState);
@@ -16,10 +16,10 @@ export function HUD() {
   const peakVelocity       = useGameStore((s) => s.peakVelocity);
   const pogMaxVelocity     = useGameStore((s) => s.debugParams.pogMaxVelocity);
   const pogsOnMat          = useGameStore((s) => s.pogsOnMat);
-
   const currentShowcase   = useGameStore((s) => s.currentShowcase);
 
-  // Keyboard shortcuts for [B] and [A]
+  const dataPackets = useGameStore((s) => s.dataPackets);
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'b') toggleBinder();
@@ -29,162 +29,143 @@ export function HUD() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [toggleBinder, toggleAchievements]);
 
-  // Hide HUD during showcase (after all hooks)
   if (currentShowcase) return null;
 
   return (
-    <div style={{
-      position: 'absolute', top: 0, left: 0,
-      width: '100%', height: '100%',
-      pointerEvents: 'none',
-      fontFamily: '"Orbitron", sans-serif',
-      color: '#fff',
-      zIndex: 10000,
-    }}>
-
-      {/* ── HEADER ─────────────────────────────────────────── */}
-      <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          {/* DIAGNOSTIC VELOCITY METER */}
-          <div style={{ 
-            marginTop: '8px', 
-            padding: '4px 8px', 
-            background: 'rgba(0,0,0,0.4)', 
-            borderLeft: '2px solid #00ffcc',
-            display: 'inline-block'
-          }}>
-            <div style={{ fontSize: '8px', color: '#00ffcc', opacity: 0.8, letterSpacing: '1px' }}>PEAK VELOCITY</div>
-            <div style={{ 
-              fontSize: '18px', 
-              fontWeight: 900, 
-              color: peakVelocity > pogMaxVelocity * 0.95 ? '#ff0044' : '#fff',
-              fontFamily: '"Share Tech Mono", monospace' 
-            }}>
-              {peakVelocity.toFixed(2)} <span style={{ fontSize: '10px', opacity: 0.5 }}>m/s</span>
-            </div>
+    <div className={`hud-container ${gameState === 'HARVEST' ? 'hud-glitch-active' : ''}`}>
+      {/* ── CINEMATIC OVERLAYS ── */}
+      <div className="hud-scanline" />
+      <div className="hud-vignette" />
+      
+      {/* ── NARRATIVE INTERFERENCE ── */}
+      {gameState === 'HARVEST' && (
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          fontSize: '48px', fontWeight: 900, color: '#ff0055', textTransform: 'uppercase',
+          letterSpacing: '15px', textShadow: '0 0 30px #ff0055', textAlign: 'center',
+          pointerEvents: 'none', zIndex: 1000
+        }}>
+          WRAITH_INTERFERENCE_DETECTED
+          <div style={{ fontSize: '14px', letterSpacing: '2px', marginTop: '10px', opacity: 0.7 }}>
+            ANALYZING_BREach_FRAGMENT... [ STOP_THEM_ ]
           </div>
+        </div>
+      )}
 
+      <div className="hud-bracket br-tl" />
+      <div className="hud-bracket br-tr" />
+      <div className="hud-bracket br-bl" />
+      <div className="hud-bracket br-br" />
+
+      {/* ── HEADER DATA ── */}
+      <div style={{ padding: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: '15px' }}>
+          {/* VELOCITY METER */}
           {gameState !== 'START_SCREEN' && (
-            <>
-              <div style={{ fontSize: '24px', fontWeight: 900, margin: '4px 0' }}>{gameState}</div>
-              <div style={{ display: 'flex', gap: '20px' }}>
-                <div style={{ fontSize: '10px', color: '#00ffcc', marginTop: '8px' }}>
-                  POGS WON: <span style={{ color: '#fff', fontSize: '14px' }}>{stats.pogsWon}</span>
-                </div>
-                <div style={{ fontSize: '10px', color: '#ff00cc', marginTop: '8px' }}>
-                  ON MAT: <span style={{ color: '#fff', fontSize: '14px' }}>{pogsOnMat}</span>
-                </div>
+            <div className="hud-meter">
+              <div className="hud-meter-header">INERTIAL FORCE</div>
+              <div style={{ 
+                fontSize: '20px', fontWeight: 900, 
+                color: peakVelocity > pogMaxVelocity * 0.9 ? '#ff0055' : '#00ffcc'
+              }}>
+                {peakVelocity.toFixed(2)} <span style={{ fontSize: '10px', opacity: 0.5 }}>MAG</span>
               </div>
-            </>
+            </div>
+          )}
+
+          {/* STATUS METER */}
+          {gameState !== 'START_SCREEN' && (
+            <div className="hud-meter" style={{ borderColor: 'rgba(255, 0, 85, 0.3)' }}>
+              <div className="hud-meter-header" style={{ color: '#ff0055' }}>SYSTEM STATUS</div>
+              <div style={{ fontSize: '16px', fontWeight: 900 }}>
+                {gameState === 'AIMING' ? 'READY_PROBE' : 
+                 gameState === 'POWERING' ? 'EXTRACT_ARMED' : 
+                 gameState === 'SLAMMED' ? 'BYPASS_ACTIVE' : 
+                 gameState === 'HARVEST' ? 'DECRYPTING_DATA_STREAM' : gameState}
+              </div>
+            </div>
           )}
         </div>
 
+        {/* TOP RIGHT STATS */}
         {gameState !== 'START_SCREEN' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', pointerEvents: 'auto' }}>
-            <button
-              onClick={() => resetStack()}
-              style={{
-                background: 'rgba(0,0,0,0.5)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                color: 'rgba(255,255,255,0.6)',
-                padding: '6px 14px', fontSize: '9px',
-                fontFamily: 'inherit', cursor: 'pointer',
-                textTransform: 'uppercase', letterSpacing: '2px',
-                borderRadius: '2px'
-              }}
-            >
-              RESET STACK [R]
-            </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="hud-meter">
+              <div className="hud-meter-header">PACKETS CAPTURED</div>
+              <div style={{ fontSize: '18px', fontWeight: 900, textAlign: 'right' }}>{stats.pogsWon}</div>
+            </div>
+            <div className="hud-meter" style={{ pointerEvents: 'auto' }}>
+              <button
+                onClick={() => resetStack()}
+                style={{
+                  background: 'none', border: 'none', color: '#fff',
+                  cursor: 'pointer', fontFamily: 'inherit', fontSize: '12px',
+                  letterSpacing: '1px', opacity: 0.7
+                }}
+              >
+                [ RESET_SYSTEM ]
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {/* ── POWER BAR ──────────────────────────────────────── */}
-      {gameState === 'POWERING' && (
-        <div style={{
-          position: 'absolute', bottom: '85px',
-          left: '50%', transform: 'translateX(-50%)',
-          width: '400px', height: '12px',
-          background: 'rgba(0,0,0,0.8)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          boxShadow: '0 0 20px rgba(0,0,0,0.5)', overflow: 'hidden'
-        }}>
-          <div style={{
-            width: `${power}%`, height: '100%',
-            background: power > 95 ? '#ff00ff' : '#00ffcc',
-            boxShadow: `0 0 10px ${power > 95 ? '#ff00ff' : '#00ffcc'}`,
-            transition: 'width 0.05s linear'
-          }} />
-          {power > 95 && (
-            <div style={{
-              position: 'absolute', top: '-32px', left: '50%',
-              transform: 'translateX(-50%)',
-              color: '#ff00ff', fontSize: '14px', fontWeight: 900,
-              letterSpacing: '2px', animation: 'pulse 0.4s infinite'
-            }}>
-              PERFECT!!
+
+      {/* ── DATA STREAM (SIDE) ── */}
+      {gameState !== 'START_SCREEN' && (
+        <div className="data-stream">
+          <div className="data-stream-header">LIVE_FEED_STREAM</div>
+          {gameState === 'HARVEST' && (
+            <div style={{ color: '#ff0055', fontWeight: 900, marginBottom: '20px', fontSize: '10px' }}>
+              {['I_SEE_EVERYTHING', 'YOUR_DATA_IS_MINE', 'REST_IN_SILICON', 'GHOST_IN_STREAM'].map((t, i) => (
+                <div key={i} style={{ animation: `textFlicker 0.1s infinite ${i * 0.2}s` }}>{t}</div>
+              ))}
             </div>
           )}
+          <div className="data-stream-content">
+            {dataPackets.map((p, i) => (
+              <div key={`${p}-${i}`} style={{ opacity: 1 - i * 0.05 }}>
+                0x{p}_FRAGMENT_RECOVERED
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* ── SLAM TEXT (float-up popup) ──────────────────────── */}
-      {lastSlamText && (
-        <div style={{
-          position: 'absolute', left: '50%', top: '35%',
-          transform: 'translateX(-50%)',
-          color: '#ffff00', fontSize: '48px', fontWeight: 900,
-          textShadow: '4px 4px 0 #ff0055',
-          animation: 'floatUp 1.2s forwards',
-          pointerEvents: 'none', whiteSpace: 'nowrap'
-        }}>
-          {lastSlamText}
+
+
+      {/* ── EXTRACTOR POWER BAR ── */}
+      {gameState === 'POWERING' && (
+        <div className="extractor-bar-container">
+          <div className="extractor-bar-fill" style={{ width: `${power}%` }} />
+          <div className="extractor-bar-pulse">
+            {power > 95 ? 'CRITICAL_BREACH_THRESHOLD' : 'HARVEST_EXTRACTION_CHARGING'}
+          </div>
         </div>
       )}
 
-      {/* ── FOOTER HINTS ──────────────────────────────────── */}
+      {/* ── POPUP TEXT ── */}
+      {lastSlamText && <div className="last-slam-popup">{lastSlamText}</div>}
+
+      {/* ── FOOTER NAVIGATION ── */}
       {gameState !== 'START_SCREEN' && (
-        <>
-          <div style={{
-            position: 'absolute', bottom: '20px', left: '20px',
-            display: 'flex', flexDirection: 'column', gap: '8px',
-            pointerEvents: 'auto'
-          }}>
-            <button
-              onClick={() => toggleBinder()}
-              style={{
-                background: 'rgba(0,0,0,0.6)',
-                border: '1px solid #00ffcc',
-                color: '#00ffcc',
-                padding: '8px 16px', fontSize: '10px',
-                fontFamily: 'inherit', cursor: 'pointer',
-                letterSpacing: '1px', fontWeight: 'bold'
-              }}
-            >
-              BINDER [B]
-            </button>
-            <button
-              onClick={() => toggleAchievements()}
-              style={{
-                background: 'rgba(0,0,0,0.6)',
-                border: '1px solid #ffaa00',
-                color: '#ffaa00',
-                padding: '8px 16px', fontSize: '10px',
-                fontFamily: 'inherit', cursor: 'pointer',
-                letterSpacing: '1px', fontWeight: 'bold'
-              }}
-            >
-              ACHIEVEMENTS [A]
-            </button>
+        <div style={{
+          position: 'absolute', bottom: '30px', width: '100%',
+          display: 'flex', justifyContent: 'space-between', padding: '0 30px',
+          pointerEvents: 'auto'
+        }}>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="nav-btn btn-binder" onClick={() => toggleBinder()}>[ B ] BINDER</button>
+            <button className="nav-btn btn-ach" onClick={() => toggleAchievements()}>[ A ] ARCHIVE</button>
           </div>
-
-          <div style={{
-            position: 'absolute', bottom: '20px', width: '100%',
-            textAlign: 'center', fontSize: '9px', opacity: 0.5, letterSpacing: '2px'
+          
+          <div style={{ 
+            fontSize: '10px', opacity: 0.4, textTransform: 'uppercase', 
+            letterSpacing: '3px', alignSelf: 'center' 
           }}>
-            [LEFT CLICK] HOLD TO CHARGE | [R] RESET
+            LOCAL_HOST::4173 // SLAMZ_CORE_V2.3 // UNINTERRUPTIBLE_POWER
           </div>
-        </>
+        </div>
       )}
 
       {gameState !== 'START_SCREEN' && (
@@ -197,15 +178,32 @@ export function HUD() {
       <AchievementToast />
 
       <style>{`
-        @keyframes pulse {
-          0%   { opacity: 1; transform: translateX(-50%) scale(1); }
-          50%  { opacity: 0.6; transform: translateX(-50%) scale(1.05); }
-          100% { opacity: 1; transform: translateX(-50%) scale(1); }
+        .last-slam-popup {
+          position: absolute; left: 50%; top: 35%;
+          transform: translateX(-50%);
+          color: #ffaa00; fontSize: 64px; fontWeight: 900;
+          text-shadow: 0 0 20px #ffaa00;
+          animation: cinematicFloat 1.2s forwards;
+          pointer-events: none;
         }
-        @keyframes floatUp {
-          0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
-          100% { opacity: 0; transform: translateX(-50%) translateY(-80px); }
+        @keyframes cinematicFloat {
+          0% { opacity: 0; transform: translate(-50%, 20px) scale(0.8); letter-spacing: 20px; }
+          20% { opacity: 1; transform: translate(-50%, 0) scale(1); letter-spacing: 2px; }
+          100% { opacity: 0; transform: translate(-50%, -100px) scale(1.1); letter-spacing: 10px; }
         }
+        .nav-btn {
+          background: rgba(0, 20, 20, 0.8);
+          border: 1px solid rgba(0, 255, 204, 0.5);
+          color: #00ffcc; padding: 10px 20px;
+          font-family: inherit; cursor: pointer;
+          transition: all 0.2s;
+        }
+        .nav-btn:hover {
+          background: #00ffcc; color: #000;
+          box-shadow: 0 0 15px #00ffcc;
+        }
+        .btn-ach { border-color: #ffaa00; color: #ffaa00; }
+        .btn-ach:hover { background: #ffaa00; color: #000; box-shadow: 0 0 15px #ffaa00; }
       `}</style>
     </div>
   );

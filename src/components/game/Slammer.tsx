@@ -176,6 +176,50 @@ export function Slammer() {
       }
     }
 
+    // 1.5 HARVEST (Kinematic Hover)
+    if (gameState === 'HARVEST') {
+      const winners = useGameStore.getState().winners;
+      const pogs = useGameStore.getState().pogs;
+      
+      let centerX = 0, centerZ = 0, count = 0;
+      
+      // Calculate centroid of winners from physics world
+      world.forEachRigidBody((body) => {
+        const ud = body.userData as any;
+        if (ud?.name?.startsWith('pog-') && winners.includes(ud['pog-id'])) {
+          const trans = body.translation();
+          centerX += trans.x;
+          centerZ += trans.z;
+          count++;
+        }
+      });
+
+      if (count > 0) {
+        centerX /= count;
+        centerZ /= count;
+        
+        // Ensure Kinematic mode
+        rb.current.setBodyType(2, true); 
+        
+        const currentTrans = rb.current.translation();
+        // Smoothly move to hover position
+        rb.current.setNextKinematicTranslation({
+          x: THREE.MathUtils.lerp(currentTrans.x, centerX, 0.1),
+          y: THREE.MathUtils.lerp(currentTrans.y, 4, 0.1),
+          z: THREE.MathUtils.lerp(currentTrans.z, centerZ, 0.1)
+        });
+        
+        // Add subtle hover bob
+        const bob = Math.sin(Date.now() * 0.005) * 0.1;
+        rb.current.setNextKinematicTranslation({
+          x: rb.current.translation().x,
+          y: 4 + bob,
+          z: rb.current.translation().z
+        });
+      }
+    }
+
+
     // 2. SLAMMED (Dynamic & Impact Detection)
     if (gameState === 'SLAMMED' && !impactProcessed.current) {
         const currentTension = useGameStore.getState().cameraTension;

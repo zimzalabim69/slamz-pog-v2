@@ -1,4 +1,4 @@
-import { Component, Suspense, type ReactNode } from 'react';
+import { Component, Suspense, type ReactNode, useEffect } from 'react';
 import * as THREE from 'three';
 import { Experience } from './components/Experience';
 import { HUD } from './components/ui/HUD';
@@ -99,44 +99,58 @@ import { AspectController } from './components/ui/AspectController';
 // ============================================================
 function App() {
   const gameState = useGameStore((s) => s.gameState);
+  const addDataPacket = useGameStore((s) => s.addDataPacket);
+
+  // Drive the global narrative stream
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const hex = Math.random().toString(16).substring(2, 8).toUpperCase();
+      addDataPacket(hex);
+    }, 1200);
+    return () => clearInterval(interval);
+  }, [addDataPacket]);
 
   return (
     <WebGLErrorBoundary>
-      <AspectController>
-        <div style={{ width: '100%', height: '100%', background: '#000', overflow: 'hidden' }}>
-          <Canvas 
-            shadows={false}
-            dpr={CANVAS_DPR}
-            style={{ background: '#050510' }}
-            gl={{
-              antialias: ENABLE_ANTIALIAS,
-              alpha: false,
-              powerPreference: "high-performance",
-              failIfMajorPerformanceCaveat: false
-            }}
-            onCreated={({ gl }) => {
-              gl.toneMapping = THREE.ACESFilmicToneMapping;
-              gl.toneMappingExposure = 1.0;
-            }}
-          >
-            <Suspense fallback={null}>
-              {gameState !== 'START_SCREEN' && <Experience />}
-            </Suspense>
-          </Canvas>
-          
-          {/* CORE GAME UI LAYERS */}
-          {gameState === 'START_SCREEN' && <StartScreen />}
-          <HUD />
-          <Showcase />
-          <CRTOverlay />
-          
-          {/* SYSTEM OVERLAYS */}
-          <PauseMenu />
-          <PerfectHit />
-          <SessionSummary />
-          <DebugPanel />
-        </div>
-      </AspectController>
+      <div style={{ width: '100%', height: '100%', background: '#000', overflow: 'hidden' }}>
+        <AspectController>
+          <div style={{ width: '100%', height: '100%', background: '#000', overflow: 'hidden' }}>
+            <Canvas 
+              shadows={false}
+              dpr={CANVAS_DPR}
+              style={{ background: '#050510' }}
+              gl={{
+                antialias: ENABLE_ANTIALIAS,
+                alpha: false,
+                powerPreference: "high-performance",
+                failIfMajorPerformanceCaveat: false
+              }}
+              onCreated={({ gl }) => {
+                gl.toneMapping = THREE.ACESFilmicToneMapping;
+                gl.toneMappingExposure = 1.0;
+              }}
+            >
+              <Suspense fallback={null}>
+                {gameState !== 'START_SCREEN' && <Experience />}
+              </Suspense>
+            </Canvas>
+            
+            {/* CORE GAME CORE (Constrained) */}
+            {gameState === 'START_SCREEN' && <StartScreen />}
+          </div>
+        </AspectController>
+
+        {/* CORE GLOBAL UI LAYERS (Always Full Screen) */}
+        <HUD />
+        <Showcase />
+        <CRTOverlay />
+        
+        {/* SYSTEM OVERLAYS */}
+        <PauseMenu />
+        <PerfectHit />
+        <SessionSummary />
+        <DebugPanel />
+      </div>
     </WebGLErrorBoundary>
   );
 }

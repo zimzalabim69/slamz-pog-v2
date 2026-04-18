@@ -491,6 +491,8 @@ export interface GameStore {
   fogColor: string;
   debugLogoMode: boolean;
   physicsDebug: boolean;
+  dataPackets: string[];
+  addDataPacket: (packet: string) => void;
   
   // Debug params
   // NEW: Collision Tuning Suite
@@ -540,6 +542,8 @@ export interface GameStore {
   setPowerDirection: (dir: number) => void;
   addToCollection: (item: CollectionItem) => void;
   updateStats: (updates: Partial<SessionStats>) => void;
+  winners: string[]; // IDs of pogs won in current round
+  setWinners: (ids: string[]) => void;
   setPogs: (pogs: PogData[]) => void;
   removePog: (id: string) => void;
   resetStack: () => void;
@@ -617,6 +621,7 @@ export const useGameStore = create<GameStore>()(
     return {
       // Initial State
       gameState: 'START_SCREEN',
+      winners: [],
       power: 0,
       powerDirection: 1,
       collection: JSON.parse(localStorage.getItem('pogCollection') || '[]'),
@@ -636,12 +641,16 @@ export const useGameStore = create<GameStore>()(
       currentSlammerType: 'standard',
       qualityLevel: 'high',
       showcaseRatioMode: 'safe',
-      aspectRatioMode: 'NATIVE', // Set to NATIVE to fill window by default
+      aspectRatioMode: '16:9', // Restore fixed ratio by default to show side margins
       previousState: null,
       fogPulseTrigger: 0,
       fogColor: '#00ffcc',
       debugLogoMode: false,
       physicsDebug: false,
+      dataPackets: [],
+      addDataPacket: (packet) => set((state) => ({
+        dataPackets: [packet, ...state.dataPackets].slice(0, 20)
+      })),
       
       // NEW: Tuning Suite
       autoSlamActive: false,
@@ -720,6 +729,7 @@ export const useGameStore = create<GameStore>()(
       })),
 
       setPogs: (pogs) => set({ pogs }),
+      setWinners: (ids: string[]) => set({ winners: ids }),
 
       removePog: (id) => set((state) => ({
         pogs: state.pogs.filter(p => p.id !== id)

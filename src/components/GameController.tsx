@@ -212,27 +212,12 @@ export function GameController() {
 
       if (_vec3.y > 0.7) {
         faceUpPogs.push(userData['pog-id']);
-        const pogData = state.pogs.find((p: any) => p.id === userData['pog-id']);
-        if (pogData) {
-          addToCollection({ theme: pogData.theme, rarity: pogData.rarity, date: new Date().toISOString() });
-          removePog(userData['pog-id']);
-          const setDef = getSetForTheme(pogData.theme);
-          const values: Record<string, number> = { standard: 50, shiny: 250, holographic: 1500 };
-          enqueueShowcase([{
-            theme: pogData.theme,
-            rarity: pogData.rarity,
-            setName: setDef ? setDef.name : 'VINTAGE COLLECTIBLE',
-            setColor: setDef ? setDef.color : '#00ffcc',
-            marketValue: values[pogData.rarity] ?? 50,
-          }]);
-          updateStats({ totalSlams: state.stats.totalSlams + 1, pogsWon: state.stats.pogsWon + 1 });
-        }
       }
     });
 
     // Update state
     useGameStore.getState().setPogsOnMat(pogsOnMatCount);
-    useGameStore.getState().setFaceUpPogs(faceUpPogs);
+    useGameStore.getState().setWinners(faceUpPogs);
     
     // Combo system: increment combo if POGs were flipped, reset if none
     if (faceUpPogs.length > 0) {
@@ -241,54 +226,17 @@ export function GameController() {
       resetCombo();
     }
 
-    // Handle practice mode vs classic mode differently
-    if (state.gameMode === 'PRACTICE_FOR_KEEPS' || state.gameMode === 'NO_RESTACK_CHAOS') {
-      // In practice mode, check if all POGs are face-up or if slam was empty
-      const remainingPogs = state.pogs.filter(pog => !faceUpPogs.includes(pog.id));
-      
-      if (remainingPogs.length === 0 || faceUpPogs.length === 0) {
-        // Session complete - show summary
-        endPracticeSession();
-      } else {
-        // Continue practice - restack remaining POGs
-        setGameState('RESETTING');
-        setTimeout(() => {
-          useGameStore.getState().setGameState('AIMING');
-          // Reset combo for next slam
-          resetCombo();
-        }, 1500);
-      }
+    if (faceUpPogs.length > 0) {
+      // ENTER HARVEST PHASE
+      setGameState('HARVEST');
     } else {
-      // Classic mode - original behavior
-      const showcaseItems = faceUpPogs.map(pogId => {
-        const pogData = state.pogs.find(p => p.id === pogId);
-        if (!pogData) return null;
-        
-        const setDef = getSetForTheme(pogData.theme);
-        const values: Record<string, number> = { standard: 50, shiny: 250, holographic: 1500 };
-        return {
-          pogId: pogId,
-          theme: pogData.theme,
-          rarity: pogData.rarity,
-          setName: setDef ? setDef.name : 'VINTAGE COLLECTIBLE',
-          setColor: setDef ? setDef.color : '#00ffcc',
-          marketValue: values[pogData.rarity] ?? 50,
-        };
-      }).filter((item): item is NonNullable<typeof item> => item !== null);
-
-      if (showcaseItems.length > 0) {
-        updateStats({ pogsWon: stats.pogsWon + showcaseItems.length });
-        // The Jackpot Fanfare and UI will now fire after cinematic completion
-        setGameState('ROUND_JACKPOT');
-        enqueueShowcase(showcaseItems);
-      } else {
-        // Nothing won â€” just reset
-        setGameState('RESETTING');
-        setTimeout(() => {
-          useGameStore.getState().setGameState('AIMING');
-        }, 1500);
-      }
+      // Nothing won â€” just reset
+      setGameState('RESETTING');
+      setTimeout(() => {
+        useGameStore.getState().setGameState('AIMING');
+      }, 1500);
     }
+
   });
 
   // â”€â”€ Advance showcase timer (5s auto-advance like original) 

@@ -72,7 +72,7 @@ export const PogHousingUI = () => {
             color: '#FF0000',
             fontSize: '14px',
             fontWeight: 'bold',
-            fontFamily: 'monospace',
+            fontFamily: "'Share Tech Mono', monospace",
           }}>X</span>
         </div>
         
@@ -93,7 +93,7 @@ export const PogHousingUI = () => {
             color: '#00FF00',
             fontSize: '14px',
             fontWeight: 'bold',
-            fontFamily: 'monospace',
+            fontFamily: "'Share Tech Mono', monospace",
           }}>Y</span>
         </div>
         
@@ -116,7 +116,7 @@ export const PogHousingUI = () => {
             color: '#0000FF',
             fontSize: '14px',
             fontWeight: 'bold',
-            fontFamily: 'monospace',
+            fontFamily: "'Share Tech Mono', monospace",
           }}>Z</span>
         </div>
 
@@ -149,7 +149,7 @@ export const PogHousingUI = () => {
           boxShadow: '8px 8px 0px #FF00FF',
         }}>
           <h1 style={{
-            fontFamily: 'Impact, sans-serif',
+            fontFamily: "'Orbitron', sans-serif",
             fontStyle: 'italic bold',
             fontSize: '1.8rem',
             margin: 0,
@@ -186,7 +186,7 @@ export const PogHousingUI = () => {
           <div style={{ borderBottom: '3px solid #FACC15', marginBottom: '12px', paddingBottom: '8px' }}>
             <p style={{
               fontSize: '10px',
-              fontFamily: 'Impact, sans-serif',
+              fontFamily: "'Orbitron', sans-serif",
               color: '#FFFFFF',
               textTransform: 'uppercase',
               letterSpacing: '3px',
@@ -202,14 +202,14 @@ export const PogHousingUI = () => {
               <p style={{
                 fontSize: '10px',
                 color: '#00FFFF',
-                fontFamily: 'Impact, sans-serif',
+                fontFamily: "'Orbitron', sans-serif",
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
                 textShadow: '2px 2px 0px #000000',
               }}>RATING:</p>
               <p style={{
                 fontSize: '1.8rem',
-                fontFamily: 'Impact, sans-serif',
+                fontFamily: "'Orbitron', sans-serif",
                 fontStyle: 'italic bold',
                 color: '#FFFFFF',
                 textShadow: '3px 3px 0px #FF00FF, -2px -2px 0px #00FFFF',
@@ -222,14 +222,14 @@ export const PogHousingUI = () => {
               <p style={{
                 fontSize: '10px',
                 color: '#00FFFF',
-                fontFamily: 'Impact, sans-serif',
+                fontFamily: "'Orbitron', sans-serif",
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
                 textShadow: '2px 2px 0px #000000',
               }}>VALUE:</p>
               <p style={{
                 fontSize: '2rem',
-                fontFamily: 'Impact, sans-serif',
+                fontFamily: "'Orbitron', sans-serif",
                 fontStyle: 'italic bold',
                 color: '#FACC15',
                 textShadow: '3px 3px 0px #000000, -1px -1px 0px #FF00FF',
@@ -242,7 +242,7 @@ export const PogHousingUI = () => {
           <div style={{
             marginTop: '12px',
             fontSize: '9px',
-            fontFamily: 'Impact, sans-serif',
+            fontFamily: "'Orbitron', sans-serif",
             color: '#FFFFFF',
             borderTop: '2px solid rgba(255,255,255,0.2)',
             paddingTop: '8px',

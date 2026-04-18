@@ -16,6 +16,8 @@ import { AdaptiveQuality } from './AdaptiveQuality';
 import { Physics } from '@react-three/rapier';
 import { LevaController } from './LevaController';
 
+import { HarvestManager } from './game/HarvestManager';
+
 export function Experience() {
   const sceneMode = useGameStore((state) => state.sceneMode);
   // Removed reactive cameraTension to prevent re-renders
@@ -113,7 +115,9 @@ export function Experience() {
       >
         {sceneMode === 'ARCADE' ? <ArcadeMode /> : <ImpactLab />}
         <PhysicsWorld />
+        <HarvestManager />
       </Physics>
+
 
       <Reticle />
       <ImpactParticles />
@@ -142,3 +146,4 @@ export function Experience() {
     </>
   );
 }
+
