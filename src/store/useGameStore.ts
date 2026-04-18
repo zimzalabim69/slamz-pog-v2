@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import type { GameState, CollectionItem, SessionStats, PogData, GameMode, SessionScore, PracticeSession } from '../types/game';
 import { PROCEDURAL_THEMES, ASSET_THEMES } from '../constants/pogData';
-import { SCENE_PRESETS } from '../constants/game';
 import { SetManager } from '../systems/SetManager';
 
 export interface DebugParams {
@@ -44,6 +43,9 @@ export interface DebugParams {
   fogDensity: number;
   fogNear: number;
   fogFar: number;
+  fogColorR: number;
+  fogColorG: number;
+  fogColorB: number;
   
   // Gameplay
   powerChargeSpeed: number;
@@ -58,20 +60,22 @@ export interface DebugParams {
   logoRotationY: number;
   logoRotationZ: number;
   
-  // Start Screen - Background 3D
-  bgScale: number;
-  bgPositionX: number;
-  bgPositionY: number;
-  bgPositionZ: number;
-  bgRotationX: number;
-  bgRotationY: number;
-  bgRotationZ: number;
   
   // Start Screen - Fog
   startFogDensity: number;
   startFogColorR: number;
   startFogColorG: number;
   startFogColorB: number;
+  
+  // CRT Decay Suite
+  crtScanlineIntensity: number;
+  crtScanlineHeight: number;
+  crtVignetteIntensity: number;
+  crtFlickerIntensity: number;
+  crtPhosphorBurn: number;
+  crtJitterIntensity: number;
+  crtWarmth: number;
+  crtCurvature: number;
   
   // Start Screen - Smoke Ground Layer
   smokeGroundColorR: number;
@@ -128,6 +132,7 @@ export interface DebugParams {
   cinematicDynamicZoomMaxScale: number;
   cinematicTimeScaleSlow: number;
   cinematicTimeScaleFreeze: number;
+  cinematicTimeScaleNormal: number;
   
   // Comet Zoom Effects
   cinematicCometApproachSpeed: number;
@@ -276,10 +281,20 @@ export interface DebugParams {
   battleAreaRotationY: number;
   battleAreaRotationZ: number;
 
+  // Start Screen - Arcade Storefront
+  storefrontScale: number;
+  storefrontPositionX: number;
+  storefrontPositionY: number;
+  storefrontPositionZ: number;
+  storefrontRotationX: number;
+  storefrontRotationY: number;
+  storefrontRotationZ: number;
+
   // Physical Ground Debug (Option A Controls)
   groundPhysicalOffset: number;
   showGroundCollider: boolean;
   floorVisible: boolean;
+  bloomStrength: number;
 }
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
@@ -310,34 +325,38 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "fogDensity": 0.035,
   "fogNear": 1,
   "fogFar": 50,
+  "fogColorR": 0.004,
+  "fogColorG": 0.012,
+  "fogColorB": 0.031,
   "powerChargeSpeed": 240,
   "slamDelay": 200,
-  "logoScale": 11.6,
+  "logoScale": 12.4,
   "logoPositionX": -0.2,
-  "logoPositionY": 0,
+  "logoPositionY": -2.3,
   "logoPositionZ": -31.5,
   "logoRotationX": 0,
   "logoRotationY": 0.14,
   "logoRotationZ": 0,
-  "bgScale": 49.91,
-  "bgPositionX": 0,
-  "bgPositionY": 9,
-  "bgPositionZ": -121,
-  "bgRotationX": 0,
-  "bgRotationY": 0,
-  "bgRotationZ": 0,
-  "startFogDensity": 0.004,
+  "startFogDensity": 0.0045,
   "startFogColorR": 0,
-  "startFogColorG": 0.45,
+  "startFogColorG": 0.47,
   "startFogColorB": 0.98,
+  "crtScanlineIntensity": 0.35,
+  "crtScanlineHeight": 2,
+  "crtVignetteIntensity": 0.7,
+  "crtFlickerIntensity": 0.4,
+  "crtPhosphorBurn": 0.15,
+  "crtJitterIntensity": 0.1,
+  "crtWarmth": 0.12,
+  "crtCurvature": 0.5,
   "smokeGroundColorR": 0.25,
-  "smokeGroundColorG": 0.03,
-  "smokeGroundColorB": 0.71,
-  "smokeGroundOpacity": 0.83,
-  "smokeGroundSpeed": 2,
-  "smokeGroundCount": 30,
-  "smokeGroundSize": 50,
-  "smokeGroundSpread": 32,
+  "smokeGroundColorG": 0.35,
+  "smokeGroundColorB": 0.40,
+  "smokeGroundOpacity": 0.8,
+  "smokeGroundSpeed": 0.15,
+  "smokeGroundCount": 50,
+  "smokeGroundSize": 180,
+  "smokeGroundSpread": 520,
   "smokeGroundHeight": -6.5,
   "smokeMidColorR": 0,
   "smokeMidColorG": 0,
@@ -348,9 +367,9 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "smokeMidSize": 41,
   "smokeMidSpread": 33,
   "smokeMidHeight": 3,
-  "buttonScale": 1.4,
-  "buttonPositionX": 0,
-  "buttonPositionY": 94,
+  "buttonScale": 0.9,
+  "buttonPositionX": 4,
+  "buttonPositionY": 83,
   "buttonFontSize": 20,
   "arenaLightIntensity": 1,
   "arenaAmbientIntensity": 0.5,
@@ -407,7 +426,7 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "wraithPositionX": 0.1,
   "wraithPositionY": 5.1,
   "wraithPositionZ": -53.6,
-  "wraithScale": 15.0,
+  "wraithScale": 15,
   "wraithRotationY": 0,
   "wraithArenaVisible": true,
   "wraithArenaPositionX": -26,
@@ -484,6 +503,13 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "battleAreaRotationX": -1.58,
   "battleAreaRotationY": 0,
   "battleAreaRotationZ": 0,
+  "storefrontScale": 11.01,
+  "storefrontPositionX": 0,
+  "storefrontPositionY": 1,
+  "storefrontPositionZ": -175.5,
+  "storefrontRotationX": 0,
+  "storefrontRotationY": 3.11681469282041,
+  "storefrontRotationZ": 0,
   "groundPhysicalOffset": 0.265,
   "showGroundCollider": false,
   "floorVisible": false,
@@ -806,8 +832,6 @@ export const useGameStore = create<GameStore>()(
               rarity = 'standard';
               theme = PROCEDURAL_THEMES[Math.floor(Math.random() * PROCEDURAL_THEMES.length)];
             }
-
-            const floorY = get().debugParams.floorPositionY;
 
             return {
               ...pog,

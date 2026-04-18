@@ -36,18 +36,18 @@ class AudioManager {
   private async loadIntro() {
     if (!this.context) return;
     try {
-      // Path defined in plan
-      const response = await fetch('/audio/slamz_intro.mp3');
+      // Updated to local user path 'Insert Soul.mp3'
+      const response = await fetch('/assets/music/Insert Soul.mp3');
       if (!response.ok) throw new Error('File not found');
       
       const arrayBuffer = await response.arrayBuffer();
       this.introBuffer = await this.context.decodeAudioData(arrayBuffer);
-      console.log('[AUDIO] Intro Track Loaded & Primed.');
+      console.log('[AUDIO] Intro Track Loaded & Primed: Insert Soul.mp3');
       
       // Auto-play on load if possible (since we initialized on a gesture)
       this.playIntro();
     } catch (e) {
-      console.warn('[AUDIO] Intro track placeholder missing. Waiting for Suno drop.');
+      console.warn('[AUDIO] Intro track "Insert Soul.mp3" missing or failed to decode. Check /public/assets/music/');
     }
   }
 

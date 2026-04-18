@@ -49,7 +49,7 @@ interface SmokePuff {
   opacityBase: number;
 }
 
-const LAYER_MAX = 30;
+const LAYER_MAX = 300;
 
 function createPuffs(count: number, heightVariance: number): SmokePuff[] {
   const puffs: SmokePuff[] = [];

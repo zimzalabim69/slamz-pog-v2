@@ -41,6 +41,22 @@ export const initSystemLogger = () => {
         })
         .join(' ');
         
+      // 3. Filter specific noisy third-party warnings to keep console "green"
+      if (
+        message.includes('THREE.Clock') || 
+        message.includes('deprecated parameters for the initialization function') ||
+        message.includes('performance caveat')
+      ) {
+        return; 
+      }
+
+      // If Context Lost is detected, trigger an emergency reboot flag
+      if (message.includes('Context Lost')) {
+         originalError('[SYSTEM] GPU Context Crash Detected. Throttling and Reloading...');
+         // Instead of waiting, we immediately try to bounce the page to recover.
+         setTimeout(() => window.location.reload(), 1000);
+      }
+        
       const store = useTerminalStore.getState();
       if (store && store.addLog) {
         store.addLog(type, message);

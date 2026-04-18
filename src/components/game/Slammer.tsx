@@ -122,7 +122,7 @@ export function Slammer() {
         forceReset(); // Ensure fresh state
         const power = customEvent.detail.power;
         powerRef.current = power;
-        handleMouseUp(); // Execute slam
+        handleMouseUp({ button: 0 } as any); // Execute slam
       }
     };
 

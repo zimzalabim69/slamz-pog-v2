@@ -5,10 +5,9 @@ import * as THREE from 'three';
 import { audioManager } from '../../utils/AudioManager';
 import { LightningBolt } from './LightningBolt';
 import { StartLogo3D } from './StartLogo3D';
-import { StartBackground3D } from './StartBackground3D';
-import { StartSmoke } from './StartSmoke';
-import { ArcadeCabinet } from './ArcadeCabinet';
+import { ArcadeStorefront } from './ArcadeStorefront';
 import { SlamzWraith } from '../game/SlamzWraith';
+import { StartSmoke } from './StartSmoke';
 import { Canvas, useThree } from '@react-three/fiber';
 import { ENABLE_ANTIALIAS, CANVAS_DPR } from '../../utils/devicePerformance';
 import { Environment } from '@react-three/drei';
@@ -148,9 +147,7 @@ export const StartScreen: React.FC = () => {
     >
       <h1 className="sr-only">SLAMZ PRO-TOUR | VIBEJAM 2026</h1>
       <div className="energy-grid" />
-      <div className="raster-warp" />
-      <div className="crt-overlay" />
-      <div className="scanlines" />
+      {/* REMOVED: Redundant CRT layers now handled by centralized CRTOverlay */}
       
       <div className="lightning-container">
         <svg className="lightning-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -200,10 +197,9 @@ export const StartScreen: React.FC = () => {
           <pointLight position={[10, 5, 5]} intensity={12} color="#00ffff" />
           <spotLight position={[0, 10, 10]} intensity={5} angle={0.5} penumbra={1} />
           
-          <StartBackground3D />
-          <StartSmoke />
-          <ArcadeCabinet />
+          <ArcadeStorefront />
           <SlamzWraith />
+          <StartSmoke />
           <StartLogo3D />
         </Canvas>
       </div>

@@ -23,7 +23,7 @@ export function ArcadeMode() {
       />
 
       <hemisphereLight
-        skyColor={preset.spotColor}
+        color={preset.spotColor}
         groundColor={preset.ambientColor}
         intensity={(debugParams.arenaAmbientIntensity ?? 1) * 0.4}
       />

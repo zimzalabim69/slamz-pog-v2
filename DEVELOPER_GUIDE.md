@@ -84,7 +84,7 @@ For a detailed breakdown of the React Hooks resolution during the V2 port, see [
 #### DesktopControls (`components/ui/DesktopControls.tsx`)
 - **Purpose**: Keyboard controls for desktop
 - **Hooks**: 1 useEffect (stable count)
-- **Controls**: R (reset), E (atmosphere), Space (continue)
+- **Controls**: R (reset), Space (continue)
 
 ## Game Systems
 
@@ -150,9 +150,9 @@ npm run preview      # Preview production build
 > [!IMPORTANT]
 > These values define the "soul" of SLAMZ. Adjust with extreme caution.
 - **Gravity**: `[0, -16, 0]` (Experience.tsx) - Heavily weighted for arcade feel.
-- **Slam Impulse**: `-22 - (power * 0.4)` (Slammer.tsx) - The velocity of the throw.
-- **Shatter Radius**: `0.75` - The distance at which POGs are scattered on impact.
-- **POG Properties**: Mass: `0.8`, Restitution: `0.05` (Non-bouncy for stacking).
+- **Slam Impulse**: `-49 + (power * 0.85)` (Slammer.tsx) - Calibrated for high-velocity impact.
+- **Shatter Radius**: `0.1` - Tightly clustered for stacking realism.
+- **POG Properties**: Mass: `6.95`, Restitution: `0.05` (Heavy-weight tournament specs).
 
 ### Visual Juice Standards
 - **Slam Punch**: Camera FOV jumps to `65` on slam, lerps back to `50`.

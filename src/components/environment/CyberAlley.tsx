@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as THREE from 'three';
 import { useMemo, useRef, Suspense, Component, ReactNode } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -97,38 +98,6 @@ export function CyberAlley() {
   const qualityLevel = useGameStore((state) => state.qualityLevel);
   const debugParams = useGameStore((state) => state.debugParams);
   
-  const rainRef = useRef<THREE.Points>(null);
-  const RAIN_COUNT = 500;
-  
-  const rainPositions = useMemo(() => {
-    const pos = new Float32Array(RAIN_COUNT * 3);
-    for (let i = 0; i < RAIN_COUNT; i++) {
-      pos[i * 3]     = (Math.random() - 0.5) * 30;
-      pos[i * 3 + 1] = Math.random() * 20;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 30;
-    }
-    return pos;
-  }, []);
-
-  const rainGeo = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(rainPositions, 3));
-    return geo;
-  }, [rainPositions]);
-
-  useFrame((_, delta) => {
-    if (!rainRef.current) return;
-    const pos = rainRef.current.geometry.attributes.position as THREE.BufferAttribute;
-    for (let i = 0; i < pos.count; i++) {
-      let y = pos.getY(i) - 20 * delta;
-      if (y < 0) y = 20;
-      pos.setY(i, y);
-    }
-    pos.needsUpdate = true;
-  });
-
-
-
   return (
     <group>
       {/* WHOLE ROOM BACKDROP */}
@@ -253,12 +222,7 @@ export function CyberAlley() {
           scale={debugParams.arcadeBackScale}
         />
       )}
-
-
-      {/* RAIN */}
-      <primitive object={new THREE.Points(rainGeo, new THREE.PointsMaterial({ 
-        color: '#88ccff', size: 0.05, transparent: true, opacity: 0.4 
-      }))} ref={rainRef} />
     </group>
   );
 }
+

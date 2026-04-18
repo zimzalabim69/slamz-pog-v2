@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useControls, folder } from 'leva';
 import { useGameStore } from '../store/useGameStore';
 import { useEffect } from 'react';

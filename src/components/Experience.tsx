@@ -73,14 +73,25 @@ export function Experience() {
         }}
       />
 
-      <color attach="background" args={[sceneMode === 'LAB' ? '#050510' : preset.bgColor]} />
+      <color attach="background" args={[
+        new THREE.Color(
+          debugParams.fogColorR ?? 0.004,
+          debugParams.fogColorG ?? 0.012,
+          debugParams.fogColorB ?? 0.031
+        )
+      ]} />
       
-      {/* GLOBAL FOG (REWIRED) */}
-      <fogExp2 
+      {/* GLOBAL FOG (REPAIRED & SYNCED) */}
+      <fog 
         attach="fog" 
         args={[
-          sceneMode === 'LAB' ? '#050510' : preset.bgColor, 
-          debugParams.fogDensity || 0.01
+          new THREE.Color(
+            debugParams.fogColorR ?? 0.004,
+            debugParams.fogColorG ?? 0.012,
+            debugParams.fogColorB ?? 0.031
+          ), 
+          debugParams.fogNear ?? 5,
+          debugParams.fogFar ?? 30
         ]} 
       />
 

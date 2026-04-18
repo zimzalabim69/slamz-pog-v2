@@ -40,6 +40,40 @@
   </head>
   <body>
     <div id="root"></div>
+    <svg style="display: none;">
+      <defs>
+        <filter id="crt-curvature">
+          <feOffset in="SourceGraphic" dx="0" dy="0" />
+          <feDisplacementMap in="SourceGraphic" in2="SourceGraphic" scale="15" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        
+        <!-- A more advanced one if displacement map isn't enough -->
+        <filter id="crt-warp">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
+          <feComponentTransfer in="blur" result="warm">
+            <feFuncR type="linear" slope="1.1" />
+            <feFuncB type="linear" slope="0.9" />
+          </feComponentTransfer>
+          <feComposite in="warm" in2="SourceGraphic" operator="over" />
+        </filter>
+      </defs>
+    </svg>
+    <svg style="display: none;">
+      <defs>
+        <filter id="crt-curvature">
+          <feOffset in="SourceGraphic" dx="0" dy="0" />
+          <feDisplacementMap in="SourceGraphic" in2="SourceGraphic" scale="15" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+    <svg style="display: none;">
+      <defs>
+        <filter id="crt-curvature">
+          <feOffset in="SourceGraphic" dx="0" dy="0" />
+          <feDisplacementMap in="SourceGraphic" in2="SourceGraphic" scale="15" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

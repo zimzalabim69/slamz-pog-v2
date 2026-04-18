@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Physics } from '@react-three/rapier';
-import { useGameStore } from '../../store/useGameStore';
 import { PhysicsFloor } from './PhysicsFloor';
 import { PogStack } from './PogStack';
 import { Slammer } from './Slammer';

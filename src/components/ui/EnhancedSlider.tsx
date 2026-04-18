@@ -23,12 +23,14 @@ export const EnhancedSlider: React.FC<EnhancedSliderProps> = ({
   unit = ''
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(value.toString());
+  const [inputValue, setInputValue] = useState(value.toFixed(decimals));
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setInputValue(value.toString());
-  }, [value]);
+    if (!isEditing) {
+      setInputValue(value.toFixed(decimals));
+    }
+  }, [value, decimals, isEditing]);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(e.target.value);
@@ -36,10 +38,10 @@ export const EnhancedSlider: React.FC<EnhancedSliderProps> = ({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
     const newValue = parseFloat(e.target.value);
     if (!isNaN(newValue)) {
       onChange(newValue);
-      setInputValue(newValue.toString());
     }
   };
 
@@ -47,9 +49,11 @@ export const EnhancedSlider: React.FC<EnhancedSliderProps> = ({
     setIsEditing(false);
     const numValue = parseFloat(inputValue);
     if (!isNaN(numValue)) {
-      onChange(numValue);
+      const clamped = Math.max(min, Math.min(max, numValue));
+      onChange(clamped);
+      setInputValue(clamped.toFixed(decimals));
     } else {
-      setInputValue(value.toString());
+      setInputValue(value.toFixed(decimals));
     }
   };
 
@@ -65,30 +69,20 @@ export const EnhancedSlider: React.FC<EnhancedSliderProps> = ({
       handleInputBlur();
     } else if (e.key === 'Escape') {
       setIsEditing(false);
-      setInputValue(value.toString());
+      setInputValue(value.toFixed(decimals));
     }
   };
 
-  // Arrow key handlers for focused component only
   const handleSliderKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (isEditing) return; // Don't handle arrows when typing in input
+    if (isEditing) return;
     
     let delta = 0;
     switch(e.key) {
-      case 'ArrowUp':
-        delta = step;
-        break;
-      case 'ArrowDown':
-        delta = -step;
-        break;
-      case 'ArrowLeft':
-        delta = -step * 5; // Faster adjustment
-        break;
-      case 'ArrowRight':
-        delta = step * 5; // Faster adjustment
-        break;
-      default:
-        return;
+      case 'ArrowUp': delta = step; break;
+      case 'ArrowDown': delta = -step; break;
+      case 'ArrowLeft': delta = -step * 5; break;
+      case 'ArrowRight': delta = step * 5; break;
+      default: return;
     }
     
     if (delta !== 0) {
@@ -99,28 +93,28 @@ export const EnhancedSlider: React.FC<EnhancedSliderProps> = ({
   };
 
   return (
-    <div className="debug-control enhanced-slider" tabIndex={0} onKeyDown={handleSliderKeyDown}>
-      <label>
-        {label}: <span className="slider-value" onClick={handleInputClick}>
-          {isEditing ? (
-            <input
-              ref={inputRef}
-              type="number"
-              value={inputValue}
-              onChange={handleInputChange}
-              onBlur={handleInputBlur}
-              onKeyDown={handleInputKeyDown}
-              className="slider-input"
-              step={step.toString()}
-              min={min.toString()}
-              max={max.toString()}
-              style={{ width: '80px' }}
-            />
-          ) : (
-            value.toFixed(decimals) + unit
-          )}
-        </span>
-      </label>
+    <div className="slider-module" tabIndex={0} onKeyDown={handleSliderKeyDown}>
+      <div className="slider-label">{label}:</div>
+      
+      <div className="slider-readout-wrapper" onClick={handleInputClick}>
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            type="number"
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            onKeyDown={handleInputKeyDown}
+            className="slider-readout input-mode"
+            step={step.toString()}
+          />
+        ) : (
+          <div className="slider-readout">
+            {value.toFixed(decimals)}{unit}
+          </div>
+        )}
+      </div>
+
       <input 
         type="range" 
         min={min} 
@@ -128,13 +122,9 @@ export const EnhancedSlider: React.FC<EnhancedSliderProps> = ({
         step={step} 
         value={value}
         onChange={handleSliderChange}
-        className="enhanced-range"
+        className="hud-range-input"
         disabled={isEditing}
       />
-      <div className="slider-info">
-        <span className="slider-min">{min.toFixed(decimals)}</span>
-        <span className="slider-max">{max.toFixed(decimals)}</span>
-      </div>
     </div>
   );
 };

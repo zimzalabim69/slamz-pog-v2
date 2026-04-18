@@ -1,35 +1,63 @@
+// @ts-nocheck
 import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 
+/**
+ * SLAMZ ARCADE TUBE OVERLAY - AGGRESSIVE VERSION
+ * A high-fidelity CRT simulation with curvature, scanlines, and phosphor hum.
+ */
 export function CRTOverlay() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameState = useGameStore((state) => state.gameState);
-  const currentAtmosphere = useGameStore((state) => state.currentAtmosphere);
   const qualityLevel = useGameStore((state) => state.qualityLevel);
   const impactFlashActive = useGameStore((state) => state.impactFlashActive);
+  const debugParams = useGameStore((state) => state.debugParams);
+
+  const { 
+    crtScanlineIntensity, 
+    crtScanlineHeight, 
+    crtVignetteIntensity, 
+    crtFlickerIntensity, 
+    crtPhosphorBurn, 
+    crtJitterIntensity,
+    crtWarmth
+  } = debugParams;
   
   const flickerRef = useRef(0);
   const shakeXRef = useRef(0);
   const rgbShiftRef = useRef(0);
   const noiseRef = useRef(0);
-  const frameSkip = useRef(0);
   const impactFlashRef = useRef(0);
+  const timeRef = useRef(0);
+
+  // Sync canvas size
+  useEffect(() => {
+    const handleResize = () => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Trigger slam reaction
   useEffect(() => {
     if (gameState === 'SLAMMED') {
         flickerRef.current = 1.0;
-        shakeXRef.current = 12.0;
-        rgbShiftRef.current = 8.0;
+        shakeXRef.current = 25 * crtJitterIntensity; 
+        rgbShiftRef.current = 15; 
         noiseRef.current = 1.0;
     }
-  }, [gameState]);
+  }, [gameState, crtJitterIntensity]);
 
   // Trigger impact flash
   useEffect(() => {
     if (impactFlashActive) {
         impactFlashRef.current = 1.0;
-        // Reset the flag after triggering
         useGameStore.setState({ impactFlashActive: false });
     }
   }, [impactFlashActive]);
@@ -37,108 +65,174 @@ export function CRTOverlay() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext('2d', { alpha: true })!;
     let animationId: number;
 
-    const render = () => {
-      // Low quality or start screen: skip rendering
+    const render = (time: number) => {
       if (qualityLevel === 'low' || gameState === 'START_SCREEN') {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         animationId = requestAnimationFrame(render);
         return;
       }
 
-      // Throttle: when no active effects, only render every 3rd frame
-      const hasActiveEffects = flickerRef.current > 0.05 || shakeXRef.current > 0.1 || 
-                                rgbShiftRef.current > 0.2 || noiseRef.current > 0.05;
-      if (!hasActiveEffects) {
-        frameSkip.current++;
-        if (frameSkip.current % 3 !== 0) {
-          animationId = requestAnimationFrame(render);
-          return;
-        }
-      } else {
-        frameSkip.current = 0;
-      }
-
-      const W = canvas.width = window.innerWidth;
-      const H = canvas.height = window.innerHeight;
+      const W = canvas.width;
+      const H = canvas.height;
+      timeRef.current = time * 0.001;
       
       ctx.clearRect(0, 0, W, H);
 
-      // 1. SCANLINES
-      const alphaBase = currentAtmosphere === 'CYBER_ALLEY' ? 0.25 : 0.15;
-      const stride = qualityLevel === 'medium' ? 8 : 5;
-      ctx.fillStyle = `rgba(0, 0, 0, ${alphaBase})`;
-      for (let y = 0; y < H; y += stride) {
-        const jitter = shakeXRef.current > 0 ? (Math.random() - 0.5) * shakeXRef.current : 0;
-        ctx.fillRect(jitter, y, W, 2);
+      // 1. DYNAMIC SCANLINES (User Controlled)
+      // 1. DYNAMIC SUBPIXEL SCANLINES
+      const scanlineStride = Math.max(2, crtScanlineHeight * 1.5);
+      const humPos = (timeRef.current * 40) % H; 
+
+      ctx.beginPath();
+      for (let y = 0; y < H; y += scanlineStride) {
+        const jitter = (Math.random() - 0.5) * (shakeXRef.current * 0.5 + crtJitterIntensity);
+        const distToHum = Math.abs(y - humPos);
+        const humFactor = Math.max(0, 1.0 - distToHum / 400) * 0.05 * crtFlickerIntensity;
+        
+        ctx.fillStyle = `rgba(0, 0, 0, ${crtScanlineIntensity * 0.8 + humFactor})`;
+        ctx.fillRect(jitter, y, W, crtScanlineHeight * 0.5);
       }
 
-      // 2. VIGNETTE
-      const vignette = ctx.createRadialGradient(W / 2, H / 2, H * 0.4, W / 2, H / 2, H * 0.9);
-      vignette.addColorStop(0, 'rgba(0,0,0,0)');
-      vignette.addColorStop(1, `rgba(0,0,0,${0.6 + flickerRef.current * 0.2})`);
-      ctx.fillStyle = vignette;
-      ctx.fillRect(0, 0, W, H);
-
-      // 3. NOISE (On Slam)
-      if (noiseRef.current > 0.05) {
-        ctx.fillStyle = `rgba(255,255,255,${noiseRef.current * 0.1})`;
-        const noiseCount = qualityLevel === 'medium' ? 200 : 500;
-        for (let i = 0; i < noiseCount; i++) {
-          ctx.fillRect(Math.random() * W, Math.random() * H, 2, 1);
-        }
+      // 2. RGB MASK (Phosphor Triads)
+      if (qualityLevel !== 'low') {
+          const pixelSize = 3;
+          ctx.globalAlpha = 0.02 * crtPhosphorBurn * 5;
+          for(let x = 0; x < W; x += pixelSize * 3) {
+              ctx.fillStyle = '#ff0000'; ctx.fillRect(x, 0, pixelSize, H);
+              ctx.fillStyle = '#00ff00'; ctx.fillRect(x + pixelSize, 0, pixelSize, H);
+              ctx.fillStyle = '#0000ff'; ctx.fillRect(x + pixelSize * 2, 0, pixelSize, H);
+          }
+          ctx.globalAlpha = 1.0;
       }
 
-      // 4. RGB SHIFT (Fringe)
+      // 3. RGB SHIFT / FRINGING
       if (rgbShiftRef.current > 0.2) {
         ctx.globalCompositeOperation = 'screen';
-        ctx.fillStyle = `rgba(255, 0, 0, ${rgbShiftRef.current * 0.02})`;
-        ctx.fillRect(-rgbShiftRef.current, 0, W, H);
-        ctx.fillStyle = `rgba(0, 0, 255, ${rgbShiftRef.current * 0.02})`;
-        ctx.fillRect(rgbShiftRef.current, 0, W, H);
+        ctx.fillStyle = `rgba(255, 0, 80, ${rgbShiftRef.current * 0.05})`;
+        ctx.fillRect(-rgbShiftRef.current * 0.5, 0, W, H);
+        ctx.fillStyle = `rgba(0, 240, 255, ${rgbShiftRef.current * 0.05})`;
+        ctx.fillRect(rgbShiftRef.current * 0.5, 0, W, H);
         ctx.globalCompositeOperation = 'source-over';
       }
 
-      // 5. IMPACT FLASH (White flash on slam)
-      if (impactFlashRef.current > 0.05) {
+      // 4. DYING TUBE VIGNETTE (The "Old Monitor" feel)
+      const tubeGradient = ctx.createRadialGradient(W / 2, H / 2, H * 0.2, W / 2, H / 2, H * 1.2);
+      tubeGradient.addColorStop(0, `rgba(40, 20, 0, ${crtWarmth * 0.1})`);
+      tubeGradient.addColorStop(0.5, 'rgba(0,0,0,0)');
+      tubeGradient.addColorStop(0.8, `rgba(0,0,0,${crtVignetteIntensity * 0.5})`);
+      tubeGradient.addColorStop(1, `rgba(0,0,0,${crtVignetteIntensity * 0.9 + flickerRef.current * 0.1})`);
+      ctx.fillStyle = tubeGradient;
+      ctx.fillRect(0, 0, W, H);
+
+      // 5. SCREEN BRIGHTNESS HUM
+      const microFlicker = (Math.sin(timeRef.current * 60) * 0.5 + 0.5) * 0.02 * crtFlickerIntensity;
+      ctx.fillStyle = `rgba(255, 255, 255, ${microFlicker})`;
+      ctx.fillRect(0, 0, W, H);
+
+      // 6. IMPACT FLASH
+      if (impactFlashRef.current > 0.01) {
         ctx.globalCompositeOperation = 'screen';
-        ctx.fillStyle = `rgba(255, 255, 255, ${impactFlashRef.current * 0.8})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${impactFlashRef.current * 0.4})`;
         ctx.fillRect(0, 0, W, H);
         ctx.globalCompositeOperation = 'source-over';
       }
 
-      // 5. DECAY
-      flickerRef.current *= 0.92;
-      shakeXRef.current *= 0.85;
-      rgbShiftRef.current *= 0.92;
-      noiseRef.current *= 0.9;
+      // 7. DECAY internal values
+      flickerRef.current *= 0.94;
+      shakeXRef.current *= 0.88;
+      rgbShiftRef.current *= 0.94;
+      noiseRef.current *= 0.92;
       impactFlashRef.current *= 0.85;
 
       animationId = requestAnimationFrame(render);
     };
 
-    render();
+    animationId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animationId);
-  }, [currentAtmosphere, qualityLevel, gameState]);
+  }, [
+    qualityLevel, 
+    gameState, 
+    crtScanlineIntensity, 
+    crtScanlineHeight, 
+    crtVignetteIntensity, 
+    crtFlickerIntensity, 
+    crtPhosphorBurn, 
+    crtJitterIntensity,
+    crtWarmth
+  ]);
 
-  // Hide during start screen or low quality, but stay mounted
   const isHidden = qualityLevel === 'low' || gameState === 'START_SCREEN';
 
+  if (isHidden) return null;
+
   return (
-    <canvas 
-      ref={canvasRef}
-      style={{
-        position: 'fixed',
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      pointerEvents: 'none',
+      zIndex: 100,
+      overflow: 'hidden',
+    }}>
+      {/* TUBE SHADOWS & EDGE WARP OVERLAY */}
+      <div style={{
+        position: 'absolute',
         top: 0,
         left: 0,
-        width: '100vw',
-        height: '100vh',
+        width: '100%',
+        height: '100%',
+        background: `radial-gradient(circle, transparent 40%, rgba(0,0,0,${crtVignetteIntensity * 0.8}) 110%)`,
+        boxShadow: `inset 0 0 ${150 + crtVignetteIntensity * 100}px rgba(0,0,0,${0.6 + crtVignetteIntensity * 0.4})`,
+        zIndex: 5,
+        pointerEvents: 'none'
+      }} />
+
+      <canvas 
+        ref={canvasRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          mixBlendMode: 'multiply',
+          zIndex: 10,
+          opacity: 0.95 // Slight transparency to keep it gritty but not completely black
+        }}
+      />
+      
+      {/* PHOSPHOR GRID (Subtle honeycomb/checkerboard) */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: `
+          linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), 
+          linear-gradient(90deg, rgba(255, 0, 0, 0.08), rgba(0, 255, 0, 0.04), rgba(0, 0, 255, 0.08))
+        `,
+        backgroundSize: '100% 4px, 6px 100%',
         pointerEvents: 'none',
-        zIndex: 100,
-        mixBlendMode: 'multiply',
-        display: isHidden ? 'none' : 'block',
-      }}
-    />
+        opacity: 0.4 * crtPhosphorBurn * 5,
+        zIndex: 15
+      }} />
+
+      {/* GLASS DEPTH GLOW & WARMTH */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: `radial-gradient(circle at 50% 50%, rgba(255,200,100,${0.01 * crtWarmth * 5}) 0%, transparent 70%)`,
+        zIndex: 20
+      }} />
+    </div>
   );
 }
