@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Sparkles } from '@react-three/drei';
@@ -18,6 +17,7 @@ export function AtmosphericFog() {
   const fogPulseTrigger = useGameStore((state) => state.fogPulseTrigger);
   const gameState = useGameStore((state) => state.gameState);
   const qualityLevel = useGameStore((state) => state.qualityLevel);
+  const debugParams = useGameStore((state) => state.debugParams);
 
   useThree(); // Ensure we are in an R3F context
 

@@ -107,11 +107,20 @@ export function PauseMenu() {
               </div>
 
               <div className="setting-row">
-                <label>FPS Limiter</label>
+                <label>Aspect Ratio (AAAA)</label>
                 <div className="toggle-group">
-                   <button className="active">NATIVE</button>
-                   <button disabled>60</button>
-                   <button disabled>30</button>
+                   <button 
+                    className={useGameStore((s) => s.aspectRatioMode) === 'NATIVE' ? 'active' : ''}
+                    onClick={() => useGameStore.setState({ aspectRatioMode: 'NATIVE' })}
+                   >NATIVE</button>
+                   <button 
+                    className={useGameStore((s) => s.aspectRatioMode) === '16:9' ? 'active' : ''}
+                    onClick={() => useGameStore.setState({ aspectRatioMode: '16:9' })}
+                   >16:9</button>
+                   <button 
+                    className={useGameStore((s) => s.aspectRatioMode) === '21:9' ? 'active' : ''}
+                    onClick={() => useGameStore.setState({ aspectRatioMode: '21:9' })}
+                   >21:9</button>
                 </div>
               </div>
 

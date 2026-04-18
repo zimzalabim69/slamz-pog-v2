@@ -92,6 +92,8 @@ class WebGLErrorBoundary extends Component<{ children: ReactNode }, { hasError: 
   }
 }
 
+import { AspectController } from './components/ui/AspectController';
+
 // ============================================================
 // MAIN APP COMPONENT
 // ============================================================
@@ -99,42 +101,43 @@ function App() {
   const gameState = useGameStore((s) => s.gameState);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#000', overflow: 'hidden' }}>
-      <WebGLErrorBoundary>
-        <Canvas 
-          shadows={false}
-          dpr={CANVAS_DPR}
-          style={{ background: '#050510' }}
-          gl={{
-            antialias: ENABLE_ANTIALIAS,
-            alpha: false,
-            powerPreference: "high-performance",
-            failIfMajorPerformanceCaveat: false,
-            preserveDrawingBuffer: true,
-          }}
-          onCreated={({ gl }) => {
-            gl.toneMapping = THREE.ACESFilmicToneMapping;
-            gl.toneMappingExposure = 1.0;
-          }}
-        >
-          <Suspense fallback={null}>
-            {gameState !== 'START_SCREEN' && <Experience />}
-          </Suspense>
-        </Canvas>
-      </WebGLErrorBoundary>
-      
-      {/* CORE GAME UI LAYERS */}
-      {gameState === 'START_SCREEN' && <StartScreen />}
-      <HUD />
-      <Showcase />
-      <CRTOverlay />
-      
-      {/* SYSTEM OVERLAYS */}
-      <PauseMenu />
-      <PerfectHit />
-      <SessionSummary />
-      <DebugPanel />
-    </div>
+    <WebGLErrorBoundary>
+      <AspectController>
+        <div style={{ width: '100%', height: '100%', background: '#000', overflow: 'hidden' }}>
+          <Canvas 
+            shadows={false}
+            dpr={CANVAS_DPR}
+            style={{ background: '#050510' }}
+            gl={{
+              antialias: ENABLE_ANTIALIAS,
+              alpha: false,
+              powerPreference: "high-performance",
+              failIfMajorPerformanceCaveat: false
+            }}
+            onCreated={({ gl }) => {
+              gl.toneMapping = THREE.ACESFilmicToneMapping;
+              gl.toneMappingExposure = 1.0;
+            }}
+          >
+            <Suspense fallback={null}>
+              {gameState !== 'START_SCREEN' && <Experience />}
+            </Suspense>
+          </Canvas>
+          
+          {/* CORE GAME UI LAYERS */}
+          {gameState === 'START_SCREEN' && <StartScreen />}
+          <HUD />
+          <Showcase />
+          <CRTOverlay />
+          
+          {/* SYSTEM OVERLAYS */}
+          <PauseMenu />
+          <PerfectHit />
+          <SessionSummary />
+          <DebugPanel />
+        </div>
+      </AspectController>
+    </WebGLErrorBoundary>
   );
 }
 

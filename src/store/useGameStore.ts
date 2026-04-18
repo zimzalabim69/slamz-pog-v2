@@ -77,28 +77,6 @@ export interface DebugParams {
   crtWarmth: number;
   crtCurvature: number;
   
-  // Start Screen - Smoke Ground Layer
-  smokeGroundColorR: number;
-  smokeGroundColorG: number;
-  smokeGroundColorB: number;
-  smokeGroundOpacity: number;
-  smokeGroundSpeed: number;
-  smokeGroundCount: number;
-  smokeGroundSize: number;
-  smokeGroundSpread: number;
-  smokeGroundHeight: number;
-  
-  // Start Screen - Smoke Mid Wisps Layer
-  smokeMidColorR: number;
-  smokeMidColorG: number;
-  smokeMidColorB: number;
-  smokeMidOpacity: number;
-  smokeMidSpeed: number;
-  smokeMidCount: number;
-  smokeMidSize: number;
-  smokeMidSpread: number;
-  smokeMidHeight: number;
-  
   // Start Screen - Button
   buttonScale: number;
   buttonPositionX: number;
@@ -281,16 +259,7 @@ export interface DebugParams {
   battleAreaRotationY: number;
   battleAreaRotationZ: number;
 
-  // Start Screen - Arcade Storefront
-  storefrontScale: number;
-  storefrontPositionX: number;
-  storefrontPositionY: number;
-  storefrontPositionZ: number;
-  storefrontRotationX: number;
-  storefrontRotationY: number;
-  storefrontRotationZ: number;
-
-  // Physical Ground Debug (Option A Controls)
+  // Physical Ground Debug
   groundPhysicalOffset: number;
   showGroundCollider: boolean;
   floorVisible: boolean;
@@ -298,12 +267,12 @@ export interface DebugParams {
 }
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
-  "pogMass": 6.95,
-  "pogRestitution": 0.05,
+  "pogMass": 0.25,
+  "pogRestitution": 0.35,
   "pogFriction": 1,
-  "pogLinearDamping": 0.15,
-  "pogAngularDamping": 0.25,
-  "slammerMass": 2.2,
+  "pogLinearDamping": 0.8,
+  "pogAngularDamping": 1,
+  "slammerMass": 2.5,
   "slammerRestitution": 0.45,
   "slammerFriction": 0.2,
   "slamBaseForce": -49,
@@ -330,9 +299,9 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "fogColorB": 0.031,
   "powerChargeSpeed": 240,
   "slamDelay": 200,
-  "logoScale": 12.4,
-  "logoPositionX": -0.2,
-  "logoPositionY": -2.3,
+  "logoScale": 10.6,
+  "logoPositionX": -1.5,
+  "logoPositionY": -0.7,
   "logoPositionZ": -31.5,
   "logoRotationX": 0,
   "logoRotationY": 0.14,
@@ -349,32 +318,14 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "crtJitterIntensity": 0.1,
   "crtWarmth": 0.12,
   "crtCurvature": 0.5,
-  "smokeGroundColorR": 0.25,
-  "smokeGroundColorG": 0.35,
-  "smokeGroundColorB": 0.40,
-  "smokeGroundOpacity": 0.8,
-  "smokeGroundSpeed": 0.15,
-  "smokeGroundCount": 50,
-  "smokeGroundSize": 180,
-  "smokeGroundSpread": 520,
-  "smokeGroundHeight": -6.5,
-  "smokeMidColorR": 0,
-  "smokeMidColorG": 0,
-  "smokeMidColorB": 0.8,
-  "smokeMidOpacity": 0.34,
-  "smokeMidSpeed": 0.28,
-  "smokeMidCount": 30,
-  "smokeMidSize": 41,
-  "smokeMidSpread": 33,
-  "smokeMidHeight": 3,
   "buttonScale": 0.9,
-  "buttonPositionX": 4,
+  "buttonPositionX": 50,
   "buttonPositionY": 83,
-  "buttonFontSize": 20,
+  "buttonFontSize": 28,
   "arenaLightIntensity": 1,
   "arenaAmbientIntensity": 0.5,
   "floorPositionY": 0,
-  "arenaRoomAsset": "slamz_logo_bg.glb",
+  "arenaRoomAsset": "glbs/slamz_logo_bg.glb",
   "arenaRoomScale": 0.1,
   "arenaRoomPositionX": -15,
   "arenaRoomPositionY": 0,
@@ -404,9 +355,9 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "cinematicScatterHeight": 6,
   "cinematicPogRotationSpeed": 8,
   "cinematicPogFloatDuration": 1.5,
-  "eruptionUpwardMultiplier": 1.4,
+  "eruptionUpwardMultiplier": 2.2,
   "eruptionRadius": 3,
-  "eruptionTorqueMultiplier": 0.15,
+  "eruptionTorqueMultiplier": 0.45,
   "autoSlamPower": 100,
   "cinematicTransitionSpeed": 2,
   "cinematicImpactFlashIntensity": 3,
@@ -423,10 +374,10 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "cinematicFinalFaceUpChance": 0.5,
   "cinematicBounceCount": 2,
   "cinematicBounceDamping": 0.6,
-  "wraithPositionX": 0.1,
-  "wraithPositionY": 5.1,
+  "wraithPositionX": -1.5,
+  "wraithPositionY": 2,
   "wraithPositionZ": -53.6,
-  "wraithScale": 15,
+  "wraithScale": 18.9,
   "wraithRotationY": 0,
   "wraithArenaVisible": true,
   "wraithArenaPositionX": -26,
@@ -434,7 +385,7 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "wraithArenaPositionZ": 0.25,
   "wraithArenaScale": 15,
   "wraithArenaRotationY": 3.98,
-  "pogMaxVelocity": 1,
+  "pogMaxVelocity": 15,
   "arenaLogoScale": 22.1,
   "arenaLogoPositionX": -20.5,
   "arenaLogoPositionY": 24.5,
@@ -451,7 +402,7 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "gameOverArcadeRotationY": -0.524,
   "gameOverArcadeRotationZ": 0,
   "gameOverArcadeVisible": true,
-  "arenaFloorSkinAsset": "Slamz_Rug.glb",
+  "arenaFloorSkinAsset": "glbs/Slamz_Rug.glb",
   "arenaFloorSkinScale": 75.3,
   "arenaFloorSkinPositionX": -36.25,
   "arenaFloorSkinPositionY": -4.03,
@@ -503,13 +454,6 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "battleAreaRotationX": -1.58,
   "battleAreaRotationY": 0,
   "battleAreaRotationZ": 0,
-  "storefrontScale": 11.01,
-  "storefrontPositionX": 0,
-  "storefrontPositionY": 1,
-  "storefrontPositionZ": -175.5,
-  "storefrontRotationX": 0,
-  "storefrontRotationY": 3.11681469282041,
-  "storefrontRotationZ": 0,
   "groundPhysicalOffset": 0.265,
   "showGroundCollider": false,
   "floorVisible": false,
@@ -541,6 +485,7 @@ export interface GameStore {
   currentSlammerType: string;
   qualityLevel: 'low' | 'medium' | 'high';
   showcaseRatioMode: 'safe' | 'full';
+  aspectRatioMode: 'NATIVE' | '16:9' | '21:9';
   previousState: GameState | null;
   fogPulseTrigger: number;
   fogColor: string;
@@ -616,6 +561,7 @@ export interface GameStore {
   setDebugLogoMode: (enabled: boolean) => void;
   triggerFogPulse: () => void;
   setDebugParams: (params: Partial<DebugParams>) => void;
+  setAspectRatioMode: (mode: 'NATIVE' | '16:9' | '21:9') => void;
   
   // Combo system actions
   incrementCombo: () => void;
@@ -657,7 +603,7 @@ export const useGameStore = create<GameStore>()(
 
     // Load debug params from localStorage
     const loadDebugParams = (): DebugParams => {
-      const stored = localStorage.getItem('debugParams');
+      const stored = localStorage.getItem('debugParams_v5');
       if (stored) {
         try {
           return { ...DEFAULT_DEBUG_PARAMS, ...JSON.parse(stored) };
@@ -690,6 +636,7 @@ export const useGameStore = create<GameStore>()(
       currentSlammerType: 'standard',
       qualityLevel: 'high',
       showcaseRatioMode: 'safe',
+      aspectRatioMode: 'NATIVE', // Set to NATIVE to fill window by default
       previousState: null,
       fogPulseTrigger: 0,
       fogColor: '#00ffcc',
@@ -750,9 +697,7 @@ export const useGameStore = create<GameStore>()(
       // Actions
       initPogs: () => {
         const state = get();
-        console.log(`[INIT POGS] Called. Current pogs.length = ${state.pogs.length}`);
         if (state.pogs.length > 0) {
-          console.log('[INIT POGS] Stack already exists, skipping');
           return;
         }
         get().resetStack();
@@ -761,6 +706,7 @@ export const useGameStore = create<GameStore>()(
       setGameState: (gameState) => set({ gameState }),
       setPower: (power) => set({ power }),
       setPowerDirection: (powerDirection) => set({ powerDirection }),
+      setAspectRatioMode: (aspectRatioMode) => set({ aspectRatioMode }),
 
       addToCollection: (item) => set((state) => {
         const newCollection = [...state.collection, item];
@@ -780,7 +726,6 @@ export const useGameStore = create<GameStore>()(
       })),
 
       resetStack: () => {
-        console.log('[RESET STACK] Reusing 15 POGs (object pool)');
         const currentPogs = get().pogs;
 
         if (currentPogs.length === 0) {
@@ -959,7 +904,7 @@ export const useGameStore = create<GameStore>()(
       triggerFogPulse: () => set((state) => ({ fogPulseTrigger: state.fogPulseTrigger + 1 })),
       setDebugParams: (params: Partial<DebugParams>) => set((state) => {
         const newParams = { ...state.debugParams, ...params };
-        localStorage.setItem('debugParams', JSON.stringify(newParams));
+        localStorage.setItem('debugParams_v5', JSON.stringify(newParams));
         return { debugParams: newParams };
       }),
       
@@ -1025,7 +970,3 @@ export const useGameStore = create<GameStore>()(
     };
   })
 );
-
-
-
-

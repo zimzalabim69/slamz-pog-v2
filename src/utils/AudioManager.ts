@@ -19,7 +19,6 @@ class AudioManager {
     try {
       this.context = new (window.AudioContext || (window as any).webkitAudioContext)();
       this.initialized = true;
-      console.log('[AUDIO] System Initialized (Arcade Mode)');
       
       // Unlock context (browser policy)
       if (this.context.state === 'suspended') {
@@ -42,7 +41,6 @@ class AudioManager {
       
       const arrayBuffer = await response.arrayBuffer();
       this.introBuffer = await this.context.decodeAudioData(arrayBuffer);
-      console.log('[AUDIO] Intro Track Loaded & Primed: Insert Soul.mp3');
       
       // Auto-play on load if possible (since we initialized on a gesture)
       this.playIntro();
@@ -59,7 +57,6 @@ class AudioManager {
     this.introSource.loop = true;
     this.introSource.connect(this.context.destination);
     this.introSource.start(0);
-    console.log('[AUDIO] Intro Loop Started.');
   }
 
   public stopIntro() {
@@ -73,7 +70,6 @@ class AudioManager {
     if (!this.context) return;
     
     // SFX Logic (Placeholder for lightning_crack, slam_start)
-    console.log(`[AUDIO] SFX Trigger: ${name}`);
     
     // Simple oscillator beep for "lightning" placeholder
     if (name === 'lightning_crack') {

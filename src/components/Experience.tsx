@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
+import { useThree } from '@react-three/fiber';
 import { useGameStore } from '../store/useGameStore';
 import { SCENE_PRESETS } from '../constants/game';
 import * as THREE from 'three';
@@ -25,6 +26,7 @@ export function Experience() {
   const togglePhysicsDebug = useGameStore((state) => state.togglePhysicsDebug);
   
   const preset = SCENE_PRESETS.CYBER_ALLEY;
+  const { size } = useThree();
   const orbitRef = React.useRef<any>(null);
   const cameraRef = React.useRef<any>(null);
 
@@ -53,15 +55,17 @@ export function Experience() {
         position={[0, 8, 6]}
         fov={50}
         onUpdate={(cam) => {
-          if (useGameStore.getState().isCinematicActive) return; // LOCKDOWN: GSAP has control
+          if (useGameStore.getState().isCinematicActive) return; 
           
-          // Use getState() to avoid reactive re-renders
           const tension = useGameStore.getState().cameraTension;
           const debug = useGameStore.getState().debugParams;
+          const aspect = size.width / size.height;
           
-          const baseFOV = debug.baseFOV || 50;
-          const targetFOV = baseFOV - (tension * 15);
-          cam.fov = THREE.MathUtils.lerp(cam.fov, targetFOV, 0.1);
+          const targetHFOV = debug.baseFOV || 65;
+          const targetVFOV = 2 * Math.atan(Math.tan((targetHFOV / 2) * Math.PI / 180) / aspect) * 180 / Math.PI;
+          
+          const finalTargetVFOV = targetVFOV - (tension * 15);
+          cam.fov = THREE.MathUtils.lerp(cam.fov, finalTargetVFOV, 0.1);
 
           if (tension > 0.8) {
             const shake = (tension - 0.8) * 0.1;

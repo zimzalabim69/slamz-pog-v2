@@ -1,8 +1,7 @@
-// @ts-nocheck
-import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette, ToneMapping } from '@react-three/postprocessing';
 import { useGameStore } from '../store/useGameStore';
 import { SCENE_PRESETS } from '../constants/game';
-import { BlendFunction } from 'postprocessing';
+import { BlendFunction, ToneMappingMode } from 'postprocessing';
 import * as THREE from 'three';
 
 /**
@@ -35,12 +34,12 @@ export function Effects() {
         mipmapBlur
       />
       
-      {isHighQuality && (
+      { (isHighQuality ? (
         <ChromaticAberration
           blendFunction={BlendFunction.SCREEN}
           offset={new THREE.Vector2(preset.chromaticAberration * 0.8, preset.chromaticAberration * 0.8)}
         />
-      )}
+      ) : null) as any }
 
       {/* AAAA Dithering & Anti-Banding Film Grain */}
       <Noise 
@@ -50,11 +49,14 @@ export function Effects() {
       />
 
       {/* Focus vignette for cinematic immersion */}
-      <Vignette 
+      { (<Vignette 
         eskil={false} 
         offset={0.5} 
         darkness={isCinematic ? 0.7 : 0.4} 
-      />
+      />) as any }
+
+      {/* Force consistent ACES Filmic mapping across all browsers overriding Brave fuzzing/Chrome HDR explosion */}
+      { (<ToneMapping mode={ToneMappingMode.ACES_FILMIC} />) as any }
 
     </EffectComposer>
   );

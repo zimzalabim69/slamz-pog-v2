@@ -1,5 +1,5 @@
 .start-screen {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -27,14 +27,8 @@
     linear-gradient(90deg, rgba(0, 255, 255, 0.15) 1px, transparent 1px);
   background-size: 60px 60px;
   transform: perspective(800px) rotateX(45deg);
-  animation: grid-scroll 15s linear infinite;
   z-index: 1;
   mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-}
-
-@keyframes grid-scroll {
-  0% { transform: perspective(800px) rotateX(45deg) translateY(0); }
-  100% { transform: perspective(800px) rotateX(45deg) translateY(60px); }
 }
 
 /* RASTER DISTORTION OVERLAY */
@@ -84,13 +78,7 @@
   letter-spacing: 18px;
   font-weight: 800;
   text-shadow: 0 0 15px #00ffff, 0 0 30px rgba(0, 255, 255, 0.5);
-  animation: flicker-in 2s linear forwards;
-}
-
-@keyframes flicker-in {
-  0%, 10%, 20%, 30% { opacity: 0; }
-  5%, 15%, 25% { opacity: 1; }
-  100% { opacity: 1; }
+  opacity: 1;
 }
 
 /* PRESS START BUTTON (AAA) */
@@ -105,7 +93,6 @@
   background: linear-gradient(45deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3));
   box-shadow: 0 0 20px rgba(255, 0, 255, 0.5), inset 0 0 15px rgba(255, 0, 255, 0.2);
   cursor: pointer;
-  animation: blink 0.6s infinite steps(2), pulse-glow 3s infinite ease-in-out;
   transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   position: relative;
   overflow: hidden;
@@ -116,11 +103,6 @@
   background: rgba(255, 0, 255, 0.6);
   box-shadow: 0 0 50px #ff00ff;
   border-color: #00ffff;
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); }
-  50% { box-shadow: 0 0 50px rgba(0, 255, 255, 0.8); }
 }
 
 /* SCREEN SHAKE CLASS */
@@ -189,10 +171,12 @@
 }
 
 /* CINEMATIC ZOOM TRANSITION */
-.start-screen.zooming .start-screen-content {
-  transform: scale(10) translateY(-50%);
+.start-screen.zooming .press-start,
+.start-screen.zooming .branding-footer {
+  transform: translate(-50%, -50%) scale(10) !important;
   opacity: 0;
-  filter: blur(20px) contrast(200%);
+  filter: blur(20px);
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .start-screen.zooming {
@@ -210,7 +194,6 @@
   font-weight: 900;
   text-shadow: 0 0 10px #00ffff;
   opacity: 0.6;
-  animation: flicker-in 3s infinite alternate;
   pointer-events: none;
   z-index: 100;
 }

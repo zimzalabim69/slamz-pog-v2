@@ -42,14 +42,6 @@ export function SlamzWraith({ context = 'start' }: SlamzWraithProps = {}) {
       groupRef.current.scale.setScalar(debugParams.wraithScale);
       groupRef.current.rotation.y = debugParams.wraithRotationY;
     }
-
-    // 2. Procedural Hover Animation (Zero-G Life) — applied in both contexts
-    const time = state.clock.getElapsedTime();
-    const hoverY = Math.sin(time * 0.8) * 0.15;
-    const hoverRotZ = Math.cos(time * 0.5) * 0.05;
-
-    groupRef.current.position.y += hoverY;
-    groupRef.current.rotation.z = hoverRotZ;
   });
 
   return (

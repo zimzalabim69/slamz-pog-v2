@@ -53,7 +53,6 @@ class CinematicEngine {
         useGameStore.setState({
           globalDampingScale: 0.05 // RELEASE: Much lower damping for "pop"
         });
-        console.log('[ENGINE] 💥 EXPLOSION RELEASED');
       }
     }, freezeDuration);
 
@@ -92,7 +91,7 @@ class CinematicEngine {
           // ANTI-CLIP KICK: Pro-active lift to ensure we aren't snagged in the mat
           body.setTranslation({ 
             x: pogPos.x, 
-            y: pogPos.y + 0.05, 
+            y: pogPos.y + 0.15, 
             z: pogPos.z 
           }, true);
 
@@ -116,8 +115,6 @@ class CinematicEngine {
         }
       }
     });
-
-    console.log('[ENGINE] 🌋 VOLCANIC TRIGGER ACTIVE - CALIBRATED POWER');
   }
 
   /**
@@ -144,8 +141,6 @@ class CinematicEngine {
         body.wakeUp();
       }
     });
-
-    console.log('[ENGINE] 🌍 FULL RELEASE - DAMPING CLEARED - POGS FREE');
     
     this.isCinematicActive = false;
     this.justEndedAt = Date.now(); // Start grace period for settle detector

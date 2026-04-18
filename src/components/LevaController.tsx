@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useControls, folder } from 'leva';
 import { useGameStore } from '../store/useGameStore';
 import { useEffect } from 'react';
@@ -53,7 +52,7 @@ export function LevaController() {
 
   // Sync physicsDebug back to Leva if toggled via keyboard
   useEffect(() => {
-    setPhysics({ physicsDebug });
+    setPhysics({ physicsDebug } as any);
   }, [physicsDebug, setPhysics]);
 
   // 2. KINETIC / BULLET TIME CONTROLS

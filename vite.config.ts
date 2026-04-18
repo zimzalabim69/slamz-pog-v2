@@ -17,7 +17,7 @@ export default defineConfig({
 
     // React Scan → shows you which components are re-rendering too much (super useful for games!)
     reactScan({
-      enable: true,   // you can change to false later if it causes issues
+      enable: false,   // you can change to false later if it causes issues
     }),
   ],
 
@@ -38,13 +38,14 @@ export default defineConfig({
       output: {
         manualChunks: {
           three: ['three'],
-          'three-drei': ['@react-three/drei', '@react-three/fiber'],
-          rapier: ['@react-three/rapier'],
+          'react-three-core': ['@react-three/fiber', '@react-three/drei'],
+          'rapier-core': ['@dimforge/rapier3d-compat'],
+          'rapier-react': ['@react-three/rapier'],
           postprocessing: ['postprocessing', '@react-three/postprocessing'],
-          'react-vendor': ['react', 'react-dom'],
+          'react-vendor': ['react', 'react-dom', 'zustand'],
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2500,
   },
 })

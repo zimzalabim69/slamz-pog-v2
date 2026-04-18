@@ -263,43 +263,12 @@ export function DebugPanel() {
                           <EnhancedSlider label="Color B" value={debugParams.startFogColorB} min={0} max={1} step={0.01} onChange={(v) => updateParam('startFogColorB', v)} decimals={2} />
                         </div>
                       ))}
-                      {renderSection('ss_smoke_g', 'Neon Smoke (Ground)', (
-                        <div className="debug-section">
-                          <EnhancedSlider label="Color R" value={debugParams.smokeGroundColorR} min={0} max={1} step={0.01} onChange={(v) => updateParam('smokeGroundColorR', v)} decimals={2} />
-                          <EnhancedSlider label="Color G" value={debugParams.smokeGroundColorG} min={0} max={1} step={0.01} onChange={(v) => updateParam('smokeGroundColorG', v)} decimals={2} />
-                          <EnhancedSlider label="Color B" value={debugParams.smokeGroundColorB} min={0} max={1} step={0.01} onChange={(v) => updateParam('smokeGroundColorB', v)} decimals={2} />
-                          <EnhancedSlider label="Opacity" value={debugParams.smokeGroundOpacity} min={0} max={1} step={0.01} onChange={(v) => updateParam('smokeGroundOpacity', v)} decimals={2} />
-                          <EnhancedSlider label="Speed" value={debugParams.smokeGroundSpeed} min={0} max={10} step={0.1} onChange={(v) => updateParam('smokeGroundSpeed', v)} decimals={1} />
-                          <EnhancedSlider label="Count" value={debugParams.smokeGroundCount} min={1} max={300} step={1} onChange={(v) => updateParam('smokeGroundCount', v)} decimals={0} />
-                          <EnhancedSlider label="Size" value={debugParams.smokeGroundSize} min={1} max={500} step={1} onChange={(v) => updateParam('smokeGroundSize', v)} decimals={0} />
-                          <EnhancedSlider label="Spread" value={debugParams.smokeGroundSpread} min={1} max={1000} step={5} onChange={(v) => updateParam('smokeGroundSpread', v)} decimals={0} />
-                          <EnhancedSlider label="Height" value={debugParams.smokeGroundHeight} min={-50} max={50} step={0.5} onChange={(v) => updateParam('smokeGroundHeight', v)} decimals={1} />
-                        </div>
-                      ))}
-                      {renderSection('ss_smoke_m', 'Neon Smoke (Mid)', (
-                        <div className="debug-section">
-                          <EnhancedSlider label="Color R" value={debugParams.smokeMidColorR} min={0} max={1} step={0.01} onChange={(v) => updateParam('smokeMidColorR', v)} decimals={2} />
-                          <EnhancedSlider label="Color G" value={debugParams.smokeMidColorG} min={0} max={1} step={0.01} onChange={(v) => updateParam('smokeMidColorG', v)} decimals={2} />
-                          <EnhancedSlider label="Color B" value={debugParams.smokeMidColorB} min={0} max={1} step={0.01} onChange={(v) => updateParam('smokeMidColorB', v)} decimals={2} />
-                          <EnhancedSlider label="Opacity" value={debugParams.smokeMidOpacity} min={0} max={1} step={0.01} onChange={(v) => updateParam('smokeMidOpacity', v)} decimals={2} />
-                          <EnhancedSlider label="Speed" value={debugParams.smokeMidSpeed} min={0} max={5} step={0.05} onChange={(v) => updateParam('smokeMidSpeed', v)} decimals={2} />
-                          <EnhancedSlider label="Count" value={debugParams.smokeMidCount} min={1} max={100} step={1} onChange={(v) => updateParam('smokeMidCount', v)} decimals={0} />
-                          <EnhancedSlider label="Size" value={debugParams.smokeMidSize} min={1} max={200} step={1} onChange={(v) => updateParam('smokeMidSize', v)} decimals={0} />
-                        </div>
-                      ))}
-                      {renderSection('ss_store', 'Arcade Storefront', (
-                        <div className="debug-section">
-                          <EnhancedSlider label="Scale" value={debugParams.storefrontScale} min={0.1} max={50} step={0.1} onChange={(v) => updateParam('storefrontScale', v)} decimals={1} />
-                          <EnhancedSlider label="Pos Y" value={debugParams.storefrontPositionY} min={-50} max={50} step={0.5} onChange={(v) => updateParam('storefrontPositionY', v)} decimals={1} />
-                          <EnhancedSlider label="Pos Z" value={debugParams.storefrontPositionZ} min={-500} max={0} step={1} onChange={(v) => updateParam('storefrontPositionZ', v)} decimals={0} />
-                          <EnhancedSlider label="Rot Y" value={debugParams.storefrontRotationY} min={-Math.PI * 2} max={Math.PI * 2} step={0.01} onChange={(v) => updateParam('storefrontRotationY', v)} decimals={2} />
-                        </div>
-                      ))}
                       {renderSection('ss_btn', 'Start Button', (
                         <div className="debug-section">
                           <EnhancedSlider label="Scale" value={debugParams.buttonScale} min={0.1} max={5} step={0.1} onChange={(v) => updateParam('buttonScale', v)} decimals={1} />
+                          <EnhancedSlider label="Pos X" value={debugParams.buttonPositionX} min={0} max={100} step={1} onChange={(v) => updateParam('buttonPositionX', v)} decimals={0} unit="%" />
                           <EnhancedSlider label="Pos Y" value={debugParams.buttonPositionY} min={0} max={100} step={1} onChange={(v) => updateParam('buttonPositionY', v)} decimals={0} unit="%" />
-                          <EnhancedSlider label="Font Size" value={debugParams.buttonFontSize} min={10} max={100} step={1} onChange={(v) => updateParam('buttonFontSize', v)} decimals={0} unit="px" />
+                          <EnhancedSlider label="Font Size" value={debugParams.buttonFontSize} min={10} max={200} step={1} onChange={(v) => updateParam('buttonFontSize', v)} decimals={0} unit="px" />
                         </div>
                       ))}
                     </>

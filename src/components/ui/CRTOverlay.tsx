@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 
@@ -97,16 +96,14 @@ export function CRTOverlay() {
       }
 
       // 2. RGB MASK (Phosphor Triads)
-      if (qualityLevel !== 'low') {
-          const pixelSize = 3;
-          ctx.globalAlpha = 0.02 * crtPhosphorBurn * 5;
-          for(let x = 0; x < W; x += pixelSize * 3) {
-              ctx.fillStyle = '#ff0000'; ctx.fillRect(x, 0, pixelSize, H);
-              ctx.fillStyle = '#00ff00'; ctx.fillRect(x + pixelSize, 0, pixelSize, H);
-              ctx.fillStyle = '#0000ff'; ctx.fillRect(x + pixelSize * 2, 0, pixelSize, H);
-          }
-          ctx.globalAlpha = 1.0;
+      const pixelSize = 3;
+      ctx.globalAlpha = 0.02 * crtPhosphorBurn * 5;
+      for(let x = 0; x < W; x += pixelSize * 3) {
+          ctx.fillStyle = '#ff0000'; ctx.fillRect(x, 0, pixelSize, H);
+          ctx.fillStyle = '#00ff00'; ctx.fillRect(x + pixelSize, 0, pixelSize, H);
+          ctx.fillStyle = '#0000ff'; ctx.fillRect(x + pixelSize * 2, 0, pixelSize, H);
       }
+      ctx.globalAlpha = 1.0;
 
       // 3. RGB SHIFT / FRINGING
       if (rgbShiftRef.current > 0.2) {
@@ -170,11 +167,11 @@ export function CRTOverlay() {
 
   return (
     <div style={{
-      position: 'fixed',
+      position: 'absolute',
       top: 0,
       left: 0,
-      width: '100vw',
-      height: '100vh',
+      width: '100%',
+      height: '100%',
       pointerEvents: 'none',
       zIndex: 100,
       overflow: 'hidden',

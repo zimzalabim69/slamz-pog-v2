@@ -2,12 +2,6 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import * as THREE from 'three';
 
-import { audioManager } from '../../utils/AudioManager';
-import { LightningBolt } from './LightningBolt';
-import { StartLogo3D } from './StartLogo3D';
-import { ArcadeStorefront } from './ArcadeStorefront';
-import { SlamzWraith } from '../game/SlamzWraith';
-import { StartSmoke } from './StartSmoke';
 import { Canvas, useThree } from '@react-three/fiber';
 import { ENABLE_ANTIALIAS, CANVAS_DPR } from '../../utils/devicePerformance';
 import { Environment } from '@react-three/drei';
@@ -24,7 +18,8 @@ function StartSceneFog() {
       debugParams.startFogColorB
     );
     scene.fog = new THREE.FogExp2(color, debugParams.startFogDensity);
-    scene.background = color;
+    // REMOVED scene.background = color to prevent Chromium opaque compositor fighting
+    scene.background = null; 
     return () => {
       scene.fog = null;
       scene.background = null;
@@ -36,6 +31,24 @@ function StartSceneFog() {
     debugParams.startFogColorG,
     debugParams.startFogColorB,
   ]);
+  
+  return null;
+}
+
+// ─── Responsive FOV Logic (AAAA Responsive Standard) ────────────────
+function ResponsiveLens() {
+  const { camera, size } = useThree();
+  const aspect = size.width / size.height;
+  
+  React.useEffect(() => {
+    if (camera.type === 'PerspectiveCamera') {
+      const pCam = camera as THREE.PerspectiveCamera;
+      const targetHFOV = 65; // Horizontal target
+      const vFOV = 2 * Math.atan(Math.tan((targetHFOV / 2) * Math.PI / 180) / aspect) * 180 / Math.PI;
+      pCam.fov = vFOV;
+      pCam.updateProjectionMatrix();
+    }
+  }, [aspect, camera]);
   
   return null;
 }
@@ -71,56 +84,15 @@ function RenderController() {
   return null;
 }
 
+import { audioManager } from '../../utils/AudioManager';
+import { StartLogo3D } from './StartLogo3D';
+import { SlamzWraith } from '../game/SlamzWraith';
+
 export const StartScreen: React.FC = () => {
   const setGameState = useGameStore((state) => state.setGameState);
   const debugParams = useGameStore((state) => state.debugParams);
   const [zooming, setZooming] = useState(false);
-  const [isShaking, setIsShaking] = useState(false);
-  const [isGlitching, setIsGlitching] = useState(false);
   const [hasStartedAudio, setHasStartedAudio] = useState(false);  
-  // Lightning state: tracks active bolts and their positions
-  const [activeBolt, setActiveBolt] = useState<{ x1: number, y1: number, x2: number, y2: number } | null>(null);
-  const lightningTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Fractal Lightning Strike Logic
-  const triggerLightning = useCallback(() => {
-    // Random position around the logo
-    const x1 = Math.random() * 100; // SVG space (0-100)
-    const y1 = Math.random() * 20;
-    const x2 = x1 + (Math.random() - 0.5) * 40;
-    const y2 = 80 + Math.random() * 20;
-
-    setActiveBolt({ x1, y1, x2, y2 });
-    setIsShaking(true);
-    setIsGlitching(true);
-    
-    audioManager.playSfx('lightning_crack', 0.5);
-
-    // Multi-stage flicker for "Real Ass" feel
-    setTimeout(() => {
-      setActiveBolt(null); // Short flicker "off"
-      setTimeout(() => {
-        // Flick back "on" with random offset
-        setActiveBolt({ x1: x1 + 2, y1, x2: x2 - 2, y2 });
-        setTimeout(() => {
-          setActiveBolt(null);
-          setIsShaking(false);
-          setIsGlitching(false);
-        }, 100);
-      }, 50);
-    }, 150);
-
-    // Next strike randomly (1.5 - 6s for high energy)
-    const nextStrike = Math.random() * 4500 + 1500;
-    lightningTimer.current = setTimeout(triggerLightning, nextStrike);
-  }, []);
-
-  useEffect(() => {
-    lightningTimer.current = setTimeout(triggerLightning, 2000);
-    return () => {
-      if (lightningTimer.current) clearTimeout(lightningTimer.current);
-    };
-  }, [triggerLightning]);
 
   const handleStart = useCallback(async () => {
     if (zooming) return;
@@ -142,41 +114,27 @@ export const StartScreen: React.FC = () => {
 
   return (
     <div 
-      className={`start-screen ${zooming ? 'zooming' : ''} ${isShaking ? 'screen-shake' : ''}`} 
+      className={`start-screen ${zooming ? 'zooming' : ''}`} 
       onClick={handleStart}
     >
       <h1 className="sr-only">SLAMZ PRO-TOUR | VIBEJAM 2026</h1>
-      <div className="energy-grid" />
-      {/* REMOVED: Redundant CRT layers now handled by centralized CRTOverlay */}
-      
-      <div className="lightning-container">
-        <svg className="lightning-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <defs>
-            <filter id="lightning-glow">
-              <feGaussianBlur stdDeviation="1.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          {activeBolt && (
-            <LightningBolt 
-              startX={activeBolt.x1} startY={activeBolt.y1}
-              endX={activeBolt.x2} endY={activeBolt.y2}
-              isActive={true}
-              intensity={1.5}
-            />
-          )}
-        </svg>
-      </div>
 
       <div className="logo-container-3d">
         <Canvas 
           frameloop="demand"
           dpr={CANVAS_DPR}
-          gl={{ outputColorSpace: THREE.SRGBColorSpace, antialias: ENABLE_ANTIALIAS }}
+          gl={{ 
+            outputColorSpace: THREE.SRGBColorSpace, 
+            antialias: ENABLE_ANTIALIAS,
+            alpha: true, // Transparent context to let base App canvas layer show
+            powerPreference: "high-performance"
+            // Removed preserveDrawingBuffer to prevent layer toggling bug
+          }}
           camera={{ position: [0, 0, 8], fov: 35 }}
+          onCreated={({ gl }) => {
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = 1.0;
+          }}
           style={{ 
             position: 'absolute',
             top: 0,
@@ -188,6 +146,7 @@ export const StartScreen: React.FC = () => {
           }}
         >
           <StartSceneFog />
+          <ResponsiveLens />
           <RenderController />
           <ambientLight intensity={1.5} />
           <Environment preset="city" />
@@ -197,39 +156,30 @@ export const StartScreen: React.FC = () => {
           <pointLight position={[10, 5, 5]} intensity={12} color="#00ffff" />
           <spotLight position={[0, 10, 10]} intensity={5} angle={0.5} penumbra={1} />
           
-          <ArcadeStorefront />
-          <SlamzWraith />
-          <StartSmoke />
+          <SlamzWraith context="start" />
           <StartLogo3D />
         </Canvas>
       </div>
 
-      <div className={`start-screen-content ${isGlitching ? 'rgb-glitch' : ''}`}>
-        <div style={{ height: '30vh' }} /> {/* Spacer for logo area */}
-        
-        <div 
-          className="press-start"
-          style={{
-            transform: `scale(${debugParams.buttonScale})`
-          }}
-        >
-          PRESS START
-        </div>
+      <div 
+        className={`press-start ${zooming ? 'zooming-out' : ''}`}
+        style={{
+          position: 'absolute',
+          left: `${debugParams.buttonPositionX}%`,
+          top: `${debugParams.buttonPositionY}%`,
+          transform: `translate(-50%, -50%) scale(${debugParams.buttonScale})`,
+          fontSize: `${debugParams.buttonFontSize}px`,
+          zIndex: 100,
+          margin: 0
+        }}
+      >
+        PRESS START
       </div>
 
       <div className="branding-footer">
         VIBEJAM 2026: PRO-TOUR
       </div>
 
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
-        <defs>
-          <filter id="rgb-split">
-            <feOffset in="SourceGraphic" dx="-3" dy="1" result="red" />
-            <feOffset in="SourceGraphic" dx="3" dy="-1" result="blue" />
-            <feBlend in="red" in2="blue" mode="screen" />
-          </filter>
-        </defs>
-      </svg>
     </div>
   );
 };

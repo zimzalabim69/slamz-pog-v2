@@ -1,6 +1,6 @@
-// @ts-nocheck
 import * as THREE from 'three';
-import { useMemo, useRef, Suspense, Component, ReactNode } from 'react';
+import { useMemo, useRef, Suspense, Component } from 'react';
+import type { ReactNode } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGameStore } from '../../store/useGameStore';
 import { useGLTF, Text } from '@react-three/drei';
