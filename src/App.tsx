@@ -12,6 +12,7 @@ import { DebugPanel } from './components/ui/DebugPanel';
 import { PauseMenu } from './components/ui/PauseMenu';
 import { PerfectHit } from './components/ui/PerfectHit';
 import { SessionSummary } from './components/ui/SessionSummary';
+import { WraithPopup } from './components/ui/WraithPopup';
 
 
 // ============================================================
@@ -150,6 +151,7 @@ function App() {
         <PerfectHit />
         <SessionSummary />
         <DebugPanel />
+        <WraithPopup />
       </div>
     </WebGLErrorBoundary>
   );

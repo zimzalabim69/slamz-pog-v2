@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
-import { useThree } from '@react-three/fiber';
+import { PerspectiveCamera, Stats } from '@react-three/drei';
 import { useGameStore } from '../store/useGameStore';
-import { SCENE_PRESETS } from '../constants/game';
 import * as THREE from 'three';
 import { Reticle } from './game/Reticle';
 import { ImpactParticles } from './game/ImpactParticles';
@@ -15,29 +13,16 @@ import { PerformanceMonitor } from './PerformanceMonitor';
 import { AdaptiveQuality } from './AdaptiveQuality';
 import { Physics } from '@react-three/rapier';
 import { LevaController } from './LevaController';
-
+import { CameraController } from './CameraController';
 import { HarvestManager } from './game/HarvestManager';
 
 export function Experience() {
   const sceneMode = useGameStore((state) => state.sceneMode);
-  // Removed reactive cameraTension to prevent re-renders
-  const isCinematicActive = useGameStore((state) => state.isCinematicActive);
   const bulletTimeActive = useGameStore((state) => state.bulletTimeActive);
   const debugParams = useGameStore((state) => state.debugParams);
   const physicsDebug = useGameStore((state) => state.physicsDebug);
   const togglePhysicsDebug = useGameStore((state) => state.togglePhysicsDebug);
   
-  const preset = SCENE_PRESETS.CYBER_ALLEY;
-  const { size } = useThree();
-  const orbitRef = React.useRef<any>(null);
-  const cameraRef = React.useRef<any>(null);
-
-  React.useEffect(() => {
-    if (cameraRef.current) {
-      cameraRef.current.lookAt(0, -1.5, 0);
-    }
-  }, []);
-
   // KEYBOARD SHORTCUTS
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -51,33 +36,8 @@ export function Experience() {
 
   return (
     <>
-      <PerspectiveCamera
-        ref={cameraRef}
-        makeDefault
-        position={[0, 8, 6]}
-        fov={50}
-        onUpdate={(cam) => {
-          if (useGameStore.getState().isCinematicActive) return; 
-          
-          const tension = useGameStore.getState().cameraTension;
-          const debug = useGameStore.getState().debugParams;
-          const aspect = size.width / size.height;
-          
-          const targetHFOV = debug.baseFOV || 65;
-          const targetVFOV = 2 * Math.atan(Math.tan((targetHFOV / 2) * Math.PI / 180) / aspect) * 180 / Math.PI;
-          
-          const finalTargetVFOV = targetVFOV - (tension * 15);
-          cam.fov = THREE.MathUtils.lerp(cam.fov, finalTargetVFOV, 0.1);
-
-          if (tension > 0.8) {
-            const shake = (tension - 0.8) * 0.1;
-            cam.position.x += (Math.random() - 0.5) * shake;
-            cam.position.y += (Math.random() - 0.5) * shake;
-          }
-
-          cam.updateProjectionMatrix();
-        }}
-      />
+      <PerspectiveCamera makeDefault />
+      <CameraController />
 
       <color attach="background" args={[
         new THREE.Color(
@@ -87,7 +47,6 @@ export function Experience() {
         )
       ]} />
       
-      {/* GLOBAL FOG (REPAIRED & SYNCED) */}
       <fog 
         attach="fog" 
         args={[
@@ -118,25 +77,12 @@ export function Experience() {
         <HarvestManager />
       </Physics>
 
-
       <Reticle />
       <ImpactParticles />
 
-      {!isCinematicActive && (
-        <OrbitControls
-          ref={orbitRef}
-          enablePan={false}
-          mouseButtons={{ LEFT: undefined, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE }}
-          maxPolarAngle={Math.PI / 2.1}
-          minDistance={0.1}
-          maxDistance={10000}
-          target={[0, debugParams.floorPositionY || -0.01, 0]}
-        />
-      )}
       <PerformanceMonitor />
       <AdaptiveQuality />
       
-      {/* DEVELOPMENT TOOLS */}
       {import.meta.env.DEV && (
         <>
           <Stats />

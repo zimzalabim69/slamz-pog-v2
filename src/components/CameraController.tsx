@@ -1,53 +1,35 @@
-import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useGameStore } from '../store/useGameStore';
 
-interface CameraControllerProps {
-  isMenuMode: boolean;
-  isCharging?: boolean;
-}
+export function CameraController() {
+  const { camera } = useThree();
+  const lookAtTarget = useRef(new THREE.Vector3(0, 1.5, 0));
 
-export const CameraController = ({ isMenuMode, isCharging = false }: CameraControllerProps) => {
-  const vec = new THREE.Vector3();
-  const chargingStartTime = useRef(0);
+  const isCinematicActive = useGameStore((s) => s.isCinematicActive);
+  const bulletTimeActive = useGameStore((s) => s.bulletTimeActive);
 
-  useFrame((state) => {
-    if (isMenuMode) {
-      // Cinematic Orbit: Rotate around the center (0,0,0)
-      const t = state.clock.getElapsedTime() * 0.3;
-      state.camera.position.lerp(vec.set(Math.cos(t) * 10, 7, Math.sin(t) * 10), 0.05);
-      state.camera.lookAt(0, 0, 0);
-      chargingStartTime.current = 0; // Reset charging timer
-    } else if (isCharging) {
-      // Start charging timer if not started
-      if (chargingStartTime.current === 0) {
-        chargingStartTime.current = state.clock.getElapsedTime();
-      }
-      
-      // CHARGING STATE: Camera "dives" into the table
-      const chargingElapsed = (state.clock.getElapsedTime() - chargingStartTime.current) * 2;
-      const diveHeight = 7 - (chargingElapsed * 3); // Descend from orbit height
-      const diveRadius = 10 - (chargingElapsed * 5); // Spiral inward
-      
-      // Clamp values to prevent negative
-      const finalHeight = Math.max(diveHeight, 2);
-      const finalRadius = Math.max(diveRadius, 0);
-      
-      state.camera.position.lerp(
-        vec.set(
-          Math.cos(chargingElapsed) * finalRadius, 
-          finalHeight, 
-          Math.sin(chargingElapsed) * finalRadius
-        ), 
-        0.15
-      );
-      state.camera.lookAt(0, 0, 0);
-    } else {
-      // Gameplay Position: Smoothly lock to top-down view
-      state.camera.position.lerp(vec.set(0, 12, 5), 0.1);
-      state.camera.lookAt(0, 0, 0);
+  useFrame(() => {
+    // Locked arcade cabinet view - fixed position and angle
+    const targetPosition = new THREE.Vector3(0, 8.5, 22); // Classic "looking down into the cabinet" angle
+
+    // During bullet-time, pull back slightly for dramatic effect but stay locked
+    if (isCinematicActive && bulletTimeActive) {
+      targetPosition.set(0, 10, 26); // slight zoom out during eruption/abduction
     }
+
+    // Smooth but limited movement (feels like a real fixed monitor)
+    camera.position.lerp(targetPosition, 0.06);
+
+    // Always look at the center of the play area
+    lookAtTarget.current.lerp(new THREE.Vector3(0, 1, 0), 0.08);
+    camera.lookAt(lookAtTarget.current);
+
+    // Fixed FOV for that old CRT feel
+    camera.fov = 52;
+    camera.updateProjectionMatrix();
   });
 
   return null;
-};
+}
