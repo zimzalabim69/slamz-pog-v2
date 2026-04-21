@@ -1,0 +1,165 @@
+.wraith-ui-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.wraith-popup {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.75);
+  border: 4px solid #ff0055;
+  box-shadow: 0 0 30px rgba(255, 0, 85, 0.4);
+  width: 320px;
+  overflow: hidden;
+  animation: popupGlitch 0.23s infinite alternate;
+}
+
+.central-popup {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px;
+  border-width: 8px;
+}
+
+.popup-header {
+  background: #ff0055;
+  color: #000;
+  padding: 5px 10px;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.popup-body {
+  padding: 20px;
+  color: #ff0055;
+}
+
+.glitch-text {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0;
+  position: relative;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  left: 2px;
+  text-shadow: -2px 0 #00ffff;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  animation: glitchAnim 0.5s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  left: -2px;
+  text-shadow: 2px 0 #ff00ff;
+  clip-path: polygon(0 80%, 100% 80%, 100% 100%, 0 100%);
+  animation: glitchAnim 0.3s infinite linear alternate;
+}
+
+.popup-footer {
+  font-size: 10px;
+  padding: 5px 10px;
+  opacity: 0.5;
+  border-top: 1px solid rgba(255, 0, 85, 0.3);
+}
+
+.swarm-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, transparent 20%, rgba(255, 0, 85, 0.1) 100%);
+  border: 20px solid rgba(255, 0, 85, 0.2);
+  pointer-events: none;
+  animation: pulseScan 0.1s infinite;
+}
+
+@keyframes popupGlitch {
+  0% { transform: translate(0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(1px, 2px); }
+}
+
+@keyframes glitchAnim {
+  0% { clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%); }
+  20% { clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%); }
+  40% { clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%); }
+  60% { clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%); }
+  80% { clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%); }
+  100% { clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%); }
+}
+
+@keyframes pulseScan {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
+
+.jitter {
+  animation: jitter 0.1s infinite;
+}
+
+.total-failure {
+  animation: failureFlicker 0.12s infinite;
+  backdrop-filter: hue-rotate(90deg) contrast(1.5);
+}
+
+.wraith-popup.swarm-instance {
+  animation: popupEnter 0.15s ease-out forwards;
+}
+
+.wraith-popup.meltdown {
+  animation: meltdownJitter 0.08s infinite !important;
+  border-color: #00ffff !important;
+  box-shadow: 0 0 50px rgba(0, 255, 255, 0.6);
+}
+
+@keyframes popupEnter {
+  0% { transform: scale(0.5) skewX(20deg); opacity: 0; }
+  70% { transform: scale(1.1) skewX(-10deg); opacity: 1; }
+  100% { transform: scale(1) skewX(0); opacity: 1; }
+}
+
+@keyframes failureFlicker {
+  0% { background: rgba(255, 0, 85, 0.05); }
+  50% { background: rgba(0, 255, 255, 0.05); }
+  100% { background: rgba(255, 0, 85, 0.05); }
+}
+
+@keyframes meltdownJitter {
+  0% { transform: translate(0,0) rotate(0deg); }
+  25% { transform: translate(-5px, 3px) rotate(1deg); }
+  50% { transform: translate(5px, -3px) rotate(-1deg); }
+  75% { transform: translate(-3px, -5px) rotate(0.5deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
+}
+
+@keyframes jitter {
+  0% { transform: translate(0,0); }
+  10% { transform: translate(-1px,-1px); }
+  20% { transform: translate(1px,0); }
+  30% { transform: translate(0,1px); }
+  40% { transform: translate(-1px,0); }
+  50% { transform: translate(0,-1px); }
+  60% { transform: translate(1px,1px); }
+  70% { transform: translate(-1px,-1px); }
+  80% { transform: translate(0,1px); }
+  90% { transform: translate(1px,-1px); }
+  100% { transform: translate(0,0); }
+}

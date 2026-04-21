@@ -65,7 +65,7 @@ npm run dev
 ## 📂 Documentation
 
 - [**SLAMZ_HANDOFF.md**](./SLAMZ_HANDOFF.md): The project "Source of Truth" and architectural deep-dive.
-- [**DEVELOPER_GUIDE.md**](./DEVELOPER_GUIDES.md): Physics registry, magic numbers, and contribution rules.
+- [**DEVELOPER_GUIDE.md**](./DEVELOPER_GUIDE.md): Physics registry, magic numbers, and contribution rules.
 - [**PORT_DOCUMENTATION.md**](./PORT_DOCUMENTATION.md): Reference for dev server and port configuration.
 - [**CHANGELOG.md**](./CHANGELOG.md): Tracking the evolution from MVP to V2.
 

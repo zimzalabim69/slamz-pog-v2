@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>SLAMZ PRO-TOUR | VIBEJAM 2026</title>
+    <meta name="description" content="The ultimate AI-powered cyberpunk pog simulator. Slam, flip, and collect in high-fidelity 3D. A VibeJam 2026 entry." />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://slamz-pro-tour.vercel.app/" />
+    <meta property="og:title" content="SLAMZ PRO-TOUR | VIBEJAM 2026" />
+    <meta property="og:description" content="The ultimate AI-powered cyberpunk pog simulator. Slam, flip, and collect in high-fidelity 3D." />
+    <meta property="og:image" content="/og_preview.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://slamz-pro-tour.vercel.app/" />
+    <meta property="twitter:title" content="SLAMZ PRO-TOUR | VIBEJAM 2026" />
+    <meta property="twitter:description" content="The ultimate AI-powered cyberpunk pog simulator. Slam, flip, and collect in high-fidelity 3D." />
+    <meta property="twitter:image" content="/og_preview.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+
+    <style>
+      body { 
+        margin: 0; 
+        padding: 0; 
+        overflow: hidden; 
+        background: #000; 
+        overscroll-behavior: none; 
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+      #root { width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <svg style="display: none;">
+      <defs>
+        <filter id="crt-curvature">
+          <feOffset in="SourceGraphic" dx="0" dy="0" />
+          <feDisplacementMap in="SourceGraphic" in2="SourceGraphic" scale="15" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        
+        <!-- A more advanced one if displacement map isn't enough -->
+        <filter id="crt-warp">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
+          <feComponentTransfer in="blur" result="warm">
+            <feFuncR type="linear" slope="1.1" />
+            <feFuncB type="linear" slope="0.9" />
+          </feComponentTransfer>
+          <feComposite in="warm" in2="SourceGraphic" operator="over" />
+        </filter>
+      </defs>
+    </svg>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

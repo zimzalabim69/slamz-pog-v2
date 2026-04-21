@@ -19,7 +19,27 @@
     /* Linting */
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@000/*": ["000_START/*"],
+      "@100/*": ["100_GAMEPLAY/*"],
+      "@200/*": ["200_FRONTEND/*"],
+      "@300/*": ["300_ASSET_PIPELINE/*"],
+      "@400/*": ["400_TECH_ROOT/*"],
+      "@500/*": ["500_ERROR_LOGS/*"],
+      "@900/*": ["900_OPS/*"],
+      "@src/*": ["src/*"]
+    }
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "000_START",
+    "100_GAMEPLAY",
+    "200_FRONTEND",
+    "300_ASSET_PIPELINE",
+    "400_TECH_ROOT",
+    "500_ERROR_LOGS",
+    "900_OPS"
+  ]
 }
