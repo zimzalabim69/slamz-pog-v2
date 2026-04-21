@@ -18,7 +18,7 @@ export const commands: CommandRegistry = {
     }
   },
   reset: {
-    description: 'Reset the physics world and POG stack',
+    description: 'Reset the physics world and slamz stack',
     execute: () => {
       useGameStore.getState().resetStack();
       return 'Physics world reset. Stack re-initialized.';

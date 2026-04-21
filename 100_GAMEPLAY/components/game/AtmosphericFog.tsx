@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Sparkles } from '@react-three/drei';
 import { useGameStore } from '@100/store/useGameStore';
+import { GAME_CONFIG } from '@100/constants/gameConfig';
 import { physicsFogBridge } from '@400/systems/PhysicsFogBridge';
 import * as THREE from 'three';
 
@@ -62,7 +63,7 @@ export function AtmosphericFog() {
     uniforms.uTime.value = state.clock.elapsedTime;
     uniforms.uPulse.value = pulseVal.current;
     uniforms.uPerfectHit.value = perfectHitActive ? 1.0 : 0.0;
-    uniforms.uDensity.value = debugParams.fogDensity;
+    uniforms.uDensity.value = GAME_CONFIG.FOG_DENSITY;
     
     // READ FROM THE BRIDGE (Ref-based, 0 re-renders)
     uniforms.uPhysicsEnergy.value = THREE.MathUtils.lerp(uniforms.uPhysicsEnergy.value, physicsFogBridge.energy, 0.1);

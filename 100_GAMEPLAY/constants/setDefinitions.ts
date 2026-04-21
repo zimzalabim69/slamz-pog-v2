@@ -52,9 +52,9 @@ export const SET_DEFS: Record<string, SetDef> = {
     slammer: 'slamzer_sonic',
     achievementId: 'sr_complete',
   },
-  MATRIX_POGZ: {
-    id: 'MATRIX_POGZ',
-    name: '💊 MATRIX POGZ',
+  MATRIX_SLAMZ: {
+    id: 'MATRIX_SLAMZ',
+    name: '💊 MATRIX SLAMZ',
     color: '#00ff44',
     members: ['mx_redpill', 'mx_code', 'mx_bullet', 'mx_neo', 'mx_oracle'],
     slammer: 'slamzer_matrix',
@@ -92,13 +92,13 @@ export const ACHIEVEMENTS: Record<string, Achievement> = {
     id: 'first_capture',
     icon: '🪙',
     name: 'COLLECTOR',
-    desc: 'Capture your first POG',
+    desc: 'Capture your first SLAMZ',
   },
   first_holo: {
     id: 'first_holo',
     icon: '✨',
     name: 'HOLO HUNTER',
-    desc: 'Capture a Holographic POG',
+    desc: 'Capture a Holographic SLAMZ',
   },
   perfect_slam: {
     id: 'perfect_slam',
@@ -116,7 +116,7 @@ export const ACHIEVEMENTS: Record<string, Achievement> = {
     id: 'hoarder',
     icon: '📚',
     name: 'HOARDER MODE',
-    desc: 'Collect 50 or more POGs',
+    desc: 'Collect 50 or more SLAMZ',
   },
   scene_explorer: {
     id: 'scene_explorer',
@@ -173,10 +173,10 @@ export const ACHIEVEMENTS: Record<string, Achievement> = {
   mx_complete: {
     id: 'mx_complete',
     icon: '💊',
-    name: 'THERE IS NO POG',
-    desc: 'Complete the MATRIX POGZ set',
+    name: 'THERE IS NO SLAMZ',
+    desc: 'Complete the MATRIX SLAMZ set',
     isSetComplete: true,
-    setId: 'MATRIX_POGZ',
+    setId: 'MATRIX_SLAMZ',
   },
   all_sets: {
     id: 'all_sets',

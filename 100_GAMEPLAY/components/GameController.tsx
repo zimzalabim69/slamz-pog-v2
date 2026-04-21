@@ -134,18 +134,18 @@ export function GameController() {
       }
     }
 
-    const faceUpPogs: string[] = [];
-    let pogsOnMatCount = 0;
+    const faceUpSlamz: string[] = [];
+    let slamzOnMatCount = 0;
     const MAT_RADIUS = debugParams.battleAreaScale;
 
     world.forEachRigidBody((body) => {
       const userData = body.userData as any;
-      if (typeof userData?.name !== 'string' || !userData.name.startsWith('pog-')) return;
+      if (typeof userData?.name !== 'string' || !userData.name.startsWith('slamz-')) return;
 
       const pos = body.translation();
       const distFromCenter = Math.sqrt(pos.x ** 2 + pos.z ** 2);
       if (distFromCenter <= MAT_RADIUS) {
-        pogsOnMatCount++;
+        slamzOnMatCount++;
       }
 
       const rot = body.rotation();
@@ -153,14 +153,14 @@ export function GameController() {
       _vec3.copy(WORLD_UP).applyQuaternion(_quat);
 
       if (_vec3.y > 0.7) {
-        faceUpPogs.push(userData['pog-id']);
+        faceUpSlamz.push(userData['slamz-id']);
       }
     });
 
-    state.setPogsOnMat(pogsOnMatCount);
-    state.setWinners(faceUpPogs);
+    state.setSlamzOnMat(slamzOnMatCount);
+    state.setWinners(faceUpSlamz);
     
-    if (faceUpPogs.length > 0) {
+    if (faceUpSlamz.length > 0) {
       state.incrementCombo();
       setGameState('HARVEST');
     } else {

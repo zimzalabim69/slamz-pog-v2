@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { getSetForTheme } from '@100/constants/setDefinitions';
-import { PROCEDURAL_THEMES, SLAMMER_SKINS } from '@100/constants/pogData';
+import { PROCEDURAL_THEMES, SLAMMER_SKINS } from '@100/constants/slamzData';
 import { useGameStore } from '@100/store/useGameStore';
 
 // ============================================================
@@ -12,7 +12,7 @@ const MATERIAL_REGISTRY: Record<string, THREE.MeshStandardMaterial[]> = {};
 const FOIL_TEXTURE: { current: THREE.CanvasTexture | null } = { current: null };
 
 let isRegistryReady = false;
-let hasInitializedPogs = false;
+let hasInitializedSlamz = false;
 
 /**
  * Preloads all PNG assets and builds the entire material registry.
@@ -22,7 +22,7 @@ let hasInitializedPogs = false;
 export async function initializeTextureRegistry() {
     if (isRegistryReady) return;
 
-    console.log("Initializing Texture Registry...");
+    
     
     // 1. Preload PNGs
     const loader = new THREE.TextureLoader();
@@ -33,7 +33,7 @@ export async function initializeTextureRegistry() {
 
     const promises = assets.map(id => {
         return new Promise<void>((resolve) => {
-            loader.load(`/assets/pogs/${id}.png`, 
+            loader.load(`/assets/slamz/${id}.png`, 
                 (tex) => {
                     PRELOADED_TEXTURES[id] = tex.image as HTMLImageElement;
                     resolve();
@@ -52,11 +52,11 @@ export async function initializeTextureRegistry() {
     // 2. Prepare Shared Foil
     FOIL_TEXTURE.current = generateFoilTexture();
 
-    // 3. Generate ALL Procedural Materials (POGs)
+    // 3. Generate ALL Procedural Materials (SLAMZ)
     for (const theme of PROCEDURAL_THEMES) {
         for (const rarity of ['standard', 'shiny', 'holographic']) {
-            const key = `pog_metal_${theme}_${rarity}`;
-            MATERIAL_REGISTRY[key] = buildSlamzMaterial('pog', 'metal', theme, rarity);
+            const key = `slamz_metal_${theme}_${rarity}`;
+            MATERIAL_REGISTRY[key] = buildSlamzMaterial('slamz', 'metal', theme, rarity);
         }
     }
 
@@ -67,31 +67,31 @@ export async function initializeTextureRegistry() {
     }
 
     // Phase 3: Synchronous Physics Pre-population
-    if (!hasInitializedPogs) {
-        console.log('[TEXTURE REGISTRY] Calling initPogs() for the first time');
-        useGameStore.getState().initPogs();
-        hasInitializedPogs = true;
+    if (!hasInitializedSlamz) {
+        
+        useGameStore.getState().initSlamz();
+        hasInitializedSlamz = true;
     } else {
-        console.log('[TEXTURE REGISTRY] POGs already initialized, skipping initPogs()');
+        
     }
 
     isRegistryReady = true;
-    console.log(`Texture registry ready with ${Object.keys(MATERIAL_REGISTRY).length} materials.`);
+    
 }
 
 export function getRegistryStatus() {
     return isRegistryReady;
 }
 
-export function getMaterialFromRegistry(type: 'pog' | 'slammer', variant = 'metal', theme: string | null = null, rarity = 'standard') {
+export function getMaterialFromRegistry(type: 'slamz' | 'slammer', variant = 'metal', theme: string | null = null, rarity = 'standard') {
     const key = type === 'slammer' 
         ? `slammer_${variant}_null_standard` 
-        : `pog_metal_${theme}_${rarity}`;
+        : `slamz_metal_${theme}_${rarity}`;
     
     const mat = MATERIAL_REGISTRY[key];
     if (!mat) {
         console.warn(`Material not found in registry: ${key}. Falling back to default.`);
-        return MATERIAL_REGISTRY[`pog_metal_${PROCEDURAL_THEMES[0]}_standard`];
+        return MATERIAL_REGISTRY[`slamz_metal_${PROCEDURAL_THEMES[0]}_standard`];
     }
     return mat;
 }
@@ -100,7 +100,7 @@ export function getMaterialFromRegistry(type: 'pog' | 'slammer', variant = 'meta
 // INTERNAL MATERIAL BUILDER (Run once during init)
 // ============================================================
 
-function buildSlamzMaterial(type: 'pog' | 'slammer', variant: string, theme: string | null, rarity: string): THREE.MeshStandardMaterial[] {
+function buildSlamzMaterial(type: 'slamz' | 'slammer', variant: string, theme: string | null, rarity: string): THREE.MeshStandardMaterial[] {
     const canvas = document.createElement('canvas');
     canvas.width = 512;
     canvas.height = 512;
@@ -110,7 +110,7 @@ function buildSlamzMaterial(type: 'pog' | 'slammer', variant: string, theme: str
     const setDef = getSetForTheme(activeTheme);
     const coreColor = setDef ? new THREE.Color(setDef.color) : new THREE.Color(0xffffff);
 
-    drawPogToCanvas(canvas, type, variant, activeTheme, rarity);
+    drawSlamzToCanvas(canvas, type, variant, activeTheme, rarity);
     
     const faceTex = new THREE.CanvasTexture(canvas);
     faceTex.anisotropy = 16;
@@ -211,9 +211,9 @@ function drawBackToCanvas(canvas: HTMLCanvasElement, rarity: string) {
     ctx.fillText('PRO-TOUR', Cx, Cy + 52);
 }
 
-function drawPogToCanvas(canvas: HTMLCanvasElement, type: string, variant: string, theme: string, rarity: string) {
+function drawSlamzToCanvas(canvas: HTMLCanvasElement, type: string, variant: string, theme: string, rarity: string) {
     const ctx = canvas.getContext('2d')!;
-    // Center pog based on canvas size (600x600 for showcase)
+    // Center slamz based on canvas size (600x600 for showcase)
     const cx = canvas.width / 2, cy = canvas.height / 2, r = 240;
 
     ctx.fillStyle = '#111';
@@ -231,7 +231,7 @@ function drawPogToCanvas(canvas: HTMLCanvasElement, type: string, variant: strin
 
     const highEndTexture = PRELOADED_TEXTURES[selectedTheme];
     if (highEndTexture) {
-        // Draw texture centered on the pog
+        // Draw texture centered on the slamz
         const textureSize = 512;
         const startX = cx - textureSize / 2;
         const startY = cy - textureSize / 2;
@@ -286,5 +286,28 @@ function createHeightMapFromCanvas(sourceCanvas: HTMLCanvasElement) {
     return tex;
 }
 
+/**
+ * Generates a soft radial gradient texture for stable "Halo" glow effects.
+ * Bypasses post-processing by using additive sprites.
+ */
+export function generateGlowTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d')!;
+    
+    const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+    grad.addColorStop(0.2, 'rgba(255, 255, 255, 0.4)');
+    grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
+    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+    
+    const tex = new THREE.CanvasTexture(canvas);
+    return tex;
+}
+
 // Export for Binder UI
-export { drawPogToCanvas };
+export { drawSlamzToCanvas };

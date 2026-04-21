@@ -7,7 +7,7 @@ set "GAME_URL=http://localhost:4173"
 cd /d "%PROJECT_DIR%"
 
 echo ======================================================
-echo   SLAMZ POG v2 - PRO TOUR DESKTOP LAUNCHER
+echo   SLAMZ PRO-TOUR v2 - PRO TOUR DESKTOP LAUNCHER
 echo ======================================================
 echo.
 echo [1/3] Sanitizing environment (Killing stale ghosts)...

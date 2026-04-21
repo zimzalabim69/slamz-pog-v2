@@ -214,7 +214,7 @@ export const StartScreen: React.FC = () => {
     setZooming(true);
     const handleStartGame = () => {
       useGameStore.getState().setGameState('AIMING');
-      useGameStore.getState().initPogs();
+      useGameStore.getState().initSlamz();
     };
     setTimeout(handleStartGame, 850);
   }, [setGameState, zooming, hasStartedAudio]);

@@ -35,7 +35,7 @@ export function AdaptiveQuality() {
     if (currentTier.current === tier) return;
     currentTier.current = tier;
     useGameStore.setState({ qualityLevel: tier });
-    console.log(`[PERF] Quality tier: ${tier.toUpperCase()}`);
+    
   }, []);
 
   useFrame((_, delta) => {

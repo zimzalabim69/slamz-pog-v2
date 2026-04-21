@@ -3,7 +3,7 @@ export type GameState = 'START_SCREEN' | 'AIMING' | 'POWERING' | 'SLAMMED' | 'HA
 
 export type GameMode = 'CLASSIC' | 'PRACTICE_FOR_KEEPS' | 'NO_RESTACK_CHAOS';
 
-export interface PogData {
+export interface SlamzData {
   id: string;
   theme: string;
   rarity: 'standard' | 'shiny' | 'holographic';
@@ -19,23 +19,24 @@ export interface CollectionItem {
 
 export interface SessionStats {
   totalSlams: number;
-  pogsWon: number;
+  slamzWon: number;
   bestCombo: number;
 }
 
 export interface SessionScore {
-  totalPogsFlipped: number;
+  totalSlamzFlipped: number;
   currentCombo: number;
   bestCombo: number;
   accuracy: number;
   streak: number;
   totalScore: number;
-  faceUpPogs: string[]; // POG IDs that landed face-up
+  faceUpSlamz: string[]; // Slamz IDs that landed face-up
 }
 
 export interface PracticeSession {
-  selectedPogs: PogData[];
+  selectedSlamz: SlamzData[];
   mode: GameMode;
   score: SessionScore;
   startTime: number;
 }
+

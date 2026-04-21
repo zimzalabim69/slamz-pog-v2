@@ -6,7 +6,7 @@ export function PracticeHUD() {
   const sessionScore = useGameStore((state) => state.sessionScore);
   const gameMode = useGameStore((state) => state.gameMode);
   const practiceSession = useGameStore((state) => state.practiceSession);
-  const faceUpPogs = useGameStore((state) => state.faceUpPogs);
+  const faceUpSlamz = useGameStore((state) => state.faceUpSlamz);
   const [glitchOffset, setGlitchOffset] = useState({ x: 0, y: 0 });
 
   // 90s glitch effect
@@ -120,7 +120,7 @@ export function PracticeHUD() {
               border: '4px solid #000',
               boxShadow: '4px 4px 0 #ff00ff',
             }}>
-              P
+              S
             </div>
           </div>
         </div>
@@ -191,10 +191,10 @@ export function PracticeHUD() {
           <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
             <div>
               <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-                {sessionScore.totalPogsFlipped}
+                {sessionScore.totalSlamzFlipped}
               </div>
               <div style={{ fontSize: '10px', opacity: 0.7 }}>
-                POGS FLIPPED
+                SLAMZ FLIPPED
               </div>
             </div>
             
@@ -222,20 +222,20 @@ export function PracticeHUD() {
             SCORE: {sessionScore.totalScore.toLocaleString()}
           </div>
 
-          {/* Remaining POGs */}
+          {/* Remaining SLAMZ */}
           <div style={{ fontSize: '12px', opacity: 0.8 }}>
-            REMAINING: {practiceSession!.selectedPogs.length - sessionScore.totalPogsFlipped} POGS
+            REMAINING: {practiceSession!.selectedSlamz.length - sessionScore.totalSlamzFlipped} SLAMZ
           </div>
 
           {/* Face-up Effects */}
-          {faceUpPogs.map((pogId, index) => {
-            const pogData = practiceSession!.selectedPogs.find(p => p.id === pogId);
-            if (!pogData) return null;
+          {faceUpSlamz.map((slamzId, index) => {
+            const slamzData = practiceSession!.selectedSlamz.find(s => s.id === slamzId);
+            if (!slamzData) return null;
             
             return (
               <FaceUpEffect 
-                key={pogId} 
-                pogId={pogId} 
+                key={slamzId} 
+                slamzId={slamzId} 
                 position={[
                   -15 + (index % 3) * 10, // Spread them out
                   10 + Math.floor(index / 3) * 5,

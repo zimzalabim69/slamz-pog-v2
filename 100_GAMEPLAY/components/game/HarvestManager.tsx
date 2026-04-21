@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { playShatterSound } from '@100/systems/audio';
 
 const _targetPos = new THREE.Vector3();
-const _pogPos = new THREE.Vector3();
+const _slamzPos = new THREE.Vector3();
 
 export function HarvestManager() {
   const { world } = useRapier();
@@ -38,8 +38,8 @@ export function HarvestManager() {
 
     world.forEachRigidBody((body) => {
       const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
-        const id = ud['pog-id'];
+      if (ud?.name?.startsWith('slamz-')) {
+        const id = ud['slamz-id'];
         if (winners.includes(id) && !shatteringIds.includes(id)) {
           const trans = body.translation();
           centerX += trans.x;
@@ -58,18 +58,18 @@ export function HarvestManager() {
     // 2. Control winner SHARDS (S.L.A.M.Z. Data Extraction)
     world.forEachRigidBody((body) => {
       const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
-        const id = ud['pog-id'];
+      if (ud?.name?.startsWith('slamz-')) {
+        const id = ud['slamz-id'];
         if (winners.includes(id) && !shatteringIds.includes(id)) {
           // Disable gravity for abduction
           body.setGravityScale(0, true);
           
           const trans = body.translation();
-          _pogPos.set(trans.x, trans.y, trans.z);
+          _slamzPos.set(trans.x, trans.y, trans.z);
           
           // Pull strictly UPWARDS along the individual abduction beam
           _targetPos.set(trans.x, 4, trans.z);
-          const dir = _targetPos.clone().sub(_pogPos).normalize();
+          const dir = _targetPos.clone().sub(_slamzPos).normalize();
           
           // Apply extraction suction
           body.applyImpulse({
@@ -110,8 +110,8 @@ export function HarvestManager() {
 
         world.forEachRigidBody((body) => {
             const ud = body.userData as any;
-            if (ud?.name?.startsWith('pog-')) {
-                const id = ud['pog-id'];
+            if (ud?.name?.startsWith('slamz-')) {
+                const id = ud['slamz-id'];
                 if (winners.includes(id) && !shatteringIds.includes(id) && instanceIdx < 15) {
                     const trans = body.translation();
                     _targetPos.set(trans.x, 10, trans.z); // Beam column height

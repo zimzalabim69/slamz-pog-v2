@@ -20,8 +20,8 @@ export function SessionSummary() {
   };
 
   const sessionDuration = Date.now() - practiceSession.startTime;
-  const accuracy = sessionScore.totalPogsFlipped > 0 
-    ? Math.round((sessionScore.totalScore / (sessionScore.totalPogsFlipped * 100)) * 100)
+  const accuracy = sessionScore.totalSlamzFlipped > 0 
+    ? Math.round((sessionScore.totalScore / (sessionScore.totalSlamzFlipped * 100)) * 100)
     : 100;
 
   const handleReturnToAlley = () => {
@@ -90,7 +90,7 @@ export function SessionSummary() {
         }}>
           <div>[ MODE ] : {gameMode === 'NO_RESTACK_CHAOS' ? 'SYSTEM_CHAOS' : 'PROTOCOL_STRIKE'}</div>
           <div>[ TIME ] : {formatTime(sessionDuration)}</div>
-          <div>[ SHARDS ] : {sessionScore.faceUpPogs.length} RECOVERED</div>
+          <div>[ SHARDS ] : {sessionScore.faceUpSlamz.length} RECOVERED</div>
           <div>[ ACCURACY ] : {accuracy}% SYNC</div>
           <div style={{ color: '#ff00ff', fontWeight: 900, marginTop: '10px', fontSize: '24px' }}>
             [ TOTAL_SCORE ] : {sessionScore.totalScore.toLocaleString()}

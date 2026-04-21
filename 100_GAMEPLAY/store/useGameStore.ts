@@ -1,15 +1,17 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import type { GameState, SessionStats, PogData, GameMode, SessionScore, PracticeSession } from '@100/types/game';
-import { PROCEDURAL_THEMES, ASSET_THEMES } from '@100/constants/pogData';
+import type { GameState, SessionStats, SlamzData, GameMode, SessionScore, PracticeSession, CollectionItem } from '@100/types/game';
+import { PROCEDURAL_THEMES, ASSET_THEMES } from '@100/constants/slamzData';
+import { SET_DEFS } from '@100/constants/setDefinitions';
+import { SetManager } from '@100/systems/SetManager';
 
 export interface DebugParams {
-  // Physics - Pog
-  pogMass: number;
-  pogRestitution: number;
-  pogFriction: number;
-  pogLinearDamping: number;
-  pogAngularDamping: number;
+  // Physics - Slamz
+  slamzMass: number;
+  slamzRestitution: number;
+  slamzFriction: number;
+  slamzLinearDamping: number;
+  slamzAngularDamping: number;
   
   // Physics - Slammer
   slammerMass: number;
@@ -27,11 +29,11 @@ export interface DebugParams {
   slammerScaleBoost: number;
   slammerEmissiveIntensity: number;
   
-  // Visual - Pog
-  pogScale: number;
-  pogRotationSpeed: number;
-  pogMetalness: number;
-  pogRoughness: number;
+  // Visual - Slamz
+  slamzScale: number;
+  slamzRotationSpeed: number;
+  slamzMetalness: number;
+  slamzRoughness: number;
   
   // Camera
   baseFOV: number;
@@ -118,12 +120,12 @@ export interface DebugParams {
   cinematicCometFOVPunch: number;
   cinematicCometShakeIntensity: number;
   
-  // Pog Explosion & Scatter (Eruption Suite)
+  // Slamz Explosion & Scatter (Eruption Suite)
   cinematicExplosionForce: number;
   cinematicScatterRadius: number;
   cinematicScatterHeight: number;
-  cinematicPogRotationSpeed: number;
-  cinematicPogFloatDuration: number;
+  cinematicSlamzRotationSpeed: number;
+  cinematicSlamzFloatDuration: number;
   
   // NEW: Collision Eruption Tuning
   eruptionUpwardMultiplier: number; // The "Kick"
@@ -136,7 +138,7 @@ export interface DebugParams {
   cinematicImpactFlashIntensity: number;
   cinematicMotionBlurStrength: number;
   
-  // Pog Lock-on Tracking
+  // Slamz Lock-on Tracking
   cinematicLockOnEnabled: boolean;
   cinematicLockOnDuration: number;
   cinematicLockOnOrbitRadius: number;
@@ -169,7 +171,7 @@ export interface DebugParams {
 
 
   // New Physics Governance
-  pogMaxVelocity: number;
+  slamzMaxVelocity: number;
 
   // Arena Logo (slamz_logo.glb in Cyber Alley)
   arenaLogoScale: number;
@@ -266,27 +268,27 @@ export interface DebugParams {
 }
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
-  "pogMass": 0.25,
-  "pogRestitution": 0.35,
-  "pogFriction": 1,
-  "pogLinearDamping": 0.8,
-  "pogAngularDamping": 1,
+  "slamzMass": 0.25,
+  "slamzRestitution": 0.35,
+  "slamzFriction": 1,
+  "slamzLinearDamping": 0.8,
+  "slamzAngularDamping": 1,
   "slammerMass": 2.5,
   "slammerRestitution": 0.45,
   "slammerFriction": 0.2,
   "slamBaseForce": -49,
   "slamPowerMultiplier": -0.85,
-  "slamForceMultiplier": 0.25,
+  "slamForceMultiplier": 0.12,
   "shatterRadius": 0.1,
   "shatterForceMin": 0,
   "shatterForceMax": 0,
   "slammerOpacity": 0.75,
   "slammerScaleBoost": 0.15,
   "slammerEmissiveIntensity": 1.5,
-  "pogScale": 1,
-  "pogRotationSpeed": 0.002,
-  "pogMetalness": 0.3,
-  "pogRoughness": 0.7,
+  "slamzScale": 1,
+  "slamzRotationSpeed": 0.002,
+  "slamzMetalness": 0.3,
+  "slamzRoughness": 0.7,
   "baseFOV": 49,
   "punchFOV": 65,
   "fovLerpSpeed": 0.15,
@@ -349,12 +351,12 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "cinematicCometEndDistance": 2,
   "cinematicCometFOVPunch": 120,
   "cinematicCometShakeIntensity": 0.8,
-  "cinematicExplosionForce": 15,
+  "cinematicExplosionForce": 5,
   "cinematicScatterRadius": 8,
   "cinematicScatterHeight": 6,
-  "cinematicPogRotationSpeed": 8,
-  "cinematicPogFloatDuration": 1.5,
-  "eruptionUpwardMultiplier": 2.2,
+  "cinematicSlamzRotationSpeed": 8,
+  "cinematicSlamzFloatDuration": 0.8,
+  "eruptionUpwardMultiplier": 0.7,
   "eruptionRadius": 3,
   "eruptionTorqueMultiplier": 0.45,
   "autoSlamPower": 100,
@@ -384,7 +386,7 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "wraithArenaPositionZ": 0.25,
   "wraithArenaScale": 15,
   "wraithArenaRotationY": 3.98,
-  "pogMaxVelocity": 15,
+  "slamzMaxVelocity": 15,
   "arenaLogoScale": 22.1,
   "arenaLogoPositionX": -20.5,
   "arenaLogoPositionY": 24.5,
@@ -458,11 +460,12 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "floorVisible": false,
   "bloomStrength": 1.2
 };
+
 export interface GameStore {
   gameState: GameState;
   power: number;
   powerDirection: number;
-  pogs: PogData[];
+  slamz: SlamzData[];
   lastSlamText: string | null;
   qualityLevel: 'low' | 'medium' | 'high';
   showcaseRatioMode: 'safe' | 'full';
@@ -497,8 +500,8 @@ export interface GameStore {
   gameMode: GameMode;
   practiceSession: PracticeSession | null;
   sessionScore: SessionScore;
-  selectedForPractice: PogData[];
-  faceUpPogs: string[];
+  selectedForPractice: SlamzData[];
+  faceUpSlamz: string[];
   winners: string[];
   
   // Combo system
@@ -523,23 +526,28 @@ export interface GameStore {
   isCinematicActive: boolean;
   bulletTimeActive: boolean;
   globalDampingScale: number;
-  pogsOnMat: number;
+  slamzOnMat: number;
   peakVelocity: number;
+  inventory: CollectionItem[];
+  completedSets: string[];
+  unlockedSlammers: string[];
+  throwsRemaining: number;
+  maxThrows: number;
 
   // Actions
-  initPogs: () => void;
+  initSlamz: () => void;
   setGameState: (state: GameState) => void;
   setPower: (power: number) => void;
   setPowerDirection: (dir: number) => void;
   setWinners: (ids: string[]) => void;
-  setPogs: (pogs: PogData[]) => void;
-  removePog: (id: string) => void;
+  setSlamz: (slamz: SlamzData[]) => void;
+  removeSlamz: (id: string) => void;
   resetStack: () => void;
   resetGame: () => void;
   setSlamText: (text: string | null) => void;
   setSlammerType: (type: string) => void;
-  addFaceUpPog: (pogId: string) => void;
-  setFaceUpPogs: (pogIds: string[]) => void;
+  addFaceUpSlamz: (slamzId: string) => void;
+  setFaceUpSlamz: (slamzIds: string[]) => void;
   endPracticeSession: () => void;
   toggleShowcaseRatio: () => void;
   togglePause: () => void;
@@ -565,7 +573,7 @@ export interface GameStore {
   triggerPerfectHit: () => void;
   setBulletTimeScale: (scale: number) => void;
   setIsCinematicActive: (active: boolean) => void;
-  setPogsOnMat: (count: number) => void;
+  setSlamzOnMat: (count: number) => void;
   
   togglePhysicsDebug: () => void;
   
@@ -577,10 +585,11 @@ export const useGameStore = create<GameStore>()(
   subscribeWithSelector((set, get) => {
     // Load debug params from localStorage
     const loadDebugParams = (): DebugParams => {
-      const stored = localStorage.getItem('debugParams_v5');
+      const stored = localStorage.getItem('debugParams_v8');
       if (stored) {
         try {
-          return { ...DEFAULT_DEBUG_PARAMS, ...JSON.parse(stored) };
+          const parsed = JSON.parse(stored);
+          return { ...DEFAULT_DEBUG_PARAMS, ...parsed };
         } catch {
           return DEFAULT_DEBUG_PARAMS;
         }
@@ -591,7 +600,7 @@ export const useGameStore = create<GameStore>()(
     return {
       // Initial State
       gameState: 'START_SCREEN',
-      pogs: [],
+      slamz: [],
       lastSlamText: null,
       currentSlammerType: 'standard',
       qualityLevel: 'high',
@@ -619,10 +628,19 @@ export const useGameStore = create<GameStore>()(
       markForShatter: (id) => set((state) => ({ 
         shatteringIds: [...state.shatteringIds, id] 
       })),
-      finalizeShatter: (id) => set((state) => ({
-        shatteringIds: state.shatteringIds.filter(sid => sid !== id),
-        pogs: state.pogs.filter(p => p.id !== id)
-      })),
+      finalizeShatter: (id) => set((state) => {
+        const itemToCapture = state.slamz.find(p => p.id === id);
+
+        if (itemToCapture) {
+          // Offload to SetManager for collection/achievement processing
+          SetManager.processCapture(itemToCapture);
+        }
+
+        return {
+          shatteringIds: state.shatteringIds.filter(sid => sid !== id),
+          slamz: state.slamz.filter(p => p.id !== id)
+        };
+      }),
       
       // NEW: Tuning Suite
       autoSlamActive: false,
@@ -631,6 +649,7 @@ export const useGameStore = create<GameStore>()(
       sceneMode: 'ARCADE',
       cameraTension: 0,
       setSceneMode: (sceneMode: 'ARCADE' | 'LAB') => set({ sceneMode }),
+      setQualityLevel: (qualityLevel) => set({ qualityLevel }),
       
       // Debug params
       debugParams: loadDebugParams(),
@@ -639,16 +658,16 @@ export const useGameStore = create<GameStore>()(
       gameMode: 'CLASSIC',
       practiceSession: null,
       sessionScore: {
-        totalPogsFlipped: 0,
+        totalSlamzFlipped: 0,
         currentCombo: 0,
         bestCombo: 0,
         accuracy: 100,
         streak: 0,
         totalScore: 0,
-        faceUpPogs: [],
+        faceUpSlamz: [],
       },
       selectedForPractice: [],
-      faceUpPogs: [],
+      faceUpSlamz: [],
       
       // Combo system initial state
       currentCombo: 0,
@@ -663,7 +682,7 @@ export const useGameStore = create<GameStore>()(
       finalScore: 0,
       bestCombo: 0,
       perfectHitActive: false,
-
+ 
       // Game flow state
       timeLeft: 120,
       score: 0,
@@ -672,13 +691,16 @@ export const useGameStore = create<GameStore>()(
       isCinematicActive: false,
       bulletTimeActive: false,
       globalDampingScale: 0,
-      pogsOnMat: 0,
+      slamzOnMat: 0,
       peakVelocity: 0,
+  inventory: [],
+  completedSets: [],
+  unlockedSlammers: ['standard'],
 
       // Actions
-      initPogs: () => {
+      initSlamz: () => {
         const state = get();
-        if (state.pogs.length > 0) {
+        if (state.slamz.length > 0) {
           return;
         }
         get().resetStack();
@@ -708,18 +730,18 @@ export const useGameStore = create<GameStore>()(
       setPowerDirection: (powerDirection) => set({ powerDirection }),
       setAspectRatioMode: (aspectRatioMode) => set({ aspectRatioMode }),
 
-      setPogs: (pogs) => set({ pogs }),
+      setSlamz: (slamz) => set({ slamz }),
       setWinners: (winners) => set({ winners }),
 
-      removePog: (id) => set((state) => ({
-        pogs: state.pogs.filter(p => p.id !== id)
+      removeSlamz: (id) => set((state) => ({
+        slamz: state.slamz.filter(p => p.id !== id)
       })),
 
       resetStack: () => {
-        const currentPogs = get().pogs;
+        const currentSlamz = get().slamz;
 
-        if (currentPogs.length === 0) {
-          const initialPogs: PogData[] = [];
+        if (currentSlamz.length === 0) {
+          const initialSlamz: SlamzData[] = [];
           for (let i = 0; i < 15; i++) {
             const jitterX = (Math.random() - 0.5) * 0.05;
             const jitterZ = (Math.random() - 0.5) * 0.05;
@@ -739,17 +761,17 @@ export const useGameStore = create<GameStore>()(
               theme = PROCEDURAL_THEMES[Math.floor(Math.random() * PROCEDURAL_THEMES.length)];
             }
 
-            initialPogs.push({
-              id: `pog_pool_${i}`,
+            initialSlamz.push({
+              id: `slamz_pool_${i}`,
               theme,
               rarity,
               position: [jitterX, 0.25 + i * 0.09, jitterZ] as [number, number, number],
               rotation: [0, Math.random() * Math.PI * 2, 0] as [number, number, number],
             });
           }
-          set({ pogs: initialPogs });
+          set({ slamz: initialSlamz });
         } else {
-          const updatedPogs = currentPogs.map((pog, i) => {
+          const updatedSlamz = currentSlamz.map((slamz, i) => {
             const jitterX = (Math.random() - 0.5) * 0.05;
             const jitterZ = (Math.random() - 0.5) * 0.05;
             const rarityRoll = Math.random();
@@ -769,159 +791,99 @@ export const useGameStore = create<GameStore>()(
             }
 
             return {
-              ...pog,
+              ...slamz,
               theme,
               rarity,
-              position: [jitterX, 0.35 + i * 0.09, jitterZ] as [number, number, number],
+              position: [jitterX, 0.25 + i * 0.09, jitterZ] as [number, number, number],
               rotation: [0, Math.random() * Math.PI * 2, 0] as [number, number, number],
             };
           });
-          set({ pogs: updatedPogs, gameState: 'AIMING', power: 0, peakVelocity: 0, throwsRemaining: 3 });
+          set({ slamz: updatedSlamz });
         }
       },
 
       resetGame: () => {
         set({
-          gameState: 'AIMING',
-          power: 0,
-          pogs: [],
+          gameState: 'START_SCREEN',
+          score: 0,
+          combo: 0,
+          throwsRemaining: 3,
+          winners: [],
+          faceUpSlamz: [],
+          shatteringIds: [],
         });
+        get().resetStack();
       },
 
-
+      setSlamText: (lastSlamText) => set({ lastSlamText }),
       setSlammerType: (currentSlammerType) => set({ currentSlammerType }),
-
-      setQualityLevel: (qualityLevel: 'low' | 'medium' | 'high') => set({ qualityLevel }),
-
-      addFaceUpPog: (pogId: string) => set((state) => ({
-        winners: [...state.winners, pogId],
+      addFaceUpSlamz: (slamzId) => set((state) => ({
+        faceUpSlamz: [...state.faceUpSlamz, slamzId]
       })),
-
-      setFaceUpPogs: (pogIds: string[]) => set({ winners: pogIds }),
-
-      setGameMode: (gameMode: GameMode) => set({ gameMode }),
+      setFaceUpSlamz: (faceUpSlamz) => set({ faceUpSlamz }),
       
-      startPracticeSession: (selectedPogs: PogData[], mode: GameMode = 'PRACTICE_FOR_KEEPS') => {
-        const session: PracticeSession = {
-          selectedPogs,
-          mode,
-          score: {
-            totalPogsFlipped: 0,
-            currentCombo: 0,
-            bestCombo: 0,
-            accuracy: 100,
-            streak: 0,
-            totalScore: 0,
-            faceUpPogs: [],
-          },
-          startTime: Date.now(),
-        };
-        
-        set({ 
-          pogs: selectedPogs.map((pog) => ({
-            ...pog,
-            position: [0, 0, 0] as [number, number, number],
-            rotation: [0, 0, 0] as [number, number, number],
-          })),
-          practiceSession: session,
-        });
-      },
-
+      endPracticeSession: () => set({ practiceSession: null, gameMode: 'CLASSIC' }),
       
-      endPracticeSession: () => set((state) => ({
-        gameState: 'SESSION_SUMMARY',
-        selectedForPractice: state.practiceSession?.selectedPogs || [],
-      })),
-
       toggleShowcaseRatio: () => set((state) => ({
         showcaseRatioMode: state.showcaseRatioMode === 'safe' ? 'full' : 'safe'
       })),
+      
+      togglePause: () => set((state) => ({
+        gameState: state.gameState === 'PAUSED' ? state.previousState || 'AIMING' : 'PAUSED',
+        previousState: state.gameState === 'PAUSED' ? null : state.gameState
+      })),
 
-      togglePause: () => set((state) => {
-        if (state.gameState === 'PAUSED') {
-          return { gameState: state.previousState || 'AIMING', previousState: null };
-        } else {
-          return { gameState: 'PAUSED', previousState: state.gameState };
-        }
-      }),
-
-      setFogColor: (fogColor: string) => set({ fogColor }),
-      togglePhysicsDebug: () => set((state) => ({ physicsDebug: !state.physicsDebug })),
-      setDebugLogoMode: (debugLogoMode: boolean) => set({ debugLogoMode }),
+      setFogColor: (fogColor) => set({ fogColor }),
+      setDebugLogoMode: (debugLogoMode) => set({ debugLogoMode }),
       triggerFogPulse: () => set((state) => ({ fogPulseTrigger: state.fogPulseTrigger + 1 })),
-      setDebugParams: (params: Partial<DebugParams>) => set((state) => {
+      
+      setDebugParams: (params) => set((state) => {
         const newParams = { ...state.debugParams, ...params };
-        localStorage.setItem('debugParams_v5', JSON.stringify(newParams));
+        localStorage.setItem('debugParams_v8', JSON.stringify(newParams));
         return { debugParams: newParams };
       }),
 
-      setSlamText: (lastSlamText) => set({ lastSlamText }),
+      incrementCombo: () => set((state) => ({
+        currentCombo: state.currentCombo + 1,
+        bestCombo: Math.max(state.bestCombo, state.currentCombo + 1)
+      })),
+
+      resetCombo: () => set({ currentCombo: 0 }),
       
-      setPeakVelocity: (peakVelocity) => {
-        if (peakVelocity > get().peakVelocity) {
-          set({ peakVelocity });
-        }
+      triggerHitStop: () => {
+        set({ hitStopActive: true });
+        // Handled by individual components for timing
       },
-      
-      incrementCombo: () => set((state) => {
-        const newCombo = state.currentCombo + 1;
-        const newMultiplier = Math.min(1 + (newCombo - 1) * 0.5, 5); // Max 5x multiplier
-        return {
-          currentCombo: newCombo,
-          comboMultiplier: newMultiplier,
-          lastSuccessfulSlam: Date.now()
-        };
-      }),
-      
-      resetCombo: () => set({
-        currentCombo: 0,
-        comboMultiplier: 1
-      }),
-      
-      triggerHitStop: () => set({ hitStopActive: true }),
-      
+
       triggerImpactFlash: () => {
         set({ impactFlashActive: true });
         setTimeout(() => set({ impactFlashActive: false }), 200);
       },
-      
-      startSession: () => set({ sessionActive: true, gameTimer: 120, finalScore: 0, bestCombo: 0 }),
-      
-      updateTimer: (delta: number) => set((state) => {
-        const newTimer = Math.max(0, state.gameTimer - delta);
-        return { gameTimer: newTimer };
-      }),
-      
-      endSession: () => set((state) => ({
-        sessionActive: false,
-        finalScore: state.score * state.comboMultiplier, // Fallback score logic
-        bestCombo: Math.max(state.bestCombo, state.currentCombo)
+
+      startSession: () => set({ sessionActive: true, gameTimer: 120 }),
+      startGame: () => {
+        get().resetStack();
+        set({ gameState: 'AIMING', sessionActive: true, throwsRemaining: 3 });
+      },
+
+      updateTimer: (delta) => set((state) => ({
+        gameTimer: Math.max(0, state.gameTimer - delta)
       })),
+
+      endSession: () => set({ sessionActive: false }),
+      endGame: () => set({ gameState: 'SESSION_SUMMARY', sessionActive: false }),
       
       triggerPerfectHit: () => {
         set({ perfectHitActive: true });
-        setTimeout(() => set({ perfectHitActive: false }), 200);
+        setTimeout(() => set({ perfectHitActive: false }), 1000);
       },
-      
-      startGame: () => {
-        get().resetStack();
-        set({ 
-          timeLeft: 120, 
-          score: 0, 
-          combo: 0,
-          sessionActive: true,
-          throwsRemaining: 3
-        });
-      },
-      
-      endGame: () => set({ 
-        gameState: 'SESSION_SUMMARY',
-        sessionActive: false 
-      }),
 
-      setBulletTimeScale: (bulletTimeScale: number) => set({ bulletTimeScale }),
+      setBulletTimeScale: (bulletTimeScale) => set({ bulletTimeScale }),
       setIsCinematicActive: (isCinematicActive) => set({ isCinematicActive }),
-      setPogsOnMat: (pogsOnMat) => set({ pogsOnMat }),
+      setSlamzOnMat: (slamzOnMat) => set({ slamzOnMat }),
+      
+      togglePhysicsDebug: () => set((state) => ({ physicsDebug: !state.physicsDebug })),
+      setPeakVelocity: (peakVelocity) => set({ peakVelocity })
     };
   })
 );

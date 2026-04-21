@@ -17,16 +17,16 @@ export function ArenaDecor() {
   // Removed tiling to prevent affecting the shared texture in the main Arena
 
 
-  // Instanced ghost pogs — 12 pogs in 1 draw call
-  const pogRef = useRef<THREE.InstancedMesh>(null);
-  const pogGeo = useMemo(() => new THREE.CylinderGeometry(0.5, 0.5, 0.05, 16), []);
-  const pogMat = useMemo(() => new THREE.MeshStandardMaterial({
+  // Instanced ghost slamz — 12 slamz in 1 draw call
+  const slamzRef = useRef<THREE.InstancedMesh>(null);
+  const slamzGeo = useMemo(() => new THREE.CylinderGeometry(0.5, 0.5, 0.05, 16), []);
+  const slamzMat = useMemo(() => new THREE.MeshStandardMaterial({
     color: preset.floorEmissive,
     roughness: 0.5,
     metalness: 0.8,
   }), [preset.floorEmissive]);
 
-  const pogTransforms = useMemo(() => {
+  const slamzTransforms = useMemo(() => {
     const transforms: { pos: [number, number, number]; rot: [number, number, number]; scale: number }[] = [];
     for (let i = 0; i < 12; i++) {
       const angle = Math.random() * Math.PI * 2;
@@ -41,17 +41,17 @@ export function ArenaDecor() {
   }, []);
 
   useEffect(() => {
-    if (!pogRef.current) return;
-    pogTransforms.forEach((t, i) => {
+    if (!slamzRef.current) return;
+    slamzTransforms.forEach((t, i) => {
       _position.set(t.pos[0], t.pos[1], t.pos[2]);
       _euler.set(t.rot[0], t.rot[1], t.rot[2]);
       _quaternion.setFromEuler(_euler);
       _scale.setScalar(t.scale);
       _matrix.compose(_position, _quaternion, _scale);
-      pogRef.current!.setMatrixAt(i, _matrix);
+      slamzRef.current!.setMatrixAt(i, _matrix);
     });
-    pogRef.current.instanceMatrix.needsUpdate = true;
-  }, [pogTransforms]);
+    slamzRef.current.instanceMatrix.needsUpdate = true;
+  }, [slamzTransforms]);
 
   return null;
 }

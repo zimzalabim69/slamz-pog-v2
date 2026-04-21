@@ -1,0 +1,162 @@
+/* ============================================================
+   SLAMZ ARENA BACKGROUND — Dark Digital Void
+   Matches the start screen palette: deep purple/navy, cyan/magenta.
+   Zero VRAM — compositor thread only.
+   ============================================================ */
+
+.arena-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #06000f;
+  z-index: 0;
+}
+
+/* ── DEEP VOID BASE ──────────────────────────────────────── */
+.arena-bg__void {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 110%, rgba(80, 0, 160, 0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 15% 60%,  rgba(0, 200, 255, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 60%,  rgba(200, 0, 255, 0.04) 0%, transparent 60%),
+    #06000f;
+}
+
+/* ── DATA RAIN (falling hex chars via CSS) ───────────────── */
+.arena-bg__rain {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 18px,
+      rgba(0, 255, 200, 0.018) 18px,
+      rgba(0, 255, 200, 0.018) 19px
+    );
+  animation: rain-drift 8s linear infinite;
+  mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.6) 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.6) 70%, transparent 100%);
+}
+
+@keyframes rain-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 0 100px; }
+}
+
+/* ── CORRUPTED SCANLINES ─────────────────────────────────── */
+.arena-bg__scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.25) 2px,
+    rgba(0, 0, 0, 0.25) 4px
+  );
+  pointer-events: none;
+}
+
+/* ── ARENA FLOOR GLOW ────────────────────────────────────── */
+.arena-bg__floor-glow {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 35%;
+  background: linear-gradient(
+    to top,
+    rgba(60, 0, 120, 0.6) 0%,
+    rgba(0, 180, 255, 0.08) 40%,
+    transparent 100%
+  );
+  animation: floor-breathe 4s ease-in-out infinite;
+}
+
+@keyframes floor-breathe {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1.0; }
+}
+
+/* ── GLITCH FLICKER LINES ────────────────────────────────── */
+.arena-bg__glitch {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: rgba(0, 255, 200, 0.15);
+  animation: glitch-travel 7s ease-in-out infinite;
+  opacity: 0;
+}
+.arena-bg__glitch--2 {
+  background: rgba(200, 0, 255, 0.12);
+  animation: glitch-travel 11s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+@keyframes glitch-travel {
+  0%   { top: 10%;  opacity: 0;    }
+  5%   { opacity: 1;               }
+  6%   { opacity: 0.1;             }
+  7%   { opacity: 1;               }
+  40%  { top: 90%;  opacity: 0.6;  }
+  41%  { opacity: 0.05;            }
+  42%  { opacity: 0.6;             }
+  60%  { top: 110%; opacity: 0;    }
+  100% { top: 110%; opacity: 0;    }
+}
+
+/* ── SIDE CORRUPTION BARS ────────────────────────────────── */
+.arena-bg__side {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 200, 255, 0.3) 25%,
+    rgba(180, 0, 255, 0.5) 50%,
+    rgba(0, 200, 255, 0.3) 75%,
+    transparent 100%
+  );
+  animation: side-pulse 3s ease-in-out infinite;
+}
+.arena-bg__side--left  { left: 0;  animation-delay: 0s;   }
+.arena-bg__side--right { right: 0; animation-delay: 1.5s; }
+
+@keyframes side-pulse {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.8; }
+}
+
+/* ── CENTRE VIGNETTE ─────────────────────────────────────── */
+.arena-bg__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 75% 75% at 50% 50%,
+    transparent 25%,
+    rgba(0, 0, 8, 0.85) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── POWERING STATE: WRAITH SURGES ───────────────────────── */
+.arena-bg--powering .arena-bg__void {
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 110%, rgba(140, 0, 255, 0.7) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 15% 60%,  rgba(200, 0, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 60%,  rgba(0, 200, 255, 0.08) 0%, transparent 60%),
+    #06000f;
+}
+.arena-bg--powering .arena-bg__floor-glow {
+  animation: floor-breathe 0.5s ease-in-out infinite;
+  background: linear-gradient(
+    to top,
+    rgba(120, 0, 200, 0.8) 0%,
+    rgba(200, 0, 255, 0.15) 40%,
+    transparent 100%
+  );
+}
+.arena-bg--powering .arena-bg__side {
+  animation: side-pulse 0.3s ease-in-out infinite;
+}

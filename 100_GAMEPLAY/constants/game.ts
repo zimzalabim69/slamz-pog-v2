@@ -35,7 +35,7 @@ export const SCENE_PRESETS = {
     bloomStrength: 1.2,
     bloomRadius: 0.5,
     bloomThreshold: 1.05,
-    pogEmissiveScale: 0.2,
+    slamzEmissiveScale: 0.2,
     scanlines: 0.8,
     chromaticAberration: 0.005
   }

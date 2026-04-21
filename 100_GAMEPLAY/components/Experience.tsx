@@ -1,22 +1,24 @@
 import * as React from 'react';
-import { PerspectiveCamera, Stats } from '@react-three/drei';
+
 import { useGameStore } from '@100/store/useGameStore';
+import { GAME_CONFIG } from '@100/constants/gameConfig';
 import * as THREE from 'three';
 import { Reticle } from './game/Reticle';
 import { ImpactParticles } from './game/ImpactParticles';
 import { PhysicsWorld } from './game/PhysicsWorld';
 import { TimerUpdate } from './game/TimerUpdate';
-import { Effects } from '@400/components/Effects';
+// Effects (postprocessing) permanently bypassed — library crashes WebGL via circular JSON
 import { ArcadeMode } from './scenes/ArcadeMode';
 import { ImpactLab } from './scenes/ImpactLab';
-import { PerformanceMonitor } from '@500/components/PerformanceMonitor';
 import { AdaptiveQuality } from '@500/components/AdaptiveQuality';
 import { Physics } from '@react-three/rapier';
-import { LevaController } from '@500/components/LevaController';
+
+import { PerspectiveCamera } from '@react-three/drei';
 import { CameraController } from '@400/components/CameraController';
 import { HarvestManager } from './game/HarvestManager';
 import { ElectricalBolts } from '@400/components/ElectricalBolts';
 import { GlitchEruption } from './game/GlitchEruption';
+import { PhysicsFogController } from './game/PhysicsFogController';
 
 export function Experience() {
   const sceneMode = useGameStore((state) => state.sceneMode);
@@ -28,7 +30,7 @@ export function Experience() {
   // KEYBOARD SHORTCUTS
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'd') {
+      if (false) {
         togglePhysicsDebug();
       }
     };
@@ -41,36 +43,26 @@ export function Experience() {
       <PerspectiveCamera makeDefault />
       <CameraController />
 
-      <color attach="background" args={[
-        new THREE.Color().setRGB(
-          debugParams.fogColorR ?? 0.004,
-          debugParams.fogColorG ?? 0.012,
-          debugParams.fogColorB ?? 0.031
-        )
-      ]} />
+      {/* Background is handled by CSS ArenaBackground — canvas is alpha:true */}
       
       <fog 
         attach="fog" 
         args={[
           new THREE.Color().setRGB(
-            debugParams.fogColorR ?? 0.004,
-            debugParams.fogColorG ?? 0.012,
-            debugParams.fogColorB ?? 0.031
+            GAME_CONFIG.FOG_COLOR_R,
+            GAME_CONFIG.FOG_COLOR_G,
+            GAME_CONFIG.FOG_COLOR_B
           ), 
-          debugParams.fogNear ?? 5,
-          debugParams.fogFar ?? 30
+          GAME_CONFIG.FOG_NEAR,
+          GAME_CONFIG.FOG_FAR
         ]} 
       />
 
-      <Effects />
       <TimerUpdate />
 
       <Physics 
-        gravity={bulletTimeActive ? [0, -2.5, 0] : [0, -16, 0]} 
+        gravity={[0, bulletTimeActive ? -2.5 : -16, 0]} 
         timeStep={1 / 60}
-        numSolverIterations={48}
-        numInternalPgsIterations={12}
-        maxCcdSubsteps={4}
         paused={false}
         debug={physicsDebug}
         interpolate={true}
@@ -78,6 +70,7 @@ export function Experience() {
         {sceneMode === 'ARCADE' ? <ArcadeMode /> : <ImpactLab />}
         <PhysicsWorld />
         <HarvestManager />
+        <PhysicsFogController />
       </Physics>
 
       <Reticle />
@@ -85,13 +78,12 @@ export function Experience() {
       <GlitchEruption />
       <ElectricalBolts />
 
-      <PerformanceMonitor />
       <AdaptiveQuality />
       
       {import.meta.env.DEV && (
         <>
-          <Stats />
-          <LevaController />
+          
+          
         </>
       )}
     </>

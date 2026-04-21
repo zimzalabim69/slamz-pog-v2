@@ -8,7 +8,7 @@ import { useGameStore } from '@100/store/useGameStore';
  * 
  * Cubes behave like real objects:
  *  - Power-scaled initial impulse (more power = bigger explosion radius)
- *  - Floor bounce using real pog restitution value
+ *  - Floor bounce using real slamz restitution value
  *  - Linear drag so they scatter and slow naturally
  *  - Frame-perfect sync with bulletTimeScale (slow-mo = cubes freeze in air)
  */
@@ -36,7 +36,7 @@ export function GlitchEruption() {
   const bulletTimeScale   = useGameStore((s) => s.bulletTimeScale);
   const qualityLevel      = useGameStore((s) => s.qualityLevel);
   const power             = useGameStore((s) => s.power);
-  const pogRestitution    = useGameStore((s) => s.debugParams.pogRestitution);
+  const slamzRestitution    = useGameStore((s) => s.debugParams.slamzRestitution);
 
   const particles = useRef<CubeParticle[]>([]);
   const lastFlash = useRef(false);
@@ -92,11 +92,11 @@ export function GlitchEruption() {
     lastFlash.current = isImpact;
 
     // ── UPDATE — bullet-time aware ───────────────────────────────────────
-    // Use store bulletTimeScale so cubes freeze identically to pogs in cinematic
+    // Use store bulletTimeScale so cubes freeze identically to slamzs in cinematic
     const timeScale = bulletTimeScale ?? 1.0;
     const dt        = Math.min(delta, 0.05) * timeScale;
 
-    const restitution = Math.min(pogRestitution ?? 0.35, 0.6); // Safe cap to prevent infinite bounce
+    const restitution = Math.min(slamzRestitution ?? 0.35, 0.6); // Safe cap to prevent infinite bounce
     let activeCount = 0;
 
     particles.current.forEach((p, i) => {
@@ -115,7 +115,7 @@ export function GlitchEruption() {
       p.pos.y += p.vel.y * dt;
       p.pos.z += p.vel.z * dt;
 
-      // ── Floor Bounce ── (like a real pog hitting the mat)
+      // ── Floor Bounce ── (like a real slamz hitting the mat)
       if (p.pos.y < FLOOR_Y && p.bounces < 4) {
         p.pos.y   = FLOOR_Y;
         p.vel.y   = Math.abs(p.vel.y) * restitution;

@@ -19,7 +19,7 @@ The goal of SLAMZ PRO-TOUR V2 was to evolve from a simple mobile simulator into 
 ## 📁 The "Big Fuck All" Overview (Project Structure)
 
 ```
-slamz-pog-v2/
+slamz-slamz-v2/
 ├── 📄 index.html                       — Main HTML entry point with React root mount
 ├── 📄 package.json                     — NPM dependencies and scripts (vite, react, three, rapier)
 ├── 📄 package-lock.json                — Locked dependency versions for reproducible builds
@@ -40,7 +40,7 @@ slamz-pog-v2/
 │   ├── 📂 components/                  
 │   │   ├── 📄 CinematicSlam.tsx        — GSAP Camera logic
 │   │   ├── 📂 ui/                      — Showcase.tsx, HUD.tsx, StartScreen.tsx
-│   │   ├── 📂 game/                    — Pog.tsx, Slammer.tsx, PhysicsWorld.tsx
+│   │   ├── 📂 game/                    — Slamz.tsx, Slammer.tsx, PhysicsWorld.tsx
 ```
 
 ---
@@ -53,9 +53,9 @@ These values are calibrated for a **"Heavy-Weight Arcade"** feel. Modify with ca
 |---|---|---|---|
 | **Gravity** | `-16` | `PhysicsWorld.tsx` | Boosted for faster falling and "thump" feel. |
 | **Slammer Mass** | `2.5 - 7.0` | `slammerTypes.ts` | Heavy hitters move the stack better. |
-| **POG Mass** | `0.25` | `gameStore.ts` | Light enough to fly, heavy enough to tumble. |
+| **SLAMZ Mass** | `0.25` | `gameStore.ts` | Light enough to fly, heavy enough to tumble. |
 | **Linear Damping** | `0.80` | `gameStore.ts` | Prevents infinite sliding (The "Viscosity Brake"). |
-| **Angular Damping** | `1.00` | `gameStore.ts` | Rapidly stabilizes spinning POGs for settle detection. |
+| **Angular Damping** | `1.00` | `gameStore.ts` | Rapidly stabilizes spinning SLAMZ for settle detection. |
 | **Max Velocity** | `15.0` | `gameStore.ts` | Physics governance to prevent "glitch-warping" on impact. |
 | **Impact Radius** | `3.0` | `gameStore.ts` | Range of the volcanic eruption effect. |
 
@@ -78,7 +78,7 @@ Handles the "Bullet Time" transition.
 A GSAP timeline that manages the camera during impact:
 1. **Windup**: Camera pulls back.
 2. **Freeze**: Short hold for impact framing.
-3. **Orbit**: 360-degree rotation around the "Pog Cloud" center.
+3. **Orbit**: 360-degree rotation around the "Slamz Cloud" center.
 4. **Reveal**: Return to standard play view.
 
 ---
@@ -100,7 +100,7 @@ We hit some major walls during development. Here is how we climbed them.
 - Never put hooks inside `if` statements!
 
 ### 3. Cinematic Pure Gating 
-**The Snag:** POGs were being "discovered" multiple times, or the prize UI would pop up during the bullet-time orbit.
+**The Snag:** SLAMZ were being "discovered" multiple times, or the prize UI would pop up during the bullet-time orbit.
 **The Fix:** 
 - **State Sequestration**: `Showcase.tsx` is now strictly locked to `gameState === 'ROUND_JACKPOT'`.
 - All inventory logic is deferred until the `CinematicEngine` finishes its hand-off.

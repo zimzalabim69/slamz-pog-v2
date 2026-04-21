@@ -11,10 +11,10 @@
 | `Slamz_Neon_Battle_Area.glb` | `[SYS-AST-305]` | 8.0 MB | Stable | Standard LOD |
 | `Slamz_Rug.glb` | `[SYS-AST-306]` | 16.4 MB | **WARNING** | Target < 2MB |
 
-## 2. POG & Slammer Textures
+## 2. slamz & Slammer Textures
 | Category | Avg Size | Count | Status |
 |---|---|---|---|
-| POG Faces | ~1.0 MB | 14 | Optimal (PNG) |
+| slamz Faces | ~1.0 MB | 14 | Optimal (PNG) |
 | Slammer Textures | ~0.8 MB | 1 | Optimal |
 | Dynamic Mat (PNG) | ~1.1 MB | 2 | Stable |
 

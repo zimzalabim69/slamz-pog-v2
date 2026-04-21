@@ -17,21 +17,21 @@ This is the Absolute Master index for the **SLAMZ PRO-TOUR V2** architecture. Ev
 | `100_GAMEPLAY/store/useGameStore.ts` | `[SYS-GPL-101]` | Central Zustand Brain |
 | `100_GAMEPLAY/systems/SetManager.ts` | `[SYS-GPL-102]` | Collection & Achievement Logic |
 | `100_GAMEPLAY/components/game/PhysicsWorld.tsx` | `[SYS-GPL-103]` | Rapier Simulation Root |
-| `100_GAMEPLAY/components/game/PogStack.tsx` | `[SYS-GPL-104]` | Procedural Stack Generation |
-| `100_GAMEPLAY/constants/setDefinitions.ts` | `[SYS-GPL-105]` | POG Archetype Registry |
+| `100_GAMEPLAY/components/game/slamzStack.tsx` | `[SYS-GPL-104]` | Procedural Stack Generation |
+| `100_GAMEPLAY/constants/setDefinitions.ts` | `[SYS-GPL-105]` | slamz Archetype Registry |
 
 ## [200] FRONTEND: UI/UX Layer
 | File | [SYSTEM ID] | Description |
 |---|---|---|
 | `200_FRONTEND/components/ui/HUD.tsx` | `[SYS-FRE-201]` | Real-time Gameplay Overlay |
-| `200_FRONTEND/components/ui/Showcase.tsx` | `[SYS-FRE-202]` | POG Capture Cinematic UI |
+| `200_FRONTEND/components/ui/Showcase.tsx` | `[SYS-FRE-202]` | slamz Capture Cinematic UI |
 | `200_FRONTEND/components/ui/StartScreen.tsx` | `[SYS-FRE-203]` | 3D Interactive Main Menu |
 
 ## [300] ASSET_PIPELINE: Virtual Link
 | Key | [SYSTEM ID] | Status |
 |---|---|---|
 | `public/assets/glbs/` | `[SYS-AST-300]` | High-Fidelity Geometry (Awaiting Draco) |
-| `public/assets/pogs/` | `[SYS-AST-301]` | Procedural Textures |
+| `public/assets/slamzs/` | `[SYS-AST-301]` | Procedural Textures |
 
 ## [400] TECH_ROOT: Engine & Cinematics
 | File | [SYSTEM ID] | Description |

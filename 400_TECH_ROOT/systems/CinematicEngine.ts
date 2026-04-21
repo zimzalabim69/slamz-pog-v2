@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RapierRigidBody } from '@react-three/rapier';
 import { useGameStore } from '@100/store/useGameStore';
+import { GAME_CONFIG } from '@100/constants/gameConfig';
 
 /**
  * SLAMZ PRO-TOUR CINEMATIC ENGINE
@@ -26,7 +27,7 @@ class CinematicEngine {
 
   /**
    * VOLCANIC TRIGGER: Shifts environment to Zero-G/Slow-Mo and applies impulses.
-   * Treating pogs as 'actual objects' with continuous collision.
+   * Treating slamzs as 'actual objects' with continuous collision.
    */
   public triggerCinematic(
     world: any, 
@@ -57,7 +58,7 @@ class CinematicEngine {
     }, hitStopDuration);
 
     // 2. Schedule the "Explosion" release after freezeDuration
-    const freezeDuration = (debugParams.cinematicFreezeDuration || 0.8) * 1000;
+    const freezeDuration = (GAME_CONFIG.CINEMATIC_FREEZE || 0.8) * 1000;
     
     setTimeout(() => {
       if (this.isCinematicActive) {
@@ -67,52 +68,50 @@ class CinematicEngine {
       }
     }, freezeDuration);
 
-    const impactSpeed = (impactPower / 100) * debugParams.powerChargeSpeed;
-    // CALIBRATION: Massive reduction for 0.1 mass regulation pogs.
-    // Aiming for impulses in the 1.0 - 5.0 range rather than 35.0+.
-    const forceBase = slammerMass * impactSpeed * debugParams.slamForceMultiplier * 0.035;
+    const impactSpeed = (impactPower / 100) * (debugParams?.powerChargeSpeed || GAME_CONFIG.POWER_CHARGE_SPEED);
+    const forceBase = slammerMass * impactSpeed * (debugParams?.slamForceMultiplier || GAME_CONFIG.SLAM_FORCE_MULTIPLIER) * 0.035;
 
     world.forEachRigidBody((body: RapierRigidBody) => {
       const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
-        const pogPos = body.translation();
+      if (ud?.name?.startsWith('slamz-')) {
+        const slamzPos = body.translation();
         
         // --- THE VOLCANIC PHYSICS ---
-        const dx = pogPos.x - impactPoint.x;
-        const dz = pogPos.z - impactPoint.z;
+        const dx = slamzPos.x - impactPoint.x;
+        const dz = slamzPos.z - impactPoint.z;
         const dist = Math.sqrt(dx * dx + dz * dz);
         
-        if (dist < debugParams.eruptionRadius) {
-          // ... [Physics Calculations] ...
+        const eruptionRadius = debugParams?.eruptionRadius || GAME_CONFIG.ERUPTION_RADIUS;
+        
+        if (dist < eruptionRadius) {
           const jitterX = (Math.random() - 0.5) * 0.4;
           const jitterZ = (Math.random() - 0.5) * 0.4;
 
           const dirX = (dx / (dist || 0.1)) + jitterX;
           const dirZ = (dz / (dist || 0.1)) + jitterZ;
-          const decline = Math.max(0, 1 - dist / debugParams.eruptionRadius);
+          const decline = Math.max(0, 1 - dist / eruptionRadius);
           
-          const airLift = forceBase * decline * debugParams.eruptionUpwardMultiplier;
+          const upwardMult = debugParams?.eruptionUpwardMultiplier || GAME_CONFIG.ERUPTION_UPWARD_MULT;
+          const airLift = forceBase * decline * upwardMult;
           
-          // TIGHTENING: Radial push now strictly clusters.
           const powerFactor = Math.pow(impactPower / 100, 2.5);
-          let radialPush = forceBase * decline * 0.05 * powerFactor; // Slightly lower baseline
+          let radialPush = forceBase * decline * 0.05 * powerFactor; 
 
           // 75% CONTAINMENT FIELD (Radius 4.5)
           const matLimit = 4.5;
-          const distToCenter = Math.sqrt(pogPos.x * pogPos.x + pogPos.z * pogPos.z);
+          const distToCenter = Math.sqrt(slamzPos.x * slamzPos.x + slamzPos.z * slamzPos.z);
           if (distToCenter > matLimit - 1.0) {
-            // Approaching boundary: Apply a reverse 'spring' impulse inwards
-            const inwardDirX = -pogPos.x / (distToCenter || 1);
-            const inwardDirZ = -pogPos.z / (distToCenter || 1);
+            const inwardDirX = -slamzPos.x / (distToCenter || 1);
+            const inwardDirZ = -slamzPos.z / (distToCenter || 1);
             const strength = Math.max(0, distToCenter - (matLimit - 1.0)) * 0.5;
             body.applyImpulse({ x: inwardDirX * strength, y: 0, z: inwardDirZ * strength }, true);
-            radialPush *= 0.2; // Dampen the outward explosion near the edge
+            radialPush *= 0.2; 
           }
           
           body.setTranslation({ 
-            x: pogPos.x, 
-            y: pogPos.y + 0.15, 
-            z: pogPos.z 
+            x: slamzPos.x, 
+            y: slamzPos.y + 0.15, 
+            z: slamzPos.z 
           }, true);
           
           body.applyImpulse({
@@ -120,17 +119,15 @@ class CinematicEngine {
             y: airLift,
             z: dirZ * radialPush
           }, true);
-          // ... [Torque Applied Below] ...
 
-          // 2. Tumble Mechanics (Torque) - Increased for 'flipping'
-          const torque = forceBase * decline * debugParams.eruptionTorqueMultiplier * 2.0;
+          const torqueMult = debugParams?.eruptionTorqueMultiplier || GAME_CONFIG.ERUPTION_TORQUE_MULT;
+          const torque = forceBase * decline * torqueMult * 2.0;
           body.applyTorqueImpulse({
             x: (Math.random() - 0.5) * torque,
             y: (Math.random() - 0.5) * torque,
             z: (Math.random() - 0.5) * torque
           }, true);
 
-          // Ensure bodies are dynamic and awake
           body.setBodyType(0, true);
           body.wakeUp();
         }
@@ -138,41 +135,30 @@ class CinematicEngine {
     });
   }
 
-  /**
-   * Hand-off: FULL RELEASE - restore normal physics completely.
-   */
   public handOff(world: any) {
     if (!world) return;
     
-    const debugParams = useGameStore.getState().debugParams;
-    
-    // FULL RELEASE - remove ALL constraints
     useGameStore.setState({ 
       bulletTimeActive: false,
       globalDampingScale: 0
     });
 
-    // CRITICAL: Reset damping on all pog bodies back to normal!
     world.forEachRigidBody((body: RapierRigidBody) => {
       const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
-        // Restore normal damping values (the 0.98 bullet-time damping is stuck on them!)
-        body.setLinearDamping(debugParams.pogLinearDamping);
-        body.setAngularDamping(debugParams.pogAngularDamping);
+      if (ud?.name?.startsWith('slamz-')) {
+        body.setLinearDamping(GAME_CONFIG.SLAMZ_LINEAR_DAMPING);
+        body.setAngularDamping(GAME_CONFIG.SLAMZ_ANGULAR_DAMPING);
         body.wakeUp();
       }
     });
     
     this.isCinematicActive = false;
-    this.justEndedAt = Date.now(); // Start grace period for settle detector
+    this.justEndedAt = Date.now();
   }
 
-  /**
-   * Reset the engine completely
-   */
   public reset() {
     this.isCinematicActive = false;
-    this.justEndedAt = 0; // Clear grace period on full reset
+    this.justEndedAt = 0;
     useGameStore.setState({ 
         bulletTimeActive: false,
         globalDampingScale: 0

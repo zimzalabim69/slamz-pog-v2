@@ -1,6 +1,5 @@
 import { useGameStore } from '@100/store/useGameStore';
-import { SlammerSelector } from './SlammerSelector';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import './HUD.css';
 
 export function HUD() {
@@ -8,12 +7,12 @@ export function HUD() {
   const power        = useGameStore((s) => s.power);
   const resetStack        = useGameStore((s) => s.resetStack);
   const peakVelocity       = useGameStore((s) => s.peakVelocity);
-  const pogMaxVelocity     = useGameStore((s) => s.debugParams.pogMaxVelocity);
-  const pogsOnMat          = useGameStore((s) => s.pogsOnMat);
+  const slamzMaxVelocity     = useGameStore((s) => s.debugParams.slamzMaxVelocity);
+  const slamzOnMat          = useGameStore((s) => s.slamzOnMat);
   const lastSlamText       = useGameStore((s) => s.lastSlamText);
   const throwsRemaining    = useGameStore((s) => s.throwsRemaining);
-
   const dataPackets = useGameStore((s) => s.dataPackets);
+  const impactFlashActive = useGameStore((s) => s.impactFlashActive);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -27,6 +26,15 @@ export function HUD() {
 
   return (
     <div className={`hud-container ${gameState === 'HARVEST' ? 'hud-glitch-active' : ''}`}>
+      {/* ── SLAM IMPACT FLASH ── */}
+      {impactFlashActive && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 9000,
+          background: 'radial-gradient(ellipse at 50% 60%, rgba(180,0,255,0.55) 0%, rgba(0,200,255,0.25) 50%, transparent 100%)',
+          pointerEvents: 'none',
+          animation: 'impactFlashAnim 0.2s ease-out forwards',
+        }} />
+      )}
       {/* ── CINEMATIC OVERLAYS ── */}
       <div className="hud-scanline" />
       <div className="hud-vignette" />
@@ -60,7 +68,7 @@ export function HUD() {
               <div className="hud-meter-header">INERTIAL FORCE</div>
               <div style={{ 
                 fontSize: '20px', fontWeight: 900, 
-                color: peakVelocity > pogMaxVelocity * 0.9 ? '#ff0055' : '#00ffcc'
+                color: peakVelocity > slamzMaxVelocity * 0.9 ? '#ff0055' : '#00ffcc'
               }}>
                 {peakVelocity.toFixed(2)} <span style={{ fontSize: '10px', opacity: 0.5 }}>MAG</span>
               </div>
@@ -108,7 +116,7 @@ export function HUD() {
           <div style={{ display: 'flex', gap: '10px' }}>
             <div className="hud-meter">
               <div className="hud-meter-header">CYCLE SHARDS BROKEN</div>
-              <div style={{ fontSize: '18px', fontWeight: 900, textAlign: 'right' }}>{pogsOnMat}</div>
+              <div style={{ fontSize: '18px', fontWeight: 900, textAlign: 'right' }}>{slamzOnMat}</div>
             </div>
             <div className="hud-meter" style={{ pointerEvents: 'auto' }}>
               <button
@@ -148,8 +156,6 @@ export function HUD() {
         </div>
       )}
 
-
-
       {/* ── EXTRACTOR POWER BAR ── */}
       {gameState === 'POWERING' && (
         <div className="extractor-bar-container">
@@ -163,16 +169,13 @@ export function HUD() {
       {/* ── POPUP TEXT ── */}
       {lastSlamText && <div className="last-slam-popup">{lastSlamText}</div>}
 
-      {/* ── FOOTER NAVIGATION ── */}
+      {/* ── FOOTER ── */}
       {gameState !== 'START_SCREEN' && (
         <div style={{
           position: 'absolute', bottom: '30px', width: '100%',
-          display: 'flex', justifyContent: 'space-between', padding: '0 30px',
-          pointerEvents: 'auto'
+          display: 'flex', justifyContent: 'flex-end', padding: '0 30px',
+          pointerEvents: 'none'
         }}>
-          <div style={{ display: 'flex', gap: '10px' }}>
-          </div>
-          
           <div style={{ 
             fontSize: '10px', opacity: 0.4, textTransform: 'uppercase', 
             letterSpacing: '3px', alignSelf: 'center' 
@@ -182,11 +185,7 @@ export function HUD() {
         </div>
       )}
 
-      {gameState !== 'START_SCREEN' && (
-        <>
-          <SlammerSelector />
-        </>
-      )}
+      {/* Slammer Selector removed for production aesthetic */}
 
       <style>{`
         .last-slam-popup {
@@ -202,22 +201,7 @@ export function HUD() {
           20% { opacity: 1; transform: translate(-50%, 0) scale(1); letter-spacing: 2px; }
           100% { opacity: 0; transform: translate(-50%, -100px) scale(1.1); letter-spacing: 10px; }
         }
-        .nav-btn {
-          background: rgba(0, 20, 20, 0.8);
-          border: 1px solid rgba(0, 255, 204, 0.5);
-          color: #00ffcc; padding: 10px 20px;
-          font-family: inherit; cursor: pointer;
-          transition: all 0.2s;
-        }
-        .nav-btn:hover {
-          background: #00ffcc; color: #000;
-          box-shadow: 0 0 15px #00ffcc;
-        }
-        .btn-ach { border-color: #ffaa00; color: #ffaa00; }
-        .btn-ach:hover { background: #ffaa00; color: #000; box-shadow: 0 0 15px #ffaa00; }
       `}</style>
     </div>
   );
 }
-
-

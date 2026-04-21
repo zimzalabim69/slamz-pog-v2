@@ -2,7 +2,7 @@
 setlocal
 
 echo ======================================================
-echo   SLAMZ POG v2 - NODE GHOST PURGE TOOL
+echo   SLAMZ PRO-TOUR v2 - NODE GHOST PURGE TOOL
 echo ======================================================
 echo.
 echo [!] Attempting to clear all dangling Node.js processes...

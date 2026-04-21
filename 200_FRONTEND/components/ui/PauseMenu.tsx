@@ -58,7 +58,7 @@ export function PauseMenu() {
               <div className="quick-actions">
                 <button className="big-action-btn primary" onClick={togglePause}>
                   RESUME ARENA
-                  <span>BACK TO THE POGS</span>
+                  <span>BACK TO THE slamzS</span>
                 </button>
               </div>
             </div>

@@ -1,11 +1,65 @@
-import { useRef, useEffect, useMemo, useCallback } from 'react';
+import { useRef, useMemo, useCallback, useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { RigidBody, RapierRigidBody, CylinderCollider, useRapier } from '@react-three/rapier';
 import { useGameStore } from '@100/store/useGameStore';
-import { getMaterialFromRegistry } from '@500/utils/TextureGenerator';
+import { GAME_CONFIG } from '@100/constants/gameConfig';
+import { generateGlowTexture } from '@500/utils/TextureGenerator';
 import * as THREE from 'three';
 import { SLAMMER_TYPES } from '@100/constants/slammerTypes';
 import { cinematicEngine } from '@400/systems/CinematicEngine';
+
+// --- SLAMMER SHARD (The Cube Explosion Thing) ---
+const cubeGeom = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+
+function SlammerShard({ position, color }: { position: [number, number, number], color: string }) {
+  const rb = useRef<RapierRigidBody>(null);
+  const [opacity, setOpacity] = useState(0.8);
+
+  useEffect(() => {
+    if (rb.current) {
+      rb.current.applyImpulse({
+        x: (Math.random() - 0.5) * 0.15,
+        y: Math.random() * 0.15,
+        z: (Math.random() - 0.5) * 0.15
+      }, true);
+    }
+  }, []);
+
+  useFrame((_, delta) => {
+    if (opacity > 0) setOpacity(prev => Math.max(0, prev - delta * 0.4));
+  });
+
+  return (
+    <RigidBody ref={rb} position={position} colliders="cuboid">
+      <mesh geometry={cubeGeom}>
+        <meshBasicMaterial 
+          color={color} 
+          wireframe={true} 
+          transparent={true} 
+          opacity={opacity} 
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+    </RigidBody>
+  );
+}
+
+function GlowHalo({ color, opacity }: { color: string, opacity: number }) {
+  const glowTex = useMemo(() => generateGlowTexture(), []);
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]}>
+      <planeGeometry args={[2.5, 2.5]} />
+      <meshBasicMaterial 
+        map={glowTex} 
+        color={color} 
+        transparent 
+        opacity={opacity * 0.5} 
+        blending={THREE.AdditiveBlending} 
+        depthWrite={false} 
+      />
+    </mesh>
+  );
+}
 
 /**
  * THE PRO-TOUR SLAMMER (V2.1 - Decoupled)
@@ -14,7 +68,19 @@ import { cinematicEngine } from '@400/systems/CinematicEngine';
 export function Slammer() {
   const rb = useRef<RapierRigidBody>(null);
   const mesh = useRef<THREE.Mesh>(null);
-  const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+
+  // GHOST WIREFRAME MATERIAL — MeshBasicMaterial: pure color, no lighting needed
+  const ghostMat = useMemo(() => new THREE.MeshBasicMaterial({
+    color: '#00ffff',
+    wireframe: true,
+    transparent: true,
+    opacity: 0.75,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  }), []);
+
+  // Keep materialRef pointing at ghostMat so useFrame mutations still work
+  const materialRef = useRef<THREE.MeshBasicMaterial>(ghostMat);
   const { mouse, raycaster, camera } = useThree();
   const { world } = useRapier();
   
@@ -24,8 +90,13 @@ export function Slammer() {
   const setPower = useGameStore((state) => state.setPower);
   const currentSlammerType = useGameStore((state) => state.currentSlammerType);
   const triggerFogPulse = useGameStore((state) => state.triggerFogPulse);
+  const triggerImpactFlash = useGameStore((state) => state.triggerImpactFlash);
   const debugParams = useGameStore((state) => state.debugParams);
   const setCameraTension = (v: number) => useGameStore.setState({ cameraTension: v });
+  
+  // Explosion state
+  const [shards, setShards] = useState<{ id: number, pos: [number, number, number] }[]>([]);
+  const [isExploded, setIsExploded] = useState(false);
 
   // Internal Refs for performance (no re-renders)
   const impactProcessed = useRef(false);
@@ -37,20 +108,27 @@ export function Slammer() {
   const shakeDecay = useRef(0.9);
 
   // High-Fidelity Mechanics Refs
-  const smoothedPos = useRef(new THREE.Vector3(0, 5, 0));
-  const targetPos = useRef(new THREE.Vector3(0, 5, 0));
+  const smoothedPos = useRef(new THREE.Vector3(0, 5.5, 0));
+  const targetPos = useRef(new THREE.Vector3(0, 5.5, 0));
   const velocity = useRef(new THREE.Vector3(0, 0, 0));
-  const lastPos = useRef(new THREE.Vector3(0, 5, 0));
+  const lastPos = useRef(new THREE.Vector3(0, 5.5, 0));
 
   // Pre-allocated math objects (Perf Rule: No 'new' in useFrame)
   const aimHit = useMemo(() => new THREE.Vector3(), []);
   const aimPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.7), []);
   const intersectPoint = useMemo(() => new THREE.Vector3(), []);
 
+  const resetCooldown = useRef(0);
+  
   // EXPLICIT PHYSICS RESET
   const forceReset = useCallback(() => {
+    // Prevent reset-hammering (min 100ms between forced resets)
+    const now = Date.now();
+    if (now - resetCooldown.current < 100) return;
+    resetCooldown.current = now;
+
     if (rb.current) {
-      console.log("[SLAMMER] 🔄 EXPLICIT RESET TRIGGERED");
+      
       rb.current.setBodyType(2, true); // 2 = Kinematic
       rb.current.setTranslation({ x: 0, y: 5, z: 0 }, true);
       rb.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
@@ -58,21 +136,25 @@ export function Slammer() {
       impactProcessed.current = false;
       isCharging.current = false;
       setCameraTension(0);
+      setShards([]);
+      setIsExploded(false);
     }
   }, [setCameraTension]);
 
-  // MATERIAL UPDATES
+  // Ghost color shifts with slammer type
   useEffect(() => {
-    if (materialRef.current) {
-      const mat = getMaterialFromRegistry('slammer', 'metal');
-      const sourceMat = (Array.isArray(mat) ? mat[0] : mat) as THREE.MeshStandardMaterial;
-      if (sourceMat) {
-        materialRef.current.color = sourceMat.color;
-        materialRef.current.roughness = sourceMat.roughness;
-        materialRef.current.metalness = sourceMat.metalness;
-      }
-    }
-  }, [currentSlammerType]);
+    const colors: Record<string, string> = {
+      standard:      '#00ffff',
+      heavy_metal:   '#ff00ff',
+      slamzer_street: '#ffff00',
+    };
+    ghostMat.color.set(colors[currentSlammerType] || '#00ffff');
+  }, [currentSlammerType, ghostMat]);
+  
+  // Initialization reset
+  useEffect(() => {
+    forceReset();
+  }, []); // Only on mount
 
   // INPUT LISTENERS (Merged & Stable)
   useEffect(() => {
@@ -111,7 +193,7 @@ export function Slammer() {
         // V2.0 SWEET SPOT: 98% - 100% Perfect Slam Boost
         if (finalPower >= 98) {
           slamForce *= 2.2; // Massive kinetic boost for the perfect hit
-          console.log("[SLAMMER] 🏆 PERFECT SLAM TRIGGERED - KINETIC BOOST APPLIED");
+          
         }
 
         if (rb.current) {
@@ -153,7 +235,6 @@ export function Slammer() {
     };
   }, [gameState, setGameState, setPower, debugParams, triggerFogPulse, forceReset, currentSlammerType]);
 
-  // RESET ON STATE CHANGE (Fallthrough check)
   useEffect(() => {
     if (gameState === 'AIMING') {
       forceReset();
@@ -202,14 +283,14 @@ export function Slammer() {
     // 1.5 HARVEST (Kinematic Hover)
     if (gameState === 'HARVEST') {
       const winners = useGameStore.getState().winners;
-      const pogs = useGameStore.getState().pogs;
+      const slamz = useGameStore.getState().slamz;
       
       let centerX = 0, centerZ = 0, count = 0;
       
       // Calculate centroid of winners from physics world
       world.forEachRigidBody((body) => {
         const ud = body.userData as any;
-        if (ud?.name?.startsWith('pog-') && winners.includes(ud['pog-id'])) {
+        if (ud?.name?.startsWith('slamz-') && winners.includes(ud['slamz-id'])) {
           const trans = body.translation();
           centerX += trans.x;
           centerZ += trans.z;
@@ -266,6 +347,16 @@ export function Slammer() {
             );
             
             shakeIntensity.current = currentPower * 0.02 * debugParams.cinematicCometShakeIntensity;
+            triggerImpactFlash();
+
+            // TRIGGER CUBE EXPLOSION
+            const shardCount = 16;
+            const newShards = Array.from({ length: shardCount }).map((_, i) => ({
+              id: Date.now() + i,
+              pos: [impactPos.x, impactPos.y + 0.5, impactPos.z] as [number, number, number]
+            }));
+            setShards(newShards);
+            setIsExploded(true);
         }
     }
 
@@ -303,7 +394,11 @@ export function Slammer() {
         }
 
         materialRef.current.transparent = true;
-        materialRef.current.opacity = gameState === 'SLAMMED' ? 1.0 : debugParams.slammerOpacity;
+        // Pulse opacity when aiming/powering
+        const pulse = (gameState === 'AIMING' || gameState === 'POWERING') 
+          ? 0.6 + Math.sin(Date.now() * 0.008) * 0.2
+          : 1.0;
+        materialRef.current.opacity = gameState === 'SLAMMED' ? 1.0 : pulse;
         materialRef.current.depthWrite = gameState === 'SLAMMED';
     }
 
@@ -318,17 +413,21 @@ export function Slammer() {
   return (
     <RigidBody 
       ref={rb}
-      type="kinematicPosition"
+      type={gameState === 'SLAMMED' ? 'dynamic' : 'kinematicPosition'}
       colliders={false}
       mass={slammerData.mass}
       restitution={debugParams.slammerRestitution}
-      position={[0, 8, 0]}
+      position={[0, 5.5, 0]}
     >
-      <CylinderCollider args={[0.125, 0.8125]} />
-      <mesh ref={mesh}>
+      {!isExploded && <CylinderCollider args={[0.125, 0.8125]} />}
+      <mesh ref={mesh} material={ghostMat} visible={!isExploded}>
         <cylinderGeometry args={[0.8125, 0.8125, 0.25, 32]} />
-        <meshStandardMaterial ref={materialRef} />
       </mesh>
+      
+      {/* RENDER SHARDS */}
+      {shards.map(s => (
+        <SlammerShard key={s.id} position={s.pos} color={ghostMat.color.getStyle()} />
+      ))}
     </RigidBody>
   );
 }

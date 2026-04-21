@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useGameStore } from '@100/store/useGameStore';
+import { GAME_CONFIG } from '@100/constants/gameConfig';
 
 /**
  * SLAMZ ARCADE TUBE OVERLAY - AGGRESSIVE VERSION

@@ -19,6 +19,20 @@ export const initSystemLogger = () => {
   const originalError = console.error;
   const originalInfo = console.info;
 
+  const safeSerializeArgs = (args: any[]): string => {
+    return args
+      .map(arg => {
+        if (arg === null) return 'null';
+        if (arg === undefined) return 'undefined';
+        if (typeof arg === 'object') {
+          // Never stringify complex objects to avoid circularity/serialization crashes
+          return `[Object ${arg.constructor?.name || 'anonymous'}]`;
+        }
+        return String(arg);
+      })
+      .join(' ');
+  };
+
   const addLog = (type: LogType, args: any[]) => {
     // 1. Re-entrancy Guard
     if (isProxying) return;
@@ -28,18 +42,7 @@ export const initSystemLogger = () => {
     
     isProxying = true;
     try {
-      const message = args
-        .map(arg => {
-          if (typeof arg === 'object') {
-            try {
-              return JSON.stringify(arg, null, 2);
-            } catch (e) {
-              return '[Object]';
-            }
-          }
-          return String(arg);
-        })
-        .join(' ');
+      const message = safeSerializeArgs(args);
         
       // 3. Filter specific noisy third-party warnings to keep console "green"
       if (
@@ -52,9 +55,7 @@ export const initSystemLogger = () => {
 
       // If Context Lost is detected, trigger an emergency reboot flag
       if (message.includes('Context Lost')) {
-         originalError('[SYSTEM] GPU/Audio Context Crash Detected. Throttling and Reloading disabled to prevent loop.');
-         // Instead of waiting, we immediately try to bounce the page to recover.
-         // setTimeout(() => window.location.reload(), 1000);
+         originalError('[SYSTEM] GPU/Audio Context Crash Detected.');
       }
         
       const store = useTerminalStore.getState();
@@ -74,9 +75,11 @@ export const initSystemLogger = () => {
   };
 
   console.warn = (...args: any[]) => {
-    // Filter out THREE.Clock deprecation to keep the console green for the final release
-    const message = args.join(' ');
-    if (message.includes('THREE.Clock')) return;
+    const message = safeSerializeArgs(args);
+    if (
+      message.includes('THREE.Clock') || 
+      message.includes('deprecated parameters for the initialization function')
+    ) return;
     
     originalWarn(...args);
     addLog('warn', args);

@@ -25,10 +25,10 @@ function Root() {
         console.warn('System Logger Bridge failed to initialize:', e);
       }
       
-      console.log("BOOTHING SLAMZ CORE...");
+      
       
       // 2. Race initialization against a safety timeout (10 seconds)
-      // Wait for fonts to be ready first to ensure Canvas drawing uses correct typography
+      // Wait for fonts to be ready first to ensure Canvas drawing uses correct tyslamzraphy
       await document.fonts.ready;
       
       const initPromise = initializeTextureRegistry();
@@ -40,7 +40,7 @@ function Root() {
         await Promise.race([initPromise, timeoutPromise]);
         if (mounted) {
           setInitialized(true);
-          console.log("Single mount confirmed. Systems active.");
+          
         }
       } catch (err) {
         console.error("Critical Initialization Failure or Timeout:", err);

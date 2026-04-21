@@ -38,7 +38,7 @@ npm run dev
 ```
 src/
   components/
-    game/          # Game objects (Pog, Slammer, Arena)
+    game/          # Game objects (Slamz, Slammer, Arena)
     ui/            # User interface components
     environment/   # 3D environment elements
   constants/      # Game constants and presets
@@ -64,8 +64,8 @@ For a detailed breakdown of the React Hooks resolution during the V2 port, see [
 - **Props**: None (uses global state)
 - **Dependencies**: useGameStore, SCENE_PRESETS
 
-#### Pog (`components/game/Pog.tsx`)
-- **Purpose**: Individual POG disc with physics and rendering
+#### Slamz (`components/game/Slamz.tsx`)
+- **Purpose**: Individual SLAMZ disc with physics and rendering
 - **Props**: id, theme, rarity, position, rotation
 - **Physics**: RigidBody with RoundCuboidCollider
 
@@ -91,7 +91,7 @@ For a detailed breakdown of the React Hooks resolution during the V2 port, see [
 ### Physics System
 - **Engine**: @react-three/rapier (WASM-based)
 - **Gravity**: [0, -16, 0] (adjusted for gameplay)
-- **Collision**: RoundCuboidCollider for POGs
+- **Collision**: RoundCuboidCollider for SLAMZ
 
 ### Audio System
 - **Location**: `systems/audio.ts`
@@ -104,7 +104,7 @@ interface GameStore {
   gameState: GameState;
   power: number;
   powerDirection: number;
-  pogs: PogData[];
+  slamz: SlamzData[];
   collection: CollectionItem[];
   // ... other state
 }
@@ -115,9 +115,9 @@ interface GameStore {
 - **Location**: `utils/TextureGenerator.ts`
 - **Process**: Synchronous initialization for stability
 
-#### Adding New POG Sets (Asset Pipeline)
-1. **Prepare Assets**: Place 512x512 PNGs in `public/assets/pogs/`.
-2. **Register Themes**: Add the file basename to `PROCEDURAL_THEMES` or `ASSET_THEMES` in `src/constants/pogData.ts`.
+#### Adding New SLAMZ Sets (Asset Pipeline)
+1. **Prepare Assets**: Place 512x512 PNGs in `public/assets/slamz/`.
+2. **Register Themes**: Add the file basename to `PROCEDURAL_THEMES` or `ASSET_THEMES` in `src/constants/slamzData.ts`.
 3. **Define Sets**: Create a set entry in `src/constants/setDefinitions.ts` to map themes to names and colors.
 
 ## Development Workflow
@@ -152,18 +152,18 @@ npm run preview      # Preview production build
 - **Gravity**: `[0, -16, 0]` (Experience.tsx) - Heavily weighted for arcade feel.
 - **Slam Impulse**: `-49 + (power * 0.85)` (Slammer.tsx) - Calibrated for high-velocity impact.
 - **Shatter Radius**: `0.1` - Tightly clustered for stacking realism.
-- **POG Properties**: Mass: `6.95`, Restitution: `0.05` (Heavy-weight tournament specs).
+- **SLAMZ Properties**: Mass: `6.95`, Restitution: `0.05` (Heavy-weight tournament specs).
 
 ### Visual Juice Standards
 - **Slam Punch**: Camera FOV jumps to `65` on slam, lerps back to `50`.
-- **Haptic Feedback**: Triggered on `MobileControls` for every POG flip.
+- **Haptic Feedback**: Triggered on `MobileControls` for every SLAMZ flip.
 - **Perfect Slam**: A "Perfect!" flash appears at `>98%` power.
 
 ### Core Gameplay Loop
 1. **Aiming Phase**: Player positions slammer
 2. **Charging Phase**: Hold to build power
-3. **Slam Phase**: Release to slam POGs
-4. **Showcase Phase**: Display captured POGs
+3. **Slam Phase**: Release to slam SLAMZ
+4. **Showcase Phase**: Display captured SLAMZ
 
 ### Scoring System
 - **Combo System**: Consecutive flips increase score

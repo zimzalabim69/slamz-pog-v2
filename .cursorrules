@@ -31,7 +31,7 @@ These rules override everything. Obey literally. No exceptions.
 - If user says "JUST READ", "read files", "tell me the state", or "remember what happened": read only. Respond with "All files read." or the requested info. NO edits.
 
 ## 4. Project-Specific Guardrails
-- This is the SLAMZ / POG rebrand project. Keep Slamz naming where it makes sense, but do not force mass renames.
+- This is the SLAMZ PRO-TOUR project (Rebrand Complete). Use 'Slamz' terminology for all new code and UI.
 - Do not touch physics constants, camera logic, or UI unless user says "update gravity", "fix collider", etc.
 - If a task seems big ("do one task"), break it into small steps and ask for confirmation before each.
 

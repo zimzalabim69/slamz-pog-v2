@@ -3,7 +3,7 @@
 ![SLAMZ PRO-TOUR PREVIEW](./public/og_preview.png)
 
 ## 🏛️ Project DNA: "Cinematic Pure"
-**SLAMZ PRO-TOUR** is a high-octane 3D arcade reimagining of the classic 90s POG phenomenon. Built for **VibeJam 2026**, it prioritizes visceral impact, bullet-time physics, and a seamless desktop-first experience.
+**SLAMZ PRO-TOUR** is a high-octane 3D arcade reimagining of the classic 90s SLAMZ phenomenon. Built for **VibeJam 2026**, it prioritizes visceral impact, bullet-time physics, and a seamless desktop-first experience.
 
 The "Cinematic Pure" philosophy ensures that the player's focus is always on the impact. We've stripped away the clutter to deliver professional-grade physics orchestration and a high-fidelity cyberpunk aesthetic.
 
@@ -24,7 +24,7 @@ The "Cinematic Pure" philosophy ensures that the player's focus is always on the
 - **Settle Detection**: Smart algorithms that know exactly when the dust has settled to trigger the jackpot.
 
 ### 🃏 Collection Management
-- **The Showcase**: A dedicated prize-viewing suite with per-POG lighting and rarity fanfare.
+- **The Showcase**: A dedicated prize-viewing suite with per-SLAMZ lighting and rarity fanfare.
 - **Set Completion**: Track your progress through iconic 90s sets (TMNT, Mortal Kombat, and more).
 - **Physical Interaction**: Inspect your prizes in 3D with direct mouse/touch manipulation.
 
@@ -49,8 +49,8 @@ The "Cinematic Pure" philosophy ensures that the player's focus is always on the
 
 ### Installation
 ```bash
-git clone https://github.com/zimzalabim69/slamz-pog-v2.git
-cd slamz-pog-v2
+git clone https://github.com/zimzalabim69/slamz-slamz-v2.git
+cd slamz-slamz-v2
 npm install
 ```
 

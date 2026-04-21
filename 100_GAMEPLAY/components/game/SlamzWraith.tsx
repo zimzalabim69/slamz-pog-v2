@@ -20,43 +20,26 @@ export function SlamzWraith({ context = 'arena' }: Props) {
   // Create a fresh clone for THIS specific instance
   const clonedScene = useMemo(() => gltf.scene.clone(), [gltf.scene]);
 
-  // Wireframe material ONLY for the arena ghost slammer
-  const ghostMat = useRef<THREE.MeshStandardMaterial | null>(null);
+  // THE EXACT GHOST WIREFRAME MATERIAL
+  const ghostWireframeMat = useMemo(() => new THREE.MeshBasicMaterial({
+    color: '#00ffff',
+    wireframe: true,
+    transparent: true,
+    opacity: context === 'start' ? 0.95 : 0.75, // Higher visibility on start screen
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  }), [context]);
 
   useEffect(() => {
-    // If we're on the start screen, keep original materials
-    if (context === 'start') {
-      clonedScene.traverse((child: any) => {
-        if (child.isMesh) {
-          // You can tweak original material brightness here if needed, 
-          // but usually leave as is for "Normal"
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
-      return;
-    }
-
-    // Apply Ghost Material for Arena Cinematic
-    if (!ghostMat.current) {
-      ghostMat.current = new THREE.MeshStandardMaterial({
-        color: 0x00ffff,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.75,
-        emissive: 0x00ffff,
-        emissiveIntensity: 2.8,
-        metalness: 0.8,
-        roughness: 0.2,
-      });
-    }
-
     clonedScene.traverse((child: any) => {
       if (child.isMesh) {
-        child.material = ghostMat.current;
+        if (context === 'arena') {
+          child.material = ghostWireframeMat;
+        }
+        child.visible = true;
       }
     });
-  }, [clonedScene, context]);
+  }, [clonedScene, ghostWireframeMat, context]);
 
   useFrame((state) => {
     if (!groupRef.current) return;

@@ -8,7 +8,7 @@ import gsap from 'gsap';
 
 /**
  * CINEMATIC SLAM - SMART CAMERA TRACKING EDITION
- * Dynamically frames the pog explosion cloud by tracking all pogs!
+ * Dynamically frames the slamz explosion cloud by tracking all slamz!
  */
 export function CinematicSlam() {
   const { camera } = useThree();
@@ -26,7 +26,7 @@ export function CinematicSlam() {
     // We start the timeline when the engine's isCinematicActive flag is true
     // This happens ATOMICALLY in the Slammer's impact loop.
     if (cinematicEngine.isCinematicActive && !timelineRef.current) {
-      console.log('[CINEMATIC] 🎬 ATOMIC SEQUENCE START - SMART TRACKING');
+      
       
       originalPosRef.current.copy(camera.position);
       const impactPoint = new THREE.Vector3(0, 0.1, 0);
@@ -36,7 +36,7 @@ export function CinematicSlam() {
 
       const tl = gsap.timeline({
         onComplete: () => {
-          console.log('[CINEMATIC] ✅ COMPLETE - ENGINE HAND-OFF');
+          
           
           // ENGINE: RESTORE VELOCITIES
           cinematicEngine.handOff(world);
@@ -49,11 +49,11 @@ export function CinematicSlam() {
       
       // Helper: Calculate the "Soft Weighted Density Center"
       // Uses a Gaussian kernel to find the most meaningful focus point in a scattering cloud.
-      const getPogDensityCenter = () => {
+      const getSlamzDensityCenter = () => {
         const positions: THREE.Vector3[] = [];
         world.forEachRigidBody((body: any) => {
           const ud = body.userData as any;
-          if (ud?.name?.startsWith('pog-')) {
+          if (ud?.name?.startsWith('slamz-')) {
             const pos = body.translation();
             positions.push(new THREE.Vector3(pos.x, pos.y, pos.z));
           }
@@ -105,7 +105,7 @@ export function CinematicSlam() {
         z: radius + 6,
         ease: 'expo.out',
         onUpdate: () => {
-          const bounds = getPogDensityCenter();
+          const bounds = getSlamzDensityCenter();
           lookAtTarget.current.lerp(bounds.center, 0.08); // Ultra-smooth lerp
           camera.lookAt(lookAtTarget.current);
         }
@@ -115,7 +115,7 @@ export function CinematicSlam() {
       tl.to({}, { 
         duration: debugParams.cinematicFreezeDuration,
         onUpdate: () => {
-          const bounds = getPogDensityCenter();
+          const bounds = getSlamzDensityCenter();
           lookAtTarget.current.lerp(bounds.center, 0.08);
           camera.lookAt(lookAtTarget.current);
         }
@@ -128,7 +128,7 @@ export function CinematicSlam() {
         duration: debugParams.cinematicOrbitDuration,
         ease: 'power2.inOut',
         onUpdate: () => {
-          const bounds = getPogDensityCenter();
+          const bounds = getSlamzDensityCenter();
           
           // Smoothed focus point
           lookAtTarget.current.lerp(bounds.center, 0.08);
@@ -161,15 +161,8 @@ export function CinematicSlam() {
       timelineRef.current = tl;
     }
     
-    // Cleanup if game resets
-    if (gameState === 'AIMING' && timelineRef.current) {
-      timelineRef.current.kill();
-      timelineRef.current = null;
-      cinematicEngine.reset();
-      setIsCinematicActive(false);
-      camera.position.copy(originalPosRef.current);
-      camera.lookAt(0, 0, 0);
-    }
+    // Cleanup if game explicitly resets (e.g. manual reset)
+    // We keep this but make it more specific if needed, or remove if it conflicts with flow
   }, [cinematicEngine.isCinematicActive, gameState, camera, world, debugParams, setIsCinematicActive]);
   
   return null;

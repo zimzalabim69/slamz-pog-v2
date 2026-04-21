@@ -24,7 +24,7 @@ export default defineConfig({
 
     // React Scan → shows you which components are re-rendering too much (super useful for games!)
     reactScan({
-      enable: false,   // you can change to false later if it causes issues
+      enable: false,
     }),
     ViteImageOptimizer({
       png: {
@@ -60,7 +60,7 @@ export default defineConfig({
   base: './',
 
   server: {
-    host: true, // Listen on all addresses
+    host: true,
     port: devPort,
     hmr: {
       overlay: true,
@@ -76,13 +76,39 @@ export default defineConfig({
         main: path.resolve(__dirname, '000_START/index.html'),
       },
       output: {
-        manualChunks: {
-          three: ['three'],
-          'react-three-core': ['@react-three/fiber', '@react-three/drei'],
-          'rapier-core': ['@dimforge/rapier3d-compat'],
-          'rapier-react': ['@react-three/rapier'],
-          postprocessing: ['postprocessing', '@react-three/postprocessing'],
-          'react-vendor': ['react', 'react-dom', 'zustand'],
+        // FIX: rapier-react <-> react-three-core circular chunk.
+        // Solution: merge them into a single 'r3f-physics' chunk so Rollup
+        // never has to split a dependency that points back at itself.
+        manualChunks(id) {
+          // Rapier core WASM — keep isolated (large, infrequently updated)
+          if (id.includes('@dimforge/rapier3d-compat')) {
+            return 'rapier-core';
+          }
+          // Merge rapier-react + all R3F packages into one chunk to break the cycle
+          if (
+            id.includes('@react-three/rapier') ||
+            id.includes('@react-three/fiber') ||
+            id.includes('@react-three/drei') ||
+            id.includes('@react-three/postprocessing')
+          ) {
+            return 'r3f-bundle';
+          }
+          // postprocessing standalone
+          if (id.includes('postprocessing')) {
+            return 'r3f-bundle';
+          }
+          // Three.js core
+          if (id.includes('/three/')) {
+            return 'three';
+          }
+          // React + Zustand vendor
+          if (
+            id.includes('/react/') ||
+            id.includes('/react-dom/') ||
+            id.includes('zustand')
+          ) {
+            return 'react-vendor';
+          }
         },
       },
     },

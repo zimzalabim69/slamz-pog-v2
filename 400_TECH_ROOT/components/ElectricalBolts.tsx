@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGameStore } from '@100/store/useGameStore';
+import { physicsFogBridge } from '@400/systems/PhysicsFogBridge';
 import * as THREE from 'three';
 
 export function ElectricalBolts() {
@@ -10,6 +11,7 @@ export function ElectricalBolts() {
   
   const meshRef = useRef<THREE.Group>(null);
   const materialRef = useRef<THREE.MeshBasicMaterial>(null);
+  const lightRef = useRef<THREE.PointLight>(null);
 
   // Generate fractal lightning points
   const points = useMemo(() => {
@@ -25,20 +27,33 @@ export function ElectricalBolts() {
   useFrame((state) => {
     if (!meshRef.current || !materialRef.current) return;
 
-    const active = isCinematicActive && bulletTimeActive;
+    // Trigger on cinematic OR high-energy impacts
+    const energy = physicsFogBridge.energy;
+    const active = (isCinematicActive && bulletTimeActive) || energy > 500;
+    
     meshRef.current.visible = active;
-
     if (!active) return;
 
-    // Source: Wraith's Arena Position
+    // Update opacity based on energy
+    const flickerBase = 0.4 + Math.random() * 0.6;
+    const energyMult = Math.min(energy / 2000, 1.5);
+    materialRef.current.opacity = flickerBase * energyMult;
+    
+    if (lightRef.current) {
+      lightRef.current.intensity = 50 * energyMult * flickerBase;
+    }
+
+    // Source: Wraith's Arena Position (Fallback to center if debug params missing)
     const source = new THREE.Vector3(
       debugParams.wraithArenaPositionX ?? -26,
       debugParams.wraithArenaPositionY ?? 16.75,
       debugParams.wraithArenaPositionZ ?? 0.25
     );
 
-    // Target: Somewhere in the center of the mat or the slab
-    const target = new THREE.Vector3(0, 0.5, 0);
+    // Target: Random disturbance point if energy is high, otherwise center
+    const target = energy > 500 && physicsFogBridge.disturbances[0]
+      ? physicsFogBridge.disturbances[0].pos.clone().add(new THREE.Vector3(0, 1, 0))
+      : new THREE.Vector3(0, 0.5, 0);
 
     // Update curve points with jitter
     const t = state.clock.elapsedTime;
@@ -72,6 +87,7 @@ export function ElectricalBolts() {
       </mesh>
       {/* Glow / Sprite pass would be nice, but simple tubes are high-performance AAAA */}
       <pointLight 
+        ref={lightRef}
         intensity={20} 
         distance={10} 
         color="#00ffff" 

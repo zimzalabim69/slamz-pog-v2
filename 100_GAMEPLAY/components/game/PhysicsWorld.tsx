@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { Physics } from '@react-three/rapier';
 import { PhysicsFloor } from './PhysicsFloor';
-import { PogStack } from './PogStack';
+import { SlamzStack } from './SlamzStack';
 import { Slammer } from './Slammer';
 import { GameController } from '../GameController';
 
 import { CinematicSlam } from '@400/components/CinematicSlam';
-import { CollisionTuningSuite } from './CollisionTuningSuite';
 import { Boundary } from './Boundary';
 
 /**
@@ -17,11 +16,10 @@ const PhysicsInnerScene = React.memo(() => {
   return (
     <>
       <PhysicsFloor />
-      <PogStack />
+      <SlamzStack />
       <Slammer />
       <GameController />
       <CinematicSlam />
-      <CollisionTuningSuite />
       <Boundary />
     </>
   );

@@ -6,8 +6,10 @@ import { StartScreen } from '@200/components/ui/StartScreen';
 import { CRTOverlay } from '@200/components/ui/CRTOverlay';
 import { Canvas } from '@react-three/fiber';
 import { ENABLE_ANTIALIAS, CANVAS_DPR } from '@500/utils/devicePerformance';
+import { SetCompleteFanfare } from '@100/components/game/SetCompleteFanfare';
 import { useGameStore } from '@100/store/useGameStore';
-import { DebugPanel } from '@200/components/ui/DebugPanel';
+import { ArenaBackground } from '@200/components/ui/ArenaBackground';
+
 import { PauseMenu } from '@200/components/ui/PauseMenu';
 import { PerfectHit } from '@200/components/ui/PerfectHit';
 import { SessionSummary } from '@200/components/ui/SessionSummary';
@@ -118,15 +120,18 @@ function App() {
     <WebGLErrorBoundary>
       <div style={{ width: '100%', height: '100%', background: '#000', overflow: 'hidden' }}>
         <AspectController>
-          <div style={{ width: '100%', height: '100%', background: '#000', overflow: 'hidden' }}>
-            <Canvas 
+          <div style={{ position: 'relative', width: '100%', height: '100%', background: '#000', overflow: 'hidden' }}>
+            {/* CSS ARENA BACKGROUND — zero VRAM, compositor thread */}
+            <ArenaBackground />
+            <Canvas
               shadows={false}
               dpr={CANVAS_DPR}
-              style={{ background: '#050510' }}
+              style={{ position: 'absolute', inset: 0 }}
               gl={{
-                antialias: ENABLE_ANTIALIAS,
+                antialias: false,
                 alpha: true,
-                powerPreference: "high-performance",
+                stencil: false,
+                powerPreference: "default",
                 failIfMajorPerformanceCaveat: false
               }}
               onCreated={({ gl }) => {
@@ -140,7 +145,8 @@ function App() {
             </Canvas>
             
             {/* CORE GAME CORE (Constrained) */}
-            {gameState === 'START_SCREEN' && <StartScreen />}
+            <SetCompleteFanfare />
+      {gameState === 'START_SCREEN' && <StartScreen />}
           </div>
         </AspectController>
 
@@ -152,7 +158,7 @@ function App() {
         <PauseMenu />
         <PerfectHit />
         <SessionSummary />
-        <DebugPanel />
+        
         <WraithPopup />
       </div>
     </WebGLErrorBoundary>

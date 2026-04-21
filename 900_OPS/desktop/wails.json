@@ -1,0 +1,19 @@
+{
+  "name": "SlamzProTour",
+  "assetdir": "../../dist",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "http://localhost:5173",
+  "author": {
+    "name": "Slamz Team",
+    "email": "dev@slamz.pro"
+  },
+  "info": {
+    "companyName": "Slamz Pro Tour",
+    "productName": "Slamz Pro-Tour V2",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright 2026",
+    "comments": "AAAA Grade Arcade Physics Simulation"
+  }
+}

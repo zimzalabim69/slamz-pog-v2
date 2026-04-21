@@ -1,5 +1,5 @@
 // ============================================================
-// POG THEME DEFINITIONS (Static Data - Available Assets Only)
+// SLAMZ THEME DEFINITIONS (Static Data - Available Assets Only)
 // ============================================================
 
 export const SET_THEMES = {

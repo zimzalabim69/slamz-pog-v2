@@ -67,29 +67,29 @@ public/assets/glbs/Slamz_Pro_Tour_Arcade.glb
 public/assets/glbs/Slamz_Rug.glb
 public/assets/glbs/Slamz_Wraith.glb
 public/assets/music/Insert Soul.mp3
-public/assets/pog_mat.png
-public/assets/pogs/media_.png
-public/assets/pogs/ms_fatality.png
-public/assets/pogs/ms_flawless.png
-public/assets/pogs/ms_raiden.png
-public/assets/pogs/ms_scorpion.png
-public/assets/pogs/ms_subzero.png
-public/assets/pogs/nt_don.png
-public/assets/pogs/nt_leo.png
-public/assets/pogs/nt_mikey.png
-public/assets/pogs/nt_raph.png
-public/assets/pogs/nt_shredmeister.png
-public/assets/pogs/slamzer_mortal.png
-public/assets/pogs/slamzer_street.png
-public/assets/pogs/slamzer_turdle.png
-public/assets/pogs/sp_combo.png
-public/assets/pogs/sp_fight.png
-public/assets/pogs/sp_hadouken.png
-public/assets/pogs/sp_ko.png
-public/assets/pogs/sp_perfect.png
-public/assets/pogs/theme_arcade_panther.png
-public/assets/pogs/theme_cyber_strike.png
-public/assets/pogs/theme_glitch_skul_vhs.png
+public/assets/slamz_mat.png
+public/assets/slamzs/media_.png
+public/assets/slamzs/ms_fatality.png
+public/assets/slamzs/ms_flawless.png
+public/assets/slamzs/ms_raiden.png
+public/assets/slamzs/ms_scorpion.png
+public/assets/slamzs/ms_subzero.png
+public/assets/slamzs/nt_don.png
+public/assets/slamzs/nt_leo.png
+public/assets/slamzs/nt_mikey.png
+public/assets/slamzs/nt_raph.png
+public/assets/slamzs/nt_shredmeister.png
+public/assets/slamzs/slamzer_mortal.png
+public/assets/slamzs/slamzer_street.png
+public/assets/slamzs/slamzer_turdle.png
+public/assets/slamzs/sp_combo.png
+public/assets/slamzs/sp_fight.png
+public/assets/slamzs/sp_hadouken.png
+public/assets/slamzs/sp_ko.png
+public/assets/slamzs/sp_perfect.png
+public/assets/slamzs/theme_arcade_panther.png
+public/assets/slamzs/theme_cyber_strike.png
+public/assets/slamzs/theme_glitch_skul_vhs.png
 public/assets/slamz_mat.png
 public/assets/theme_trapper.png
 public/clear-storage.html
@@ -125,8 +125,8 @@ src/components/game/ImpactParticles.tsx
 src/components/game/PhysicsFloor.tsx
 src/components/game/PhysicsFogController.tsx
 src/components/game/PhysicsWorld.tsx
-src/components/game/Pog.tsx
-src/components/game/PogStack.tsx
+src/components/game/slamz.tsx
+src/components/game/slamzStack.tsx
 src/components/game/Reticle.tsx
 src/components/game/Ring.tsx
 src/components/game/ShowcaseHUD.tsx
@@ -172,7 +172,7 @@ src/components/ui/MobileControls.tsx
 src/components/ui/PauseMenu.css
 src/components/ui/PauseMenu.tsx
 src/components/ui/PerfectHit.tsx
-src/components/ui/PogHousingUI.tsx
+src/components/ui/slamzHousingUI.tsx
 src/components/ui/PracticeHUD.tsx
 src/components/ui/ProTourIntro.tsx
 src/components/ui/SessionSummary.tsx
@@ -189,7 +189,7 @@ src/components/ui/SystemTerminal.css
 src/components/ui/SystemTerminal.tsx
 src/components/ui/Timer.tsx
 src/constants/game.ts
-src/constants/pogData.ts
+src/constants/slamzData.ts
 src/constants/setDefinitions.ts
 src/constants/slammerTypes.ts
 src/hooks/useDebugParams.ts
@@ -255,7 +255,7 @@ These rules override everything. Obey literally. No exceptions.
 - If user says "JUST READ", "read files", "tell me the state", or "remember what happened": read only. Respond with "All files read." or the requested info. NO edits.
 
 ## 4. Project-Specific Guardrails
-- This is the SLAMZ / POG rebrand project. Keep Slamz naming where it makes sense, but do not force mass renames.
+- This is the SLAMZ / slamz rebrand project. Keep Slamz naming where it makes sense, but do not force mass renames.
 - Do not touch physics constants, camera logic, or UI unless user says "update gravity", "fix collider", etc.
 - If a task seems big ("do one task"), break it into small steps and ask for confirmation before each.
 
@@ -296,7 +296,7 @@ These rules override everything. Obey literally. No exceptions.
 - If user says "JUST READ", "read files", "tell me the state", or "remember what happened": read only. Respond with "All files read." or the requested info. NO edits.
 
 ## 4. Project-Specific Guardrails
-- This is the SLAMZ / POG rebrand project. Keep Slamz naming where it makes sense, but do not force mass renames.
+- This is the SLAMZ / slamz rebrand project. Keep Slamz naming where it makes sense, but do not force mass renames.
 - Do not touch physics constants, camera logic, or UI unless user says "update gravity", "fix collider", etc.
 - If a task seems big ("do one task"), break it into small steps and ask for confirmation before each.
 
@@ -306,13 +306,13 @@ Failure to follow = bad agent.
 </file>
 
 <file path="AGENT_CHANGES.md">
-# SLAMZ / POG PROJECT HANDOFF - Single Source of Truth
+# SLAMZ / slamz PROJECT HANDOFF - Single Source of Truth
 
 **Last updated:** 2026-04-19 02:49
-**Project State:** SLAMZ PRO-TOUR | VIBEJAM 2026 — 90s POG reimagining with Three.js + Rapier. Slamz is the active rebrand.
+**Project State:** SLAMZ PRO-TOUR | VIBEJAM 2026 — 90s slamz reimagining with Three.js + Rapier. Slamz is the active rebrand.
 
 Approved changes so far:
-- Project-wide rebrand from "pog" to "slamz" (partial logic/full docs).
+- Project-wide rebrand from "slamz" to "slamz" (partial logic/full docs).
 - Switched Arena.tsx floor to CylinderCollider for physics stability.
 - Boosted gravity to -16 in PhysicsWorld.tsx.
 - Implemented "Volcanic" and "Atomic Freeze" cinematic logic.
@@ -518,7 +518,7 @@ Call `getToolCapabilities` once at the start of each session to confirm which br
 ## [2026-04-13] - Documentation Overhaul "Indestructible"
 - **Unified Standards**: Consolidated React Hook hygiene rules into `DEVELOPER_GUIDE.md`.
 - **Physics Registry**: Documented all "Magic Numbers" (Gravity: -16, Slam: -22) for future tuning.
-- **Asset Pipeline**: Added 3-step tutorial for procedural POG set generation.
+- **Asset Pipeline**: Added 3-step tutorial for procedural slamz set generation.
 - **Submission Checklist**: Added Vibejam 2026 pre-flight checklist.
 - **Crisis Archive**: Moved historical "React Hooks Crisis" details to `PORT_DOCUMENTATION.md`.
 
@@ -607,7 +607,7 @@ We do not render the React app until the Texture Registry and Physics State are 
 #### Texture Registry Integration
 - **Phase 3 Addition**: Texture registry now initializes physics world state
 - **Synchronous Pre-population**: Physics world populated during texture loading
-- **Single Initialization**: Prevents duplicate POG creation
+- **Single Initialization**: Prevents duplicate slamz creation
 
 ## Component Port Status
 
@@ -622,7 +622,7 @@ These components have been ported directly from the original with minimal change
 #### Systems
 - **Audio System**: Ported 1:1 from `AudioSystem.js`. Managed via `systems/audio.ts`.
 - **Set Manager**: Ported 1:1. Handles collection logic and achievement triggers.
-- **Set Definitions**: Ported 1:1. The "Source of Truth" for POG visual properties.
+- **Set Definitions**: Ported 1:1. The "Source of Truth" for slamz visual properties.
 
 #### Game Logic
 - **Drawing Core**: "1:1 PROTOTYPE LOGIC" maintained in texture generation
@@ -1074,7 +1074,7 @@ if you have any problem, let we know by email: admin@177studio.com
 setlocal
 
 echo ======================================================
-echo   SLAMZ POG v2 - NODE GHOST PURGE TOOL
+echo   SLAMZ slamz v2 - NODE GHOST PURGE TOOL
 echo ======================================================
 echo.
 echo [!] Attempting to clear all dangling Node.js processes...
@@ -1110,7 +1110,7 @@ exit /b 0
 ![SLAMZ PRO-TOUR PREVIEW](./public/og_preview.png)
 
 ## 🏛️ Project DNA: "Cinematic Pure"
-**SLAMZ PRO-TOUR** is a high-octane 3D arcade reimagining of the classic 90s POG phenomenon. Built for **VibeJam 2026**, it prioritizes visceral impact, bullet-time physics, and a seamless desktop-first experience.
+**SLAMZ PRO-TOUR** is a high-octane 3D arcade reimagining of the classic 90s slamz phenomenon. Built for **VibeJam 2026**, it prioritizes visceral impact, bullet-time physics, and a seamless desktop-first experience.
 
 The "Cinematic Pure" philosophy ensures that the player's focus is always on the impact. We've stripped away the clutter to deliver professional-grade physics orchestration and a high-fidelity cyberpunk aesthetic.
 
@@ -1131,7 +1131,7 @@ The "Cinematic Pure" philosophy ensures that the player's focus is always on the
 - **Settle Detection**: Smart algorithms that know exactly when the dust has settled to trigger the jackpot.
 
 ### 🃏 Collection Management
-- **The Showcase**: A dedicated prize-viewing suite with per-POG lighting and rarity fanfare.
+- **The Showcase**: A dedicated prize-viewing suite with per-slamz lighting and rarity fanfare.
 - **Set Completion**: Track your progress through iconic 90s sets (TMNT, Mortal Kombat, and more).
 - **Physical Interaction**: Inspect your prizes in 3D with direct mouse/touch manipulation.
 
@@ -1156,8 +1156,8 @@ The "Cinematic Pure" philosophy ensures that the player's focus is always on the
 
 ### Installation
 ```bash
-git clone https://github.com/zimzalabim69/slamz-pog-v2.git
-cd slamz-pog-v2
+git clone https://github.com/zimzalabim69/slamz-slamz-v2.git
+cd slamz-slamz-v2
 npm install
 ```
 
@@ -1205,7 +1205,7 @@ set "GAME_URL=http://localhost:4173"
 cd /d "%PROJECT_DIR%"
 
 echo ======================================================
-echo   SLAMZ POG v2 - PRO TOUR DESKTOP LAUNCHER
+echo   SLAMZ slamz v2 - PRO TOUR DESKTOP LAUNCHER
 echo ======================================================
 echo.
 echo [1/3] Sanitizing environment (Killing stale ghosts)...
@@ -1263,7 +1263,7 @@ The goal of SLAMZ PRO-TOUR V2 was to evolve from a simple mobile simulator into 
 ## 📁 The "Big Fuck All" Overview (Project Structure)
 
 ```
-slamz-pog-v2/
+slamz-slamz-v2/
 ├── 📄 index.html                       — Main HTML entry point with React root mount
 ├── 📄 package.json                     — NPM dependencies and scripts (vite, react, three, rapier)
 ├── 📄 package-lock.json                — Locked dependency versions for reproducible builds
@@ -1284,7 +1284,7 @@ slamz-pog-v2/
 │   ├── 📂 components/                  
 │   │   ├── 📄 CinematicSlam.tsx        — GSAP Camera logic
 │   │   ├── 📂 ui/                      — Showcase.tsx, HUD.tsx, StartScreen.tsx
-│   │   ├── 📂 game/                    — Pog.tsx, Slammer.tsx, PhysicsWorld.tsx
+│   │   ├── 📂 game/                    — slamz.tsx, Slammer.tsx, PhysicsWorld.tsx
 ```
 
 ---
@@ -1297,9 +1297,9 @@ These values are calibrated for a **"Heavy-Weight Arcade"** feel. Modify with ca
 |---|---|---|---|
 | **Gravity** | `-16` | `PhysicsWorld.tsx` | Boosted for faster falling and "thump" feel. |
 | **Slammer Mass** | `2.5 - 7.0` | `slammerTypes.ts` | Heavy hitters move the stack better. |
-| **POG Mass** | `0.25` | `gameStore.ts` | Light enough to fly, heavy enough to tumble. |
+| **slamz Mass** | `0.25` | `gameStore.ts` | Light enough to fly, heavy enough to tumble. |
 | **Linear Damping** | `0.80` | `gameStore.ts` | Prevents infinite sliding (The "Viscosity Brake"). |
-| **Angular Damping** | `1.00` | `gameStore.ts` | Rapidly stabilizes spinning POGs for settle detection. |
+| **Angular Damping** | `1.00` | `gameStore.ts` | Rapidly stabilizes spinning slamzs for settle detection. |
 | **Max Velocity** | `15.0` | `gameStore.ts` | Physics governance to prevent "glitch-warping" on impact. |
 | **Impact Radius** | `3.0` | `gameStore.ts` | Range of the volcanic eruption effect. |
 
@@ -1322,7 +1322,7 @@ Handles the "Bullet Time" transition.
 A GSAP timeline that manages the camera during impact:
 1. **Windup**: Camera pulls back.
 2. **Freeze**: Short hold for impact framing.
-3. **Orbit**: 360-degree rotation around the "Pog Cloud" center.
+3. **Orbit**: 360-degree rotation around the "slamz Cloud" center.
 4. **Reveal**: Return to standard play view.
 
 ---
@@ -1344,7 +1344,7 @@ We hit some major walls during development. Here is how we climbed them.
 - Never put hooks inside `if` statements!
 
 ### 3. Cinematic Pure Gating 
-**The Snag:** POGs were being "discovered" multiple times, or the prize UI would pop up during the bullet-time orbit.
+**The Snag:** slamzs were being "discovered" multiple times, or the prize UI would pop up during the bullet-time orbit.
 **The Fix:** 
 - **State Sequestration**: `Showcase.tsx` is now strictly locked to `gameState === 'ROUND_JACKPOT'`.
 - All inventory logic is deferred until the `CinematicEngine` finishes its hand-off.
@@ -1649,7 +1649,7 @@ import { useGameStore } from '../../store/useGameStore';
 
 /**
  * BOUNDARY — Invisible containment cylinder
- * This keeps pogs from flying off the arena mat.
+ * This keeps slamzs from flying off the arena mat.
  */
 export function Boundary() {
   const debugParams = useGameStore((state) => state.debugParams);
@@ -1734,11 +1734,11 @@ import { useGameStore } from '../../store/useGameStore';
 import * as THREE from 'three';
 
 interface FaceUpEffectProps {
-  pogId: string;
+  slamzId: string;
   position: [number, number, number];
 }
 
-export function FaceUpEffect({ pogId, position }: FaceUpEffectProps) {
+export function FaceUpEffect({ slamzId, position }: FaceUpEffectProps) {
   const qualityLevel = useGameStore((state) => state.qualityLevel);
   const meshRef = useRef<THREE.Mesh>(null);
   
@@ -1771,7 +1771,7 @@ export function FaceUpEffect({ pogId, position }: FaceUpEffectProps) {
     }, 2000);
     
     return () => clearTimeout(timeout);
-  }, [pogId, qualityLevel]);
+  }, [slamzId, qualityLevel]);
 
   return (
     <mesh ref={meshRef} position={position}>
@@ -1793,7 +1793,7 @@ import { getSetForTheme } from '../../constants/setDefinitions';
 
 
 const _targetPos = new THREE.Vector3();
-const _pogPos = new THREE.Vector3();
+const _slamzPos = new THREE.Vector3();
 
 export function HarvestManager() {
   const { world } = useRapier();
@@ -1801,11 +1801,11 @@ export function HarvestManager() {
   const winners = useGameStore((s: GameStore) => s.winners);
   const setGameState = useGameStore((s: GameStore) => s.setGameState);
   const addToCollection = useGameStore((s: GameStore) => s.addToCollection);
-  const removePog = useGameStore((s: GameStore) => s.removePog);
+  const removeslamz = useGameStore((s: GameStore) => s.removeslamz);
   const enqueueShowcase = useGameStore((s: GameStore) => s.enqueueShowcase);
   const updateStats = useGameStore((s: GameStore) => s.updateStats);
   const stats = useGameStore((s: GameStore) => s.stats);
-  const pogs = useGameStore((s: GameStore) => s.pogs);
+  const slamzs = useGameStore((s: GameStore) => s.slamzs);
 
 
   const harvestStartTime = useRef(0);
@@ -1831,8 +1831,8 @@ export function HarvestManager() {
 
     world.forEachRigidBody((body) => {
       const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
-        const id = ud['pog-id'];
+      if (ud?.name?.startsWith('slamz-')) {
+        const id = ud['slamz-id'];
         if (winners.includes(id) && !harvestedIds.current.has(id)) {
           const trans = body.translation();
           centerX += trans.x;
@@ -1848,21 +1848,21 @@ export function HarvestManager() {
       centerZ /= count;
     }
 
-    // 2. Control winner POGs (Abduction)
+    // 2. Control winner slamzs (Abduction)
     world.forEachRigidBody((body) => {
       const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
-        const id = ud['pog-id'];
+      if (ud?.name?.startsWith('slamz-')) {
+        const id = ud['slamz-id'];
         if (winners.includes(id) && !harvestedIds.current.has(id)) {
           // Disable gravity for abduction
           body.setGravityScale(0, true);
           
           const trans = body.translation();
-          _pogPos.set(trans.x, trans.y, trans.z);
+          _slamzPos.set(trans.x, trans.y, trans.z);
           
           // Pull towards Slammer (which we'll hover at y=4)
           _targetPos.set(centerX, 4, centerZ);
-          const dir = _targetPos.clone().sub(_pogPos).normalize();
+          const dir = _targetPos.clone().sub(_slamzPos).normalize();
           
           // Apply upward suction force
           body.applyImpulse({
@@ -1874,24 +1874,24 @@ export function HarvestManager() {
           // If reached abduction height, finalize capture
           if (trans.y > 3.5) {
             harvestedIds.current.add(id);
-            const pogData = pogs.find((p: any) => p.id === id);
-            if (pogData) {
+            const slamzData = slamzs.find((p: any) => p.id === id);
+            if (slamzData) {
 
-              const setDef = getSetForTheme(pogData.theme);
+              const setDef = getSetForTheme(slamzData.theme);
               const values: Record<string, number> = { standard: 50, shiny: 250, holographic: 1500 };
               
               // Add to collection & prepare showcase
-              addToCollection({ theme: pogData.theme, rarity: pogData.rarity, date: new Date().toISOString() });
+              addToCollection({ theme: slamzData.theme, rarity: slamzData.rarity, date: new Date().toISOString() });
               enqueueShowcase([{
-                theme: pogData.theme,
-                rarity: pogData.rarity,
+                theme: slamzData.theme,
+                rarity: slamzData.rarity,
                 setName: setDef ? setDef.name : 'VINTAGE COLLECTIBLE',
                 setColor: setDef ? setDef.color : '#00ffcc',
-                marketValue: values[pogData.rarity as keyof typeof values] ?? 50,
+                marketValue: values[slamzData.rarity as keyof typeof values] ?? 50,
               }]);
 
-              updateStats({ pogsWon: stats.pogsWon + 1 });
-              removePog(id);
+              updateStats({ slamzsWon: stats.slamzsWon + 1 });
+              removeslamz(id);
             }
           }
         }
@@ -2071,7 +2071,7 @@ export function PhysicsFogController() {
         const pos = body.translation();
         const userData = body.userData as any;
         
-        // Identify if it's a special glowing POG
+        // Identify if it's a special glowing slamz
         let color = '';
         if (userData?.rarity === 'holographic') color = '#ff00ff';
         else if (userData?.rarity === 'shiny') color = '#00ffff';
@@ -2491,11 +2491,11 @@ export function AchievementToast() {
   color: #444;
 }
 
-.pog-thumb canvas {
+.slamz-thumb canvas {
   display: block;
 }
 
-.pog-count {
+.slamz-count {
   position: absolute;
   top: -5px;
   right: -5px;
@@ -2511,7 +2511,7 @@ export function AchievementToast() {
   z-index: 10;
 }
 
-.pog-label {
+.slamz-label {
   margin-top: 5px;
   font-size: 10px;
   text-align: center;
@@ -4465,7 +4465,7 @@ export function PracticeHUD() {
   const sessionScore = useGameStore((state) => state.sessionScore);
   const gameMode = useGameStore((state) => state.gameMode);
   const practiceSession = useGameStore((state) => state.practiceSession);
-  const faceUpPogs = useGameStore((state) => state.faceUpPogs);
+  const faceUpslamzs = useGameStore((state) => state.faceUpslamzs);
   const [glitchOffset, setGlitchOffset] = useState({ x: 0, y: 0 });
 
   // 90s glitch effect
@@ -4650,10 +4650,10 @@ export function PracticeHUD() {
           <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
             <div>
               <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-                {sessionScore.totalPogsFlipped}
+                {sessionScore.totalslamzsFlipped}
               </div>
               <div style={{ fontSize: '10px', opacity: 0.7 }}>
-                POGS FLIPPED
+                slamzS FLIPPED
               </div>
             </div>
             
@@ -4681,20 +4681,20 @@ export function PracticeHUD() {
             SCORE: {sessionScore.totalScore.toLocaleString()}
           </div>
 
-          {/* Remaining POGs */}
+          {/* Remaining slamzs */}
           <div style={{ fontSize: '12px', opacity: 0.8 }}>
-            REMAINING: {practiceSession!.selectedPogs.length - sessionScore.totalPogsFlipped} POGS
+            REMAINING: {practiceSession!.selectedslamzs.length - sessionScore.totalslamzsFlipped} slamzS
           </div>
 
           {/* Face-up Effects */}
-          {faceUpPogs.map((pogId, index) => {
-            const pogData = practiceSession!.selectedPogs.find(p => p.id === pogId);
-            if (!pogData) return null;
+          {faceUpslamzs.map((slamzId, index) => {
+            const slamzData = practiceSession!.selectedslamzs.find(p => p.id === slamzId);
+            if (!slamzData) return null;
             
             return (
               <FaceUpEffect 
-                key={pogId} 
-                pogId={pogId} 
+                key={slamzId} 
+                slamzId={slamzId} 
                 position={[
                   -15 + (index % 3) * 10, // Spread them out
                   10 + Math.floor(index / 3) * 5,
@@ -4747,7 +4747,7 @@ export const ProTourIntro = ({ onStartComplete }: ProTourIntroProps) => {
         <div className="flex h-full items-center justify-center bg-black">
           <div className="text-cyan-500 font-mono text-sm animate-pulse">
             {'>'} INITIALIZING NEURAL LINK...<br/>
-            {'>'} LOADING POG_ENGINE_V2.0.6...<br/>
+            {'>'} LOADING slamz_ENGINE_V2.0.6...<br/>
             {'>'} SLAMMER CALIBRATION: OK
           </div>
         </div>
@@ -5476,14 +5476,14 @@ if (!document.head.querySelector('style[data-timer-animations]')) {
 }
 </file>
 
-<file path="src/constants/pogData.ts">
+<file path="src/constants/slamzData.ts">
 // ============================================================
-// POG THEME DEFINITIONS (Static Data - Available Assets Only)
+// slamz THEME DEFINITIONS (Static Data - Available Assets Only)
 // ============================================================
 
 export const SET_THEMES = {
   MORTAL_SLAMZ:  ['ms_scorpion', 'ms_subzero', 'ms_raiden', 'ms_fatality', 'ms_flawless'],
-  STREET_POG:    ['sp_hadouken', 'sp_fight', 'sp_perfect', 'sp_combo', 'sp_ko'],
+  STREET_slamz:    ['sp_hadouken', 'sp_fight', 'sp_perfect', 'sp_combo', 'sp_ko'],
   NINJA_TURDLES: ['nt_leo', 'nt_raph', 'nt_mikey', 'nt_don', 'nt_shredmeister'],
 } as const;
 
@@ -5522,9 +5522,9 @@ export const SET_DEFS: Record<string, SetDef> = {
     slammer: 'slamzer_mortal',
     achievementId: 'ms_complete',
   },
-  STREET_POG: {
-    id: 'STREET_POG',
-    name: '🕹️ STREET POG',
+  STREET_slamz: {
+    id: 'STREET_slamz',
+    name: '🕹️ STREET slamz',
     color: '#ff6600',
     members: ['sp_hadouken', 'sp_fight', 'sp_perfect', 'sp_combo', 'sp_ko'],
     slammer: 'slamzer_street',
@@ -5554,9 +5554,9 @@ export const SET_DEFS: Record<string, SetDef> = {
     slammer: 'slamzer_sonic',
     achievementId: 'sr_complete',
   },
-  MATRIX_POGZ: {
-    id: 'MATRIX_POGZ',
-    name: '💊 MATRIX POGZ',
+  MATRIX_slamzZ: {
+    id: 'MATRIX_slamzZ',
+    name: '💊 MATRIX slamzZ',
     color: '#00ff44',
     members: ['mx_redpill', 'mx_code', 'mx_bullet', 'mx_neo', 'mx_oracle'],
     slammer: 'slamzer_matrix',
@@ -5594,13 +5594,13 @@ export const ACHIEVEMENTS: Record<string, Achievement> = {
     id: 'first_capture',
     icon: '🪙',
     name: 'COLLECTOR',
-    desc: 'Capture your first POG',
+    desc: 'Capture your first slamz',
   },
   first_holo: {
     id: 'first_holo',
     icon: '✨',
     name: 'HOLO HUNTER',
-    desc: 'Capture a Holographic POG',
+    desc: 'Capture a Holographic slamz',
   },
   perfect_slam: {
     id: 'perfect_slam',
@@ -5618,7 +5618,7 @@ export const ACHIEVEMENTS: Record<string, Achievement> = {
     id: 'hoarder',
     icon: '📚',
     name: 'HOARDER MODE',
-    desc: 'Collect 50 or more POGs',
+    desc: 'Collect 50 or more slamzs',
   },
   scene_explorer: {
     id: 'scene_explorer',
@@ -5644,9 +5644,9 @@ export const ACHIEVEMENTS: Record<string, Achievement> = {
     id: 'sp_complete',
     icon: '🕹️',
     name: 'STREET LEGEND',
-    desc: 'Complete the STREET POG set',
+    desc: 'Complete the STREET slamz set',
     isSetComplete: true,
-    setId: 'STREET_POG',
+    setId: 'STREET_slamz',
   },
   nt_complete: {
     id: 'nt_complete',
@@ -5675,10 +5675,10 @@ export const ACHIEVEMENTS: Record<string, Achievement> = {
   mx_complete: {
     id: 'mx_complete',
     icon: '💊',
-    name: 'THERE IS NO POG',
-    desc: 'Complete the MATRIX POGZ set',
+    name: 'THERE IS NO slamz',
+    desc: 'Complete the MATRIX slamzZ set',
     isSetComplete: true,
-    setId: 'MATRIX_POGZ',
+    setId: 'MATRIX_slamzZ',
   },
   all_sets: {
     id: 'all_sets',
@@ -5695,12 +5695,12 @@ export const ACHIEVEMENT_LIST = Object.values(ACHIEVEMENTS);
 import { useEffect, useState } from 'react';
 
 export interface DebugParams {
-  // Physics - Pog
-  pogMass: number;
-  pogRestitution: number;
-  pogFriction: number;
-  pogLinearDamping: number;
-  pogAngularDamping: number;
+  // Physics - slamz
+  slamzMass: number;
+  slamzRestitution: number;
+  slamzFriction: number;
+  slamzLinearDamping: number;
+  slamzAngularDamping: number;
   
   // Physics - Slammer
   slammerMass: number;
@@ -5717,11 +5717,11 @@ export interface DebugParams {
   slammerScaleBoost: number;
   slammerEmissiveIntensity: number;
   
-  // Visual - Pog
-  pogScale: number;
-  pogRotationSpeed: number;
-  pogMetalness: number;
-  pogRoughness: number;
+  // Visual - slamz
+  slamzScale: number;
+  slamzRotationSpeed: number;
+  slamzMetalness: number;
+  slamzRoughness: number;
   
   // Camera
   baseFOV: number;
@@ -5759,12 +5759,12 @@ export interface DebugParams {
 }
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
-  // Physics - Pog
-  pogMass: 0.8,
-  pogRestitution: 0.05,
-  pogFriction: 0.8,
-  pogLinearDamping: 0.15,
-  pogAngularDamping: 0.25,
+  // Physics - slamz
+  slamzMass: 0.8,
+  slamzRestitution: 0.05,
+  slamzFriction: 0.8,
+  slamzLinearDamping: 0.15,
+  slamzAngularDamping: 0.25,
   
   // Physics - Slammer
   slammerMass: 1.5,
@@ -5781,11 +5781,11 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   slammerScaleBoost: 0.15,
   slammerEmissiveIntensity: 1.5,
   
-  // Visual - Pog
-  pogScale: 1.0,
-  pogRotationSpeed: 0.002,
-  pogMetalness: 0.3,
-  pogRoughness: 0.7,
+  // Visual - slamz
+  slamzScale: 1.0,
+  slamzRotationSpeed: 0.002,
+  slamzMetalness: 0.3,
+  slamzRoughness: 0.7,
   
   // Camera
   baseFOV: 50,
@@ -6846,7 +6846,7 @@ npm run dev
 ```
 src/
   components/
-    game/          # Game objects (Pog, Slammer, Arena)
+    game/          # Game objects (slamz, Slammer, Arena)
     ui/            # User interface components
     environment/   # 3D environment elements
   constants/      # Game constants and presets
@@ -6872,8 +6872,8 @@ For a detailed breakdown of the React Hooks resolution during the V2 port, see [
 - **Props**: None (uses global state)
 - **Dependencies**: useGameStore, SCENE_PRESETS
 
-#### Pog (`components/game/Pog.tsx`)
-- **Purpose**: Individual POG disc with physics and rendering
+#### slamz (`components/game/slamz.tsx`)
+- **Purpose**: Individual slamz disc with physics and rendering
 - **Props**: id, theme, rarity, position, rotation
 - **Physics**: RigidBody with RoundCuboidCollider
 
@@ -6899,7 +6899,7 @@ For a detailed breakdown of the React Hooks resolution during the V2 port, see [
 ### Physics System
 - **Engine**: @react-three/rapier (WASM-based)
 - **Gravity**: [0, -16, 0] (adjusted for gameplay)
-- **Collision**: RoundCuboidCollider for POGs
+- **Collision**: RoundCuboidCollider for slamzs
 
 ### Audio System
 - **Location**: `systems/audio.ts`
@@ -6912,7 +6912,7 @@ interface GameStore {
   gameState: GameState;
   power: number;
   powerDirection: number;
-  pogs: PogData[];
+  slamzs: slamzData[];
   collection: CollectionItem[];
   // ... other state
 }
@@ -6923,9 +6923,9 @@ interface GameStore {
 - **Location**: `utils/TextureGenerator.ts`
 - **Process**: Synchronous initialization for stability
 
-#### Adding New POG Sets (Asset Pipeline)
-1. **Prepare Assets**: Place 512x512 PNGs in `public/assets/pogs/`.
-2. **Register Themes**: Add the file basename to `PROCEDURAL_THEMES` or `ASSET_THEMES` in `src/constants/pogData.ts`.
+#### Adding New slamz Sets (Asset Pipeline)
+1. **Prepare Assets**: Place 512x512 PNGs in `public/assets/slamzs/`.
+2. **Register Themes**: Add the file basename to `PROCEDURAL_THEMES` or `ASSET_THEMES` in `src/constants/slamzData.ts`.
 3. **Define Sets**: Create a set entry in `src/constants/setDefinitions.ts` to map themes to names and colors.
 
 ## Development Workflow
@@ -6960,18 +6960,18 @@ npm run preview      # Preview production build
 - **Gravity**: `[0, -16, 0]` (Experience.tsx) - Heavily weighted for arcade feel.
 - **Slam Impulse**: `-49 + (power * 0.85)` (Slammer.tsx) - Calibrated for high-velocity impact.
 - **Shatter Radius**: `0.1` - Tightly clustered for stacking realism.
-- **POG Properties**: Mass: `6.95`, Restitution: `0.05` (Heavy-weight tournament specs).
+- **slamz Properties**: Mass: `6.95`, Restitution: `0.05` (Heavy-weight tournament specs).
 
 ### Visual Juice Standards
 - **Slam Punch**: Camera FOV jumps to `65` on slam, lerps back to `50`.
-- **Haptic Feedback**: Triggered on `MobileControls` for every POG flip.
+- **Haptic Feedback**: Triggered on `MobileControls` for every slamz flip.
 - **Perfect Slam**: A "Perfect!" flash appears at `>98%` power.
 
 ### Core Gameplay Loop
 1. **Aiming Phase**: Player positions slammer
 2. **Charging Phase**: Hold to build power
-3. **Slam Phase**: Release to slam POGs
-4. **Showcase Phase**: Display captured POGs
+3. **Slam Phase**: Release to slam slamzs
+4. **Showcase Phase**: Display captured slamzs
 
 ### Scoring System
 - **Combo System**: Consecutive flips increase score
@@ -7015,8 +7015,8 @@ npm run preview      # Preview production build
 
 <file path="LAUNCH_GAME_SILENT.vbs">
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.CurrentDirectory = "C:\Users\sikke\CascadeProjects\slamz-pog-v2"
-WshShell.Run Chr(34) & "C:\Users\sikke\CascadeProjects\slamz-pog-v2\LAUNCH_GAME.bat" & Chr(34), 0, False
+WshShell.CurrentDirectory = "C:\Users\sikke\CascadeProjects\slamz-slamz-v2"
+WshShell.Run Chr(34) & "C:\Users\sikke\CascadeProjects\slamz-slamz-v2\LAUNCH_GAME.bat" & Chr(34), 0, False
 Set WshShell = Nothing
 </file>
 
@@ -7024,14 +7024,14 @@ Set WshShell = Nothing
 @echo off
 setlocal
 
-set "PROJECT_DIR=C:\Users\sikke\CascadeProjects\slamz-pog-v2"
+set "PROJECT_DIR=C:\Users\sikke\CascadeProjects\slamz-slamz-v2"
 set "GAME_URL=http://127.0.0.1:4173"
 
 cd /d "%PROJECT_DIR%"
 
 echo.
 echo ========================================
-echo   SLAMZ POG v2 - VIBE JAM 2026
+echo   SLAMZ slamz v2 - VIBE JAM 2026
 echo ========================================
 echo.
 
@@ -7186,32 +7186,32 @@ export function GhostHand() {
 }
 </file>
 
-<file path="src/components/game/PogStack.tsx">
+<file path="src/components/game/slamzStack.tsx">
 import { useGameStore } from '../../store/useGameStore';
-import { Pog } from './Pog';
+import { slamz } from './slamz';
 import { Ring } from './Ring';
 
 /**
- * POG STACK COMPONENT (Phase 3: Pre-populated)
+ * slamz STACK COMPONENT (Phase 3: Pre-populated)
  * This component now renders exactly what is in the store.
  * Spawning logic is handled during the initial registry phase
  * to ensure maximum physics stability.
  */
-export function PogStack() {
-  const pogs = useGameStore((state) => state.pogs);
+export function slamzStack() {
+  const slamzs = useGameStore((state) => state.slamzs);
 
-  // Get top POG position for glowing indicator
-  const topPogPos = pogs.length > 0 ? pogs[pogs.length - 1]?.position : null;
+  // Get top slamz position for glowing indicator
+  const topslamzPos = slamzs.length > 0 ? slamzs[slamzs.length - 1]?.position : null;
 
   return (
     <>
-      {pogs.map((pog) => (
-        <Pog key={pog.id} {...pog} />
+      {slamzs.map((slamz) => (
+        <slamz key={slamz.id} {...slamz} />
       ))}
-      {/* Glowing impact indicator on top POG */}
-      {topPogPos && (
+      {/* Glowing impact indicator on top slamz */}
+      {topslamzPos && (
         <Ring 
-          position={[topPogPos[0], topPogPos[1] + 0.05, topPogPos[2]]} 
+          position={[topslamzPos[0], topslamzPos[1] + 0.05, topslamzPos[2]]} 
           args={[0.1, 0.12, 32]} 
           color="#00ffcc" 
           opacity={0.8} 
@@ -7385,7 +7385,7 @@ export function AspectController({ children }: { children: ReactNode }) {
 import { useGameStore } from '../../store/useGameStore';
 import { ALL_SETS } from '../../constants/setDefinitions';
 import { useState, useEffect, useRef } from 'react';
-import { drawPogToCanvas } from '../../utils/TextureGenerator';
+import { drawslamzToCanvas } from '../../utils/TextureGenerator';
 import './Binder.css';
 
 export function Binder() {
@@ -7421,7 +7421,7 @@ export function Binder() {
     <>
       <div className="binder-overlay" onClick={() => toggleBinder()}>
         <div className="binder-content" onClick={(e) => e.stopPropagation()}>
-          <div className="binder-header">POG COLLECTION PORTFOLIO</div>
+          <div className="binder-header">slamz COLLECTION PORTFOLIO</div>
           
           <div className="binder-tabs">
             {ALL_SETS.map((setDef) => (
@@ -7461,7 +7461,7 @@ export function Binder() {
             })}
           </div>
 
-          <div className="global-stats">TOTAL POGS: {collection.length}</div>
+          <div className="global-stats">TOTAL slamzS: {collection.length}</div>
 
           <button className="binder-close-btn" onClick={() => toggleBinder()}>
             CLOSE [B]
@@ -7493,7 +7493,7 @@ function BinderSlot({
 
   useEffect(() => {
     if (isOwned && canvasRef.current) {
-      drawPogToCanvas(canvasRef.current, 'pog', 'metal', themeId, 'standard');
+      drawslamzToCanvas(canvasRef.current, 'slamz', 'metal', themeId, 'standard');
     }
   }, [isOwned, themeId]);
 
@@ -7501,20 +7501,20 @@ function BinderSlot({
     return (
       <div className="binder-slot empty">
         <div className="mystery-icon">?</div>
-        <div className="pog-label">{themeId.replace(/_/g, ' ')}</div>
+        <div className="slamz-label">{themeId.replace(/_/g, ' ')}</div>
       </div>
     );
   }
 
   return (
     <div className="binder-slot owned" style={{ borderColor: setColor }} onClick={() => onInspect(themeId)}>
-      <div className="pog-thumb">
+      <div className="slamz-thumb">
         <canvas ref={canvasRef} width={100} height={100} />
       </div>
-      <div className="pog-count" style={{ background: setColor }}>
+      <div className="slamz-count" style={{ background: setColor }}>
         {count}
       </div>
-      <div className="pog-label" style={{ color: setColor }}>
+      <div className="slamz-label" style={{ color: setColor }}>
         {themeId.replace(/_/g, ' ')}
       </div>
     </div>
@@ -7526,7 +7526,7 @@ function ArtworkInspector({ theme, onClose }: { theme: string; onClose: () => vo
 
   useEffect(() => {
     if (canvasRef.current) {
-      drawPogToCanvas(canvasRef.current, 'pog', 'metal', theme, 'standard');
+      drawslamzToCanvas(canvasRef.current, 'slamz', 'metal', theme, 'standard');
     }
   }, [theme]);
 
@@ -8572,23 +8572,23 @@ export function PerfectHit() {
 }
 </file>
 
-<file path="src/components/ui/PogHousingUI.tsx">
+<file path="src/components/ui/slamzHousingUI.tsx">
 import { useEffect, useRef } from 'react';
 import { Html } from '@react-three/drei';
 import { useGameStore } from '../../store/useGameStore';
-import { drawPogToCanvas } from '../../utils/TextureGenerator';
+import { drawslamzToCanvas } from '../../utils/TextureGenerator';
 
 /**
- * POG HOUSING UI: 90s Extreme Frame Container
- * Creates a housing/frame structure that contains the POG
+ * slamz HOUSING UI: 90s Extreme Frame Container
+ * Creates a housing/frame structure that contains the slamz
  */
-export const PogHousingUI = () => {
+export const slamzHousingUI = () => {
   const gameState = useGameStore((state) => state.gameState);
   const currentShowcase = useGameStore((state) => state.currentShowcase);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotationRef = useRef(0);
 
-  // POG rotation animation
+  // slamz rotation animation
   useEffect(() => {
     if (!currentShowcase || !canvasRef.current) return;
 
@@ -8609,7 +8609,7 @@ export const PogHousingUI = () => {
       ctx.translate(-centerX, -centerY);
       
       const { theme, rarity } = currentShowcase;
-      drawPogToCanvas(canvas, 'pog', 'metal', theme, rarity);
+      drawslamzToCanvas(canvas, 'slamz', 'metal', theme, rarity);
       
       ctx.restore();
       
@@ -8695,7 +8695,7 @@ export const PogHousingUI = () => {
           }}>Z</span>
         </div>
 
-        {/* POG CANVAS - Full POG in center, no frame */}
+        {/* slamz CANVAS - Full slamz in center, no frame */}
         <canvas 
           ref={canvasRef}
           width={360}
@@ -8898,22 +8898,22 @@ export function SessionSummary() {
   };
 
   const sessionDuration = Date.now() - practiceSession.startTime;
-  const accuracy = sessionScore.totalPogsFlipped > 0 
-    ? Math.round((sessionScore.totalScore / (sessionScore.totalPogsFlipped * 100)) * 100)
+  const accuracy = sessionScore.totalslamzsFlipped > 0 
+    ? Math.round((sessionScore.totalScore / (sessionScore.totalslamzsFlipped * 100)) * 100)
     : 100;
 
   const handleSaveToCollection = () => {
     setIsSaving(true);
     
-    // Add all face-up POGs to permanent collection
-    const wonPogs = selectedForPractice.filter(pog => 
-      sessionScore.faceUpPogs.includes(pog.id)
+    // Add all face-up slamzs to permanent collection
+    const wonslamzs = selectedForPractice.filter(slamz => 
+      sessionScore.faceUpslamzs.includes(slamz.id)
     );
 
-    wonPogs.forEach(pog => {
+    wonslamzs.forEach(slamz => {
       useGameStore.getState().addToCollection({
-        theme: pog.theme,
-        rarity: pog.rarity,
+        theme: slamz.theme,
+        rarity: slamz.rarity,
         date: new Date().toISOString()
       });
     });
@@ -8974,7 +8974,7 @@ export function SessionSummary() {
             <strong>Time:</strong> {formatTime(sessionDuration)}
           </div>
           <div style={{ marginBottom: '15px' }}>
-            <strong>POGs Flipped:</strong> {sessionScore.totalPogsFlipped} / {selectedForPractice.length}
+            <strong>slamzs Flipped:</strong> {sessionScore.totalslamzsFlipped} / {selectedForPractice.length}
           </div>
           <div style={{ marginBottom: '15px' }}>
             <strong>Best Combo:</strong> {sessionScore.bestCombo}x
@@ -8987,10 +8987,10 @@ export function SessionSummary() {
           </div>
         </div>
 
-        {/* Won POGs Display */}
+        {/* Won slamzs Display */}
         <div style={{ marginBottom: '30px' }}>
           <h3 style={{ color: '#00ff00', marginBottom: '15px' }}>
-            POGS WON ({sessionScore.faceUpPogs.length})
+            slamzS WON ({sessionScore.faceUpslamzs.length})
           </h3>
           <div style={{ 
             display: 'grid', 
@@ -8999,8 +8999,8 @@ export function SessionSummary() {
             maxHeight: '200px',
             overflowY: 'auto',
           }}>
-            {selectedForPractice.filter(pog => sessionScore.faceUpPogs.includes(pog.id)).map(pog => (
-              <div key={pog.id} style={{
+            {selectedForPractice.filter(slamz => sessionScore.faceUpslamzs.includes(slamz.id)).map(slamz => (
+              <div key={slamz.id} style={{
                 background: '#2a2a2a',
                 border: '2px solid #444',
                 borderRadius: '8px',
@@ -9012,15 +9012,15 @@ export function SessionSummary() {
                   color: '#ffffff',
                   marginBottom: '5px',
                 }}>
-                  {pog.theme.replace(/_/g, ' ').toUpperCase()}
+                  {slamz.theme.replace(/_/g, ' ').toUpperCase()}
                 </div>
                 <div style={{
                   fontSize: '10px',
-                  color: pog.rarity === 'holographic' ? '#ff00ff' : 
-                            pog.rarity === 'shiny' ? '#00ff00' : '#ffffff',
+                  color: slamz.rarity === 'holographic' ? '#ff00ff' : 
+                            slamz.rarity === 'shiny' ? '#00ff00' : '#ffffff',
                   fontWeight: 'bold',
                 }}>
-                  {pog.rarity.toUpperCase()}
+                  {slamz.rarity.toUpperCase()}
                 </div>
               </div>
             ))}
@@ -9138,7 +9138,7 @@ function Root() {
       console.log("BOOTHING SLAMZ CORE...");
       
       // 2. Race initialization against a safety timeout (10 seconds)
-      // Wait for fonts to be ready first to ensure Canvas drawing uses correct typography
+      // Wait for fonts to be ready first to ensure Canvas drawing uses correct tyslamzraphy
       await document.fonts.ready;
       
       const initPromise = initializeTextureRegistry();
@@ -9493,7 +9493,7 @@ export const commands: CommandRegistry = {
     }
   },
   reset: {
-    description: 'Reset the physics world and POG stack',
+    description: 'Reset the physics world and slamz stack',
     execute: () => {
       useGameStore.getState().resetStack();
       return 'Physics world reset. Stack re-initialized.';
@@ -9509,12 +9509,12 @@ export const commands: CommandRegistry = {
     description: 'Show current game session stats',
     execute: () => {
       const stats = useGameStore.getState().stats;
-      const pogs = useGameStore.getState().pogs.length;
+      const slamzs = useGameStore.getState().slamzs.length;
       return [
         '--- SESSION DIAGNOSTICS ---',
-        `Active POGs: ${pogs}`,
+        `Active slamzs: ${slamzs}`,
         `Total Slams: ${stats.totalSlams}`,
-        `POGs Won:    ${stats.pogsWon}`,
+        `slamzs Won:    ${stats.slamzsWon}`,
         `Best Combo:  ${stats.bestCombo}`,
         '---------------------------'
       ].join('\n');
@@ -9563,7 +9563,7 @@ export const executeCommand = (input: string) => {
 <file path="src/utils/TextureGenerator.ts">
 import * as THREE from 'three';
 import { getSetForTheme } from '../constants/setDefinitions';
-import { PROCEDURAL_THEMES, SLAMMER_SKINS } from '../constants/pogData';
+import { PROCEDURAL_THEMES, SLAMMER_SKINS } from '../constants/slamzData';
 import { useGameStore } from '../store/useGameStore';
 
 // ============================================================
@@ -9575,7 +9575,7 @@ const MATERIAL_REGISTRY: Record<string, THREE.MeshStandardMaterial[]> = {};
 const FOIL_TEXTURE: { current: THREE.CanvasTexture | null } = { current: null };
 
 let isRegistryReady = false;
-let hasInitializedPogs = false;
+let hasInitializedslamzs = false;
 
 /**
  * Preloads all PNG assets and builds the entire material registry.
@@ -9596,7 +9596,7 @@ export async function initializeTextureRegistry() {
 
     const promises = assets.map(id => {
         return new Promise<void>((resolve) => {
-            loader.load(`/assets/pogs/${id}.png`, 
+            loader.load(`/assets/slamzs/${id}.png`, 
                 (tex) => {
                     PRELOADED_TEXTURES[id] = tex.image as HTMLImageElement;
                     resolve();
@@ -9615,11 +9615,11 @@ export async function initializeTextureRegistry() {
     // 2. Prepare Shared Foil
     FOIL_TEXTURE.current = generateFoilTexture();
 
-    // 3. Generate ALL Procedural Materials (POGs)
+    // 3. Generate ALL Procedural Materials (slamzs)
     for (const theme of PROCEDURAL_THEMES) {
         for (const rarity of ['standard', 'shiny', 'holographic']) {
-            const key = `pog_metal_${theme}_${rarity}`;
-            MATERIAL_REGISTRY[key] = buildSlamzMaterial('pog', 'metal', theme, rarity);
+            const key = `slamz_metal_${theme}_${rarity}`;
+            MATERIAL_REGISTRY[key] = buildSlamzMaterial('slamz', 'metal', theme, rarity);
         }
     }
 
@@ -9630,12 +9630,12 @@ export async function initializeTextureRegistry() {
     }
 
     // Phase 3: Synchronous Physics Pre-population
-    if (!hasInitializedPogs) {
-        console.log('[TEXTURE REGISTRY] Calling initPogs() for the first time');
-        useGameStore.getState().initPogs();
-        hasInitializedPogs = true;
+    if (!hasInitializedslamzs) {
+        console.log('[TEXTURE REGISTRY] Calling initslamzs() for the first time');
+        useGameStore.getState().initslamzs();
+        hasInitializedslamzs = true;
     } else {
-        console.log('[TEXTURE REGISTRY] POGs already initialized, skipping initPogs()');
+        console.log('[TEXTURE REGISTRY] slamzs already initialized, skipping initslamzs()');
     }
 
     isRegistryReady = true;
@@ -9646,15 +9646,15 @@ export function getRegistryStatus() {
     return isRegistryReady;
 }
 
-export function getMaterialFromRegistry(type: 'pog' | 'slammer', variant = 'metal', theme: string | null = null, rarity = 'standard') {
+export function getMaterialFromRegistry(type: 'slamz' | 'slammer', variant = 'metal', theme: string | null = null, rarity = 'standard') {
     const key = type === 'slammer' 
         ? `slammer_${variant}_null_standard` 
-        : `pog_metal_${theme}_${rarity}`;
+        : `slamz_metal_${theme}_${rarity}`;
     
     const mat = MATERIAL_REGISTRY[key];
     if (!mat) {
         console.warn(`Material not found in registry: ${key}. Falling back to default.`);
-        return MATERIAL_REGISTRY[`pog_metal_${PROCEDURAL_THEMES[0]}_standard`];
+        return MATERIAL_REGISTRY[`slamz_metal_${PROCEDURAL_THEMES[0]}_standard`];
     }
     return mat;
 }
@@ -9663,7 +9663,7 @@ export function getMaterialFromRegistry(type: 'pog' | 'slammer', variant = 'meta
 // INTERNAL MATERIAL BUILDER (Run once during init)
 // ============================================================
 
-function buildSlamzMaterial(type: 'pog' | 'slammer', variant: string, theme: string | null, rarity: string): THREE.MeshStandardMaterial[] {
+function buildSlamzMaterial(type: 'slamz' | 'slammer', variant: string, theme: string | null, rarity: string): THREE.MeshStandardMaterial[] {
     const canvas = document.createElement('canvas');
     canvas.width = 512;
     canvas.height = 512;
@@ -9673,7 +9673,7 @@ function buildSlamzMaterial(type: 'pog' | 'slammer', variant: string, theme: str
     const setDef = getSetForTheme(activeTheme);
     const coreColor = setDef ? new THREE.Color(setDef.color) : new THREE.Color(0xffffff);
 
-    drawPogToCanvas(canvas, type, variant, activeTheme, rarity);
+    drawslamzToCanvas(canvas, type, variant, activeTheme, rarity);
     
     const faceTex = new THREE.CanvasTexture(canvas);
     faceTex.anisotropy = 16;
@@ -9774,9 +9774,9 @@ function drawBackToCanvas(canvas: HTMLCanvasElement, rarity: string) {
     ctx.fillText('PRO-TOUR', Cx, Cy + 52);
 }
 
-function drawPogToCanvas(canvas: HTMLCanvasElement, type: string, variant: string, theme: string, rarity: string) {
+function drawslamzToCanvas(canvas: HTMLCanvasElement, type: string, variant: string, theme: string, rarity: string) {
     const ctx = canvas.getContext('2d')!;
-    // Center pog based on canvas size (600x600 for showcase)
+    // Center slamz based on canvas size (600x600 for showcase)
     const cx = canvas.width / 2, cy = canvas.height / 2, r = 240;
 
     ctx.fillStyle = '#111';
@@ -9794,7 +9794,7 @@ function drawPogToCanvas(canvas: HTMLCanvasElement, type: string, variant: strin
 
     const highEndTexture = PRELOADED_TEXTURES[selectedTheme];
     if (highEndTexture) {
-        // Draw texture centered on the pog
+        // Draw texture centered on the slamz
         const textureSize = 512;
         const startX = cx - textureSize / 2;
         const startY = cy - textureSize / 2;
@@ -9850,7 +9850,7 @@ function createHeightMapFromCanvas(sourceCanvas: HTMLCanvasElement) {
 }
 
 // Export for Binder UI
-export { drawPogToCanvas };
+export { drawslamzToCanvas };
 </file>
 
 <file path="tsconfig.json">
@@ -9883,7 +9883,7 @@ export { drawPogToCanvas };
 
 <file path="package.json">
 {
-  "name": "slamz-pog-v2",
+  "name": "slamz-slamz-v2",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10028,11 +10028,11 @@ export function LevaController() {
           if (v !== useGameStore.getState().physicsDebug) togglePhysicsDebug();
         }
       },
-      pogMass: {
-        value: debugParams.pogMass,
+      slamzMass: {
+        value: debugParams.slamzMass,
         min: 0.1, max: 10, step: 0.1,
-        label: 'Pog Mass',
-        onChange: (v) => setDebugParams({ pogMass: v })
+        label: 'slamz Mass',
+        onChange: (v) => setDebugParams({ slamzMass: v })
       },
       slammerMass: {
         value: debugParams.slammerMass,
@@ -10040,11 +10040,11 @@ export function LevaController() {
         label: 'Slammer Mass',
         onChange: (v) => setDebugParams({ slammerMass: v })
       },
-      pogFriction: {
-        value: debugParams.pogFriction,
+      slamzFriction: {
+        value: debugParams.slamzFriction,
         min: 0, max: 1, step: 0.05,
-        label: 'Pog Friction',
-        onChange: (v) => setDebugParams({ pogFriction: v })
+        label: 'slamz Friction',
+        onChange: (v) => setDebugParams({ slamzFriction: v })
       },
       slamForceMultiplier: {
         value: debugParams.slamForceMultiplier || 1.0,
@@ -10486,7 +10486,7 @@ export function PauseMenu() {
               <div className="quick-actions">
                 <button className="big-action-btn primary" onClick={togglePause}>
                   RESUME ARENA
-                  <span>BACK TO THE POGS</span>
+                  <span>BACK TO THE slamzS</span>
                 </button>
               </div>
             </div>
@@ -10613,7 +10613,7 @@ export const SCENE_PRESETS = {
     bloomStrength: 1.2,
     bloomRadius: 0.5,
     bloomThreshold: 1.05,
-    pogEmissiveScale: 0.2,
+    slamzEmissiveScale: 0.2,
     scanlines: 0.8,
     chromaticAberration: 0.005
   }
@@ -10628,7 +10628,7 @@ export type GameState = 'START_SCREEN' | 'AIMING' | 'POWERING' | 'SLAMMED' | 'HA
 
 export type GameMode = 'CLASSIC' | 'PRACTICE_FOR_KEEPS' | 'NO_RESTACK_CHAOS';
 
-export interface PogData {
+export interface slamzData {
   id: string;
   theme: string;
   rarity: 'standard' | 'shiny' | 'holographic';
@@ -10644,22 +10644,22 @@ export interface CollectionItem {
 
 export interface SessionStats {
   totalSlams: number;
-  pogsWon: number;
+  slamzsWon: number;
   bestCombo: number;
 }
 
 export interface SessionScore {
-  totalPogsFlipped: number;
+  totalslamzsFlipped: number;
   currentCombo: number;
   bestCombo: number;
   accuracy: number;
   streak: number;
   totalScore: number;
-  faceUpPogs: string[]; // POG IDs that landed face-up
+  faceUpslamzs: string[]; // slamz IDs that landed face-up
 }
 
 export interface PracticeSession {
-  selectedPogs: PogData[];
+  selectedslamzs: slamzData[];
   mode: GameMode;
   score: SessionScore;
   startTime: number;
@@ -10869,20 +10869,20 @@ export const systemLog = (message: string) => {
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>SLAMZ PRO-TOUR | VIBEJAM 2026</title>
-    <meta name="description" content="The ultimate AI-powered cyberpunk pog simulator. Slam, flip, and collect in high-fidelity 3D. A VibeJam 2026 entry." />
+    <meta name="description" content="The ultimate AI-powered cyberpunk slamz simulator. Slam, flip, and collect in high-fidelity 3D. A VibeJam 2026 entry." />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://slamz-pro-tour.vercel.app/" />
     <meta property="og:title" content="SLAMZ PRO-TOUR | VIBEJAM 2026" />
-    <meta property="og:description" content="The ultimate AI-powered cyberpunk pog simulator. Slam, flip, and collect in high-fidelity 3D." />
+    <meta property="og:description" content="The ultimate AI-powered cyberpunk slamz simulator. Slam, flip, and collect in high-fidelity 3D." />
     <meta property="og:image" content="/og_preview.png" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://slamz-pro-tour.vercel.app/" />
     <meta property="twitter:title" content="SLAMZ PRO-TOUR | VIBEJAM 2026" />
-    <meta property="twitter:description" content="The ultimate AI-powered cyberpunk pog simulator. Slam, flip, and collect in high-fidelity 3D." />
+    <meta property="twitter:description" content="The ultimate AI-powered cyberpunk slamz simulator. Slam, flip, and collect in high-fidelity 3D." />
     <meta property="twitter:image" content="/og_preview.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10965,16 +10965,16 @@ export function ArenaDecor() {
   // Removed tiling to prevent affecting the shared texture in the main Arena
 
 
-  // Instanced ghost pogs — 12 pogs in 1 draw call
-  const pogRef = useRef<THREE.InstancedMesh>(null);
-  const pogGeo = useMemo(() => new THREE.CylinderGeometry(0.5, 0.5, 0.05, 16), []);
-  const pogMat = useMemo(() => new THREE.MeshStandardMaterial({
+  // Instanced ghost slamzs — 12 slamzs in 1 draw call
+  const slamzRef = useRef<THREE.InstancedMesh>(null);
+  const slamzGeo = useMemo(() => new THREE.CylinderGeometry(0.5, 0.5, 0.05, 16), []);
+  const slamzMat = useMemo(() => new THREE.MeshStandardMaterial({
     color: preset.floorEmissive,
     roughness: 0.5,
     metalness: 0.8,
   }), [preset.floorEmissive]);
 
-  const pogTransforms = useMemo(() => {
+  const slamzTransforms = useMemo(() => {
     const transforms: { pos: [number, number, number]; rot: [number, number, number]; scale: number }[] = [];
     for (let i = 0; i < 12; i++) {
       const angle = Math.random() * Math.PI * 2;
@@ -10989,17 +10989,17 @@ export function ArenaDecor() {
   }, []);
 
   useEffect(() => {
-    if (!pogRef.current) return;
-    pogTransforms.forEach((t, i) => {
+    if (!slamzRef.current) return;
+    slamzTransforms.forEach((t, i) => {
       _position.set(t.pos[0], t.pos[1], t.pos[2]);
       _euler.set(t.rot[0], t.rot[1], t.rot[2]);
       _quaternion.setFromEuler(_euler);
       _scale.setScalar(t.scale);
       _matrix.compose(_position, _quaternion, _scale);
-      pogRef.current!.setMatrixAt(i, _matrix);
+      slamzRef.current!.setMatrixAt(i, _matrix);
     });
-    pogRef.current.instanceMatrix.needsUpdate = true;
-  }, [pogTransforms]);
+    slamzRef.current.instanceMatrix.needsUpdate = true;
+  }, [slamzTransforms]);
 
   return null;
 }
@@ -11060,7 +11060,7 @@ export function ShowcaseHUD() {
 
   const materials = useMemo(() => {
     if (!currentShowcase) return null;
-    return getMaterialFromRegistry('pog', 'metal', currentShowcase.theme, currentShowcase.rarity);
+    return getMaterialFromRegistry('slamz', 'metal', currentShowcase.theme, currentShowcase.rarity);
   }, [currentShowcase]);
 
   useFrame((_, delta) => {
@@ -11069,7 +11069,7 @@ export function ShowcaseHUD() {
     // Direct Time Injection from Bridge
     localRotationTime.current += delta * physicsFogBridge.bulletTimeScale;
 
-    // 1. POG Rotation/Tilt
+    // 1. slamz Rotation/Tilt
     if (meshRef.current) {
         meshRef.current.rotation.y += 0.02 * physicsFogBridge.bulletTimeScale;
         meshRef.current.rotation.x = 1.1 + Math.sin(localRotationTime.current * 1.5) * 0.05;
@@ -11208,7 +11208,7 @@ export function ShowcaseHUD() {
             </Text>
           </group>
 
-          {/* THE POG HERO */}
+          {/* THE slamz HERO */}
           <group position={[0, -0.5, 0]}>
             <mesh 
                 ref={meshRef} 
@@ -11664,7 +11664,7 @@ import gsap from 'gsap';
 
 /**
  * CINEMATIC SLAM - SMART CAMERA TRACKING EDITION
- * Dynamically frames the pog explosion cloud by tracking all pogs!
+ * Dynamically frames the slamz explosion cloud by tracking all slamzs!
  */
 export function CinematicSlam() {
   const { camera } = useThree();
@@ -11705,11 +11705,11 @@ export function CinematicSlam() {
       
       // Helper: Calculate the "Soft Weighted Density Center"
       // Uses a Gaussian kernel to find the most meaningful focus point in a scattering cloud.
-      const getPogDensityCenter = () => {
+      const getslamzDensityCenter = () => {
         const positions: THREE.Vector3[] = [];
         world.forEachRigidBody((body: any) => {
           const ud = body.userData as any;
-          if (ud?.name?.startsWith('pog-')) {
+          if (ud?.name?.startsWith('slamz-')) {
             const pos = body.translation();
             positions.push(new THREE.Vector3(pos.x, pos.y, pos.z));
           }
@@ -11761,7 +11761,7 @@ export function CinematicSlam() {
         z: radius + 6,
         ease: 'expo.out',
         onUpdate: () => {
-          const bounds = getPogDensityCenter();
+          const bounds = getslamzDensityCenter();
           lookAtTarget.current.lerp(bounds.center, 0.08); // Ultra-smooth lerp
           camera.lookAt(lookAtTarget.current);
         }
@@ -11771,7 +11771,7 @@ export function CinematicSlam() {
       tl.to({}, { 
         duration: debugParams.cinematicFreezeDuration,
         onUpdate: () => {
-          const bounds = getPogDensityCenter();
+          const bounds = getslamzDensityCenter();
           lookAtTarget.current.lerp(bounds.center, 0.08);
           camera.lookAt(lookAtTarget.current);
         }
@@ -11784,7 +11784,7 @@ export function CinematicSlam() {
         duration: debugParams.cinematicOrbitDuration,
         ease: 'power2.inOut',
         onUpdate: () => {
-          const bounds = getPogDensityCenter();
+          const bounds = getslamzDensityCenter();
           
           // Smoothed focus point
           lookAtTarget.current.lerp(bounds.center, 0.08);
@@ -11834,13 +11834,13 @@ export function CinematicSlam() {
 
 <file path="src/components/ui/Showcase.tsx">
 // ============================================================
-// SHOWCASE — Display captured pogs one by one after a slam
+// SHOWCASE — Display captured slamzs one by one after a slam
 // Ported from v1 UIController.showCaptureShowcase()
 // ============================================================
 
 import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../store/useGameStore';
-import { drawPogToCanvas } from '../../utils/TextureGenerator';
+import { drawslamzToCanvas } from '../../utils/TextureGenerator';
 import { playJackpotFanfare } from '../../systems/audio';
 import './Showcase.css';
 
@@ -11878,9 +11878,9 @@ export function Showcase() {
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate(rotationRef.current);
       
-      // Draw pog at origin (will be rotated)
+      // Draw slamz at origin (will be rotated)
       const { theme, rarity } = currentShowcase;
-      drawPogToCanvas(canvas, 'pog', 'metal', theme, rarity);
+      drawslamzToCanvas(canvas, 'slamz', 'metal', theme, rarity);
       
       // Restore context state
       ctx.restore();
@@ -11982,9 +11982,9 @@ const SLAM_DURATION = 1.2;
 const DROP_HEIGHT = 60;
 const DROP_SCALE_BOOST = 1.3;
 
-// ─── Pog Explosion System ───────────────────────────────────
+// ─── slamz Explosion System ───────────────────────────────────
 
-interface PogParticle {
+interface slamzParticle {
   px: number; py: number; pz: number;
   vx: number; vy: number; vz: number;
   rx: number; ry: number; rz: number;
@@ -12000,8 +12000,8 @@ const GROUND_Y = -6;
 const DAMPING = 0.55;
 const ANGULAR_DAMPING = 0.88;
 
-function createParticles(ix: number, iy: number, iz: number): PogParticle[] {
-  const particles: PogParticle[] = [];
+function createParticles(ix: number, iy: number, iz: number): slamzParticle[] {
+  const particles: slamzParticle[] = [];
   for (let i = 0; i < PARTICLE_COUNT; i++) {
     const angle = (Math.PI * 2 * i) / PARTICLE_COUNT + (Math.random() - 0.5) * 0.8;
     const speed = 6 + Math.random() * 18;
@@ -12018,7 +12018,7 @@ function createParticles(ix: number, iy: number, iz: number): PogParticle[] {
       avx: (Math.random() - 0.5) * 18,
       avy: (Math.random() - 0.5) * 18,
       avz: (Math.random() - 0.5) * 18,
-      scale: (0.5 + Math.random() * 0.6) * 1.5 * (useGameStore.getState().debugParams.pogScale || 1),
+      scale: (0.5 + Math.random() * 0.6) * 1.5 * (useGameStore.getState().debugParams.slamzScale || 1),
       settled: false,
       groundY: GROUND_Y + Math.random() * 1.0,
       bounces: 0,
@@ -12027,20 +12027,20 @@ function createParticles(ix: number, iy: number, iz: number): PogParticle[] {
   return particles;
 }
 
-function PogExplosion({ active, impactX, impactY, impactZ }: {
+function slamzExplosion({ active, impactX, impactY, impactZ }: {
   active: boolean;
   impactX: number;
   impactY: number;
   impactZ: number;
 }) {
   const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const particlesRef = useRef<PogParticle[] | null>(null);
+  const particlesRef = useRef<slamzParticle[] | null>(null);
   const debugParams = useGameStore((state) => state.debugParams);
 
-  // Shared geometry (cylinder pog shape)
+  // Shared geometry (cylinder slamz shape)
   const geometry = useMemo(() => new THREE.CylinderGeometry(0.55, 0.55, 0.09, 24), []);
 
-  // SLAMZ graffiti gradient materials - each pog gets a unique 2-color gradient
+  // SLAMZ graffiti gradient materials - each slamz gets a unique 2-color gradient
   const materials = useMemo(() => {
     const palette = [
       new THREE.Color('#00ffff'), // bright cyan
@@ -12085,7 +12085,7 @@ function PogExplosion({ active, impactX, impactY, impactZ }: {
           varying vec3 vNormal;
           varying vec3 vViewDir;
           void main() {
-            // Diagonal gradient across the pog face
+            // Diagonal gradient across the slamz face
             float grad = smoothstep(0.0, 1.0, (vUv.x + vUv.y) * 0.5);
             vec3 baseColor = mix(colorA, colorB, grad);
 
@@ -12205,13 +12205,13 @@ export function StartLogo3D() {
         const mesh = child as THREE.Mesh;
         const mat = mesh.material as THREE.MeshStandardMaterial;
         if (mat) {
-          mat.metalness = debugParams.pogMetalness;
-          mat.roughness = debugParams.pogRoughness;
+          mat.metalness = debugParams.slamzMetalness;
+          mat.roughness = debugParams.slamzRoughness;
           mat.needsUpdate = true;
         }
       }
     });
-  }, [scene, debugParams.pogMetalness, debugParams.pogRoughness]);
+  }, [scene, debugParams.slamzMetalness, debugParams.slamzRoughness]);
 
   // Fire impact effects once
   const fireImpact = useCallback(() => {
@@ -12240,7 +12240,7 @@ export function StartLogo3D() {
       navigator.vibrate([30, 20, 80]);
     }
 
-    // POG EXPLOSION
+    // slamz EXPLOSION
     setExplosionActive(true);
   }, []);
 
@@ -12294,7 +12294,7 @@ export function StartLogo3D() {
       <group ref={groupRef}>
         <primitive object={scene.clone()} />
       </group>
-      <PogExplosion
+      <slamzExplosion
         active={explosionActive}
         impactX={impactCoords.current.x}
         impactY={impactCoords.current.y}
@@ -12312,7 +12312,7 @@ useGLTF.preload('/assets/glbs/slamz_logo.glb');
 import * as React from 'react';
 import { Physics } from '@react-three/rapier';
 import { PhysicsFloor } from './PhysicsFloor';
-import { PogStack } from './PogStack';
+import { slamzStack } from './slamzStack';
 import { Slammer } from './Slammer';
 import { GameController } from '../GameController';
 
@@ -12328,7 +12328,7 @@ const PhysicsInnerScene = React.memo(() => {
   return (
     <>
       <PhysicsFloor />
-      <PogStack />
+      <slamzStack />
       <Slammer />
       <GameController />
       <CinematicSlam />
@@ -12653,7 +12653,7 @@ class CinematicEngine {
 
   /**
    * VOLCANIC TRIGGER: Shifts environment to Zero-G/Slow-Mo and applies impulses.
-   * Treating pogs as 'actual objects' with continuous collision.
+   * Treating slamzs as 'actual objects' with continuous collision.
    */
   public triggerCinematic(
     world: any, 
@@ -12684,18 +12684,18 @@ class CinematicEngine {
     }, freezeDuration);
 
     const impactSpeed = (impactPower / 100) * debugParams.powerChargeSpeed;
-    // CALIBRATION: Massive reduction for 0.1 mass regulation pogs.
+    // CALIBRATION: Massive reduction for 0.1 mass regulation slamzs.
     // Aiming for impulses in the 1.0 - 5.0 range rather than 35.0+.
     const forceBase = slammerMass * impactSpeed * debugParams.slamForceMultiplier * 0.035;
 
     world.forEachRigidBody((body: RapierRigidBody) => {
       const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
-        const pogPos = body.translation();
+      if (ud?.name?.startsWith('slamz-')) {
+        const slamzPos = body.translation();
         
         // --- THE VOLCANIC PHYSICS ---
-        const dx = pogPos.x - impactPoint.x;
-        const dz = pogPos.z - impactPoint.z;
+        const dx = slamzPos.x - impactPoint.x;
+        const dz = slamzPos.z - impactPoint.z;
         const dist = Math.sqrt(dx * dx + dz * dz);
         
         if (dist < debugParams.eruptionRadius) {
@@ -12717,9 +12717,9 @@ class CinematicEngine {
           
           // ANTI-CLIP KICK: Pro-active lift to ensure we aren't snagged in the mat
           body.setTranslation({ 
-            x: pogPos.x, 
-            y: pogPos.y + 0.15, 
-            z: pogPos.z 
+            x: slamzPos.x, 
+            y: slamzPos.y + 0.15, 
+            z: slamzPos.z 
           }, true);
 
           body.applyImpulse({
@@ -12758,13 +12758,13 @@ class CinematicEngine {
       globalDampingScale: 0
     });
 
-    // CRITICAL: Reset damping on all pog bodies back to normal!
+    // CRITICAL: Reset damping on all slamz bodies back to normal!
     world.forEachRigidBody((body: RapierRigidBody) => {
       const ud = body.userData as any;
-      if (ud?.name?.startsWith('pog-')) {
+      if (ud?.name?.startsWith('slamz-')) {
         // Restore normal damping values (the 0.98 bullet-time damping is stuck on them!)
-        body.setLinearDamping(debugParams.pogLinearDamping);
-        body.setAngularDamping(debugParams.pogAngularDamping);
+        body.setLinearDamping(debugParams.slamzLinearDamping);
+        body.setAngularDamping(debugParams.slamzAngularDamping);
         body.wakeUp();
       }
     });
@@ -13368,8 +13368,8 @@ export function HUD() {
   const toggleBinder      = useGameStore((s) => s.toggleBinder);
   const toggleAchievements = useGameStore((s) => s.toggleAchievements);
   const peakVelocity       = useGameStore((s) => s.peakVelocity);
-  const pogMaxVelocity     = useGameStore((s) => s.debugParams.pogMaxVelocity);
-  const pogsOnMat          = useGameStore((s) => s.pogsOnMat);
+  const slamzMaxVelocity     = useGameStore((s) => s.debugParams.slamzMaxVelocity);
+  const slamzsOnMat          = useGameStore((s) => s.slamzsOnMat);
   const currentShowcase   = useGameStore((s) => s.currentShowcase);
 
   const dataPackets = useGameStore((s) => s.dataPackets);
@@ -13420,7 +13420,7 @@ export function HUD() {
               <div className="hud-meter-header">INERTIAL FORCE</div>
               <div style={{ 
                 fontSize: '20px', fontWeight: 900, 
-                color: peakVelocity > pogMaxVelocity * 0.9 ? '#ff0055' : '#00ffcc'
+                color: peakVelocity > slamzMaxVelocity * 0.9 ? '#ff0055' : '#00ffcc'
               }}>
                 {peakVelocity.toFixed(2)} <span style={{ fontSize: '10px', opacity: 0.5 }}>MAG</span>
               </div>
@@ -13446,7 +13446,7 @@ export function HUD() {
           <div style={{ display: 'flex', gap: '10px' }}>
             <div className="hud-meter">
               <div className="hud-meter-header">PACKETS CAPTURED</div>
-              <div style={{ fontSize: '18px', fontWeight: 900, textAlign: 'right' }}>{stats.pogsWon}</div>
+              <div style={{ fontSize: '18px', fontWeight: 900, textAlign: 'right' }}>{stats.slamzsWon}</div>
             </div>
             <div className="hud-meter" style={{ pointerEvents: 'auto' }}>
               <button
@@ -13702,14 +13702,14 @@ export function DebugPanel() {
                 <div className="tab-content">
                   {tab === 'physics' && (
                     <>
-                      {renderSection('phys_pog', 'Pog Physics', (
+                      {renderSection('phys_slamz', 'slamz Physics', (
                         <div className="debug-section">
-                          <EnhancedSlider label="Mass" value={debugParams.pogMass} min={0.1} max={100} step={0.1} onChange={(v) => updateParam('pogMass', v)} decimals={2} />
-                          <EnhancedSlider label="Restitution" value={debugParams.pogRestitution} min={0} max={2} step={0.01} onChange={(v) => updateParam('pogRestitution', v)} decimals={2} />
-                          <EnhancedSlider label="Friction" value={debugParams.pogFriction} min={0} max={5} step={0.1} onChange={(v) => updateParam('pogFriction', v)} decimals={1} />
-                          <EnhancedSlider label="Linear Damp" value={debugParams.pogLinearDamping} min={0} max={5} step={0.01} onChange={(v) => updateParam('pogLinearDamping', v)} decimals={2} />
-                          <EnhancedSlider label="Angular Damp" value={debugParams.pogAngularDamping} min={0} max={5} step={0.01} onChange={(v) => updateParam('pogAngularDamping', v)} decimals={2} />
-                          <EnhancedSlider label="Max Velocity" value={debugParams.pogMaxVelocity} min={1} max={300} step={1} onChange={(v) => updateParam('pogMaxVelocity', v)} decimals={0} />
+                          <EnhancedSlider label="Mass" value={debugParams.slamzMass} min={0.1} max={100} step={0.1} onChange={(v) => updateParam('slamzMass', v)} decimals={2} />
+                          <EnhancedSlider label="Restitution" value={debugParams.slamzRestitution} min={0} max={2} step={0.01} onChange={(v) => updateParam('slamzRestitution', v)} decimals={2} />
+                          <EnhancedSlider label="Friction" value={debugParams.slamzFriction} min={0} max={5} step={0.1} onChange={(v) => updateParam('slamzFriction', v)} decimals={1} />
+                          <EnhancedSlider label="Linear Damp" value={debugParams.slamzLinearDamping} min={0} max={5} step={0.01} onChange={(v) => updateParam('slamzLinearDamping', v)} decimals={2} />
+                          <EnhancedSlider label="Angular Damp" value={debugParams.slamzAngularDamping} min={0} max={5} step={0.01} onChange={(v) => updateParam('slamzAngularDamping', v)} decimals={2} />
+                          <EnhancedSlider label="Max Velocity" value={debugParams.slamzMaxVelocity} min={1} max={300} step={1} onChange={(v) => updateParam('slamzMaxVelocity', v)} decimals={0} />
                         </div>
                       ))}
                       {renderSection('phys_slam', 'Slammer Physics', (
@@ -13741,12 +13741,12 @@ export function DebugPanel() {
                           <EnhancedSlider label="Emissive" value={debugParams.slammerEmissiveIntensity} min={0} max={10} step={0.1} onChange={(v) => updateParam('slammerEmissiveIntensity', v)} decimals={1} />
                         </div>
                       ))}
-                      {renderSection('vis_pog', 'Pog Visuals', (
+                      {renderSection('vis_slamz', 'slamz Visuals', (
                         <div className="debug-section">
-                          <EnhancedSlider label="Scale" value={debugParams.pogScale} min={0.1} max={5} step={0.1} onChange={(v) => updateParam('pogScale', v)} decimals={1} />
-                          <EnhancedSlider label="Rot Speed" value={debugParams.pogRotationSpeed} min={0} max={0.1} step={0.001} onChange={(v) => updateParam('pogRotationSpeed', v)} decimals={3} />
-                          <EnhancedSlider label="Metalness" value={debugParams.pogMetalness} min={0} max={1} step={0.01} onChange={(v) => updateParam('pogMetalness', v)} decimals={2} />
-                          <EnhancedSlider label="Roughness" value={debugParams.pogRoughness} min={0} max={1} step={0.01} onChange={(v) => updateParam('pogRoughness', v)} decimals={2} />
+                          <EnhancedSlider label="Scale" value={debugParams.slamzScale} min={0.1} max={5} step={0.1} onChange={(v) => updateParam('slamzScale', v)} decimals={1} />
+                          <EnhancedSlider label="Rot Speed" value={debugParams.slamzRotationSpeed} min={0} max={0.1} step={0.001} onChange={(v) => updateParam('slamzRotationSpeed', v)} decimals={3} />
+                          <EnhancedSlider label="Metalness" value={debugParams.slamzMetalness} min={0} max={1} step={0.01} onChange={(v) => updateParam('slamzMetalness', v)} decimals={2} />
+                          <EnhancedSlider label="Roughness" value={debugParams.slamzRoughness} min={0} max={1} step={0.01} onChange={(v) => updateParam('slamzRoughness', v)} decimals={2} />
                         </div>
                       ))}
                       {renderSection('vis_bloom', 'Post Processing', (
@@ -13871,7 +13871,7 @@ export function DebugPanel() {
                           <EnhancedSlider label="Explosion" value={debugParams.cinematicExplosionForce} min={0} max={50} step={0.5} onChange={(v) => updateParam('cinematicExplosionForce', v)} decimals={1} />
                           <EnhancedSlider label="Radius" value={debugParams.cinematicScatterRadius} min={0.1} max={20} step={0.1} onChange={(v) => updateParam('cinematicScatterRadius', v)} decimals={1} />
                           <EnhancedSlider label="Height" value={debugParams.cinematicScatterHeight} min={0.1} max={15} step={0.1} onChange={(v) => updateParam('cinematicScatterHeight', v)} decimals={1} />
-                          <EnhancedSlider label="Rot Speed" value={debugParams.cinematicPogRotationSpeed} min={0} max={20} step={0.5} onChange={(v) => updateParam('cinematicPogRotationSpeed', v)} decimals={1} />
+                          <EnhancedSlider label="Rot Speed" value={debugParams.cinematicslamzRotationSpeed} min={0} max={20} step={0.5} onChange={(v) => updateParam('cinematicslamzRotationSpeed', v)} decimals={1} />
                         </div>
                       ))}
                       {renderSection('tune_timing', 'Scene Physics', (
@@ -14264,7 +14264,7 @@ function App() {
 export default App;
 </file>
 
-<file path="src/components/game/Pog.tsx">
+<file path="src/components/game/slamz.tsx">
 import { RigidBody, CylinderCollider, RapierRigidBody } from '@react-three/rapier';
 import { useFrame } from '@react-three/fiber';
 import { useGameStore } from '../../store/useGameStore';
@@ -14276,7 +14276,7 @@ import * as THREE from 'three';
 // Removed debug logs for cleaner console
 
 
-interface PogProps {
+interface slamzProps {
   id: string;
   theme: string;
   rarity: 'standard' | 'shiny' | 'holographic';
@@ -14284,36 +14284,36 @@ interface PogProps {
   rotation: [number, number, number];
 }
 
-export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) => {
+export const slamz = memo(({ id, theme, rarity, position, rotation }: slamzProps) => {
   const rb = useRef<RapierRigidBody>(null);
-  const mass = useGameStore((state) => state.debugParams.pogMass);
-  const friction = useGameStore((state) => state.debugParams.pogFriction);
-  const restitution = useGameStore((state) => state.debugParams.pogRestitution);
-  const linearDampingDefault = useGameStore((state) => state.debugParams.pogLinearDamping);
-  const angularDampingDefault = useGameStore((state) => state.debugParams.pogAngularDamping);
-  const pogScale = useGameStore((state) => state.debugParams.pogScale);
-  const pogMetalness = useGameStore((state) => state.debugParams.pogMetalness);
-  const pogRoughness = useGameStore((state) => state.debugParams.pogRoughness);
-  const pogMaxVelocity = useGameStore((state) => state.debugParams.pogMaxVelocity);
+  const mass = useGameStore((state) => state.debugParams.slamzMass);
+  const friction = useGameStore((state) => state.debugParams.slamzFriction);
+  const restitution = useGameStore((state) => state.debugParams.slamzRestitution);
+  const linearDampingDefault = useGameStore((state) => state.debugParams.slamzLinearDamping);
+  const angularDampingDefault = useGameStore((state) => state.debugParams.slamzAngularDamping);
+  const slamzScale = useGameStore((state) => state.debugParams.slamzScale);
+  const slamzMetalness = useGameStore((state) => state.debugParams.slamzMetalness);
+  const slamzRoughness = useGameStore((state) => state.debugParams.slamzRoughness);
+  const slamzMaxVelocity = useGameStore((state) => state.debugParams.slamzMaxVelocity);
 
   const materials = useMemo(() => {
-    const mat = getMaterialFromRegistry('pog', 'metal', theme, rarity);
+    const mat = getMaterialFromRegistry('slamz', 'metal', theme, rarity);
         const materialList = (Array.isArray(mat) ? mat : [mat]).filter(
       (material): material is THREE.MeshStandardMaterial =>
         typeof material === 'object' && material !== null && 'metalness' in material && 'roughness' in material
     );
 
     materialList.forEach((material) => {
-      material.metalness = pogMetalness;
-      material.roughness = pogRoughness;
+      material.metalness = slamzMetalness;
+      material.roughness = slamzRoughness;
       material.depthWrite = true;
       material.depthTest = true;
     });
 
     return mat;
-  }, [theme, rarity, pogMetalness, pogRoughness]);
+  }, [theme, rarity, slamzMetalness, slamzRoughness]);
   
-  const userData = useMemo(() => ({ name: `pog-${id}`, theme, rarity, 'pog-id': id }), [id, theme, rarity]);
+  const userData = useMemo(() => ({ name: `slamz-${id}`, theme, rarity, 'slamz-id': id }), [id, theme, rarity]);
 
   useEffect(() => {
     if (rb.current) {
@@ -14350,7 +14350,7 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
   useFrame(() => {
     if (!rb.current) return;
     
-    // In Volcanic mode, POGs stay Dynamic during the Bullet Time orbit
+    // In Volcanic mode, slamzs stay Dynamic during the Bullet Time orbit
     if (cinematicEngine.isCinematicActive) {
       if (rb.current.bodyType() !== 0) {
         rb.current.setBodyType(0, true); // 0 = Dynamic
@@ -14395,8 +14395,8 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
 
     // Velocity cap ONLY during cinematic (prevents nuclear launch during bullet time)
     // Once cinematic ends, let physics run naturally
-    if (cinematicEngine.isCinematicActive && velocityMagnitude > pogMaxVelocity * 1.5) {
-      const scaleVal = (pogMaxVelocity * 1.5) / velocityMagnitude;
+    if (cinematicEngine.isCinematicActive && velocityMagnitude > slamzMaxVelocity * 1.5) {
+      const scaleVal = (slamzMaxVelocity * 1.5) / velocityMagnitude;
       rb.current.setLinvel({
         x: linvel.x * scaleVal,
         y: linvel.y * scaleVal,
@@ -14421,14 +14421,14 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
       canSleep
     >
       <CylinderCollider args={[0.0245, 0.814]} />
-      <mesh material={materials} scale={pogScale} renderOrder={20}>
+      <mesh material={materials} scale={slamzScale} renderOrder={20}>
         <cylinderGeometry args={[0.814, 0.814, 0.049, 32]} />
       </mesh>
     </RigidBody>
   );
 });
 
-Pog.displayName = 'Pog';
+slamz.displayName = 'slamz';
 </file>
 
 <file path="src/components/ui/StartScreen.tsx">
@@ -14543,7 +14543,7 @@ export const StartScreen: React.FC = () => {
     setZooming(true);
     const handleStartGame = () => {
       useGameStore.getState().setGameState('AIMING');
-      useGameStore.getState().initPogs();
+      useGameStore.getState().initslamzs();
     };
     setTimeout(handleStartGame, 850);
   }, [setGameState, zooming, hasStartedAudio]);
@@ -14874,7 +14874,7 @@ export function GameController() {
   const hasProcessedSlam = useRef(false);
   const hitStopFrames = useRef<number>(0);
   const settleStartTime = useRef<number>(0);
-  const sustainedSettleTicks = useRef<number>(0); // Consecutive fixed-timestep ticks all pogs have been below threshold
+  const sustainedSettleTicks = useRef<number>(0); // Consecutive fixed-timestep ticks all slamzs have been below threshold
   const SUSTAINED_SETTLE_THRESHOLD = 20; // ~0.33s at 60Hz fixed-timestep â€” must stay settled this long
 
   const gameState  = useGameStore((s) => s.gameState);
@@ -14884,7 +14884,7 @@ export function GameController() {
   const setGameState  = useGameStore((s) => s.setGameState);
   const stats         = useGameStore((s) => s.stats);
   const updateStats   = useGameStore((s) => s.updateStats);
-  const removePog     = useGameStore((s) => s.removePog);
+  const removeslamz     = useGameStore((s) => s.removeslamz);
   const addToCollection = useGameStore((s) => s.addToCollection);
   const enqueueShowcase = useGameStore((s) => s.enqueueShowcase);
   const advanceShowcase = useGameStore((s) => s.advanceShowcase);
@@ -15000,7 +15000,7 @@ export function GameController() {
 
     // SUSTAINED-SETTLE CHECK: require N consecutive fixed-timestep ticks below
     // threshold before declaring victory. A single lucky frame of low velocity
-    // (e.g. from residual bullet-time damping or a pog passing zero-crossing
+    // (e.g. from residual bullet-time damping or a slamz passing zero-crossing
     // on its way up/down) is not enough. forceReset bypasses this.
     if (!forceReset) {
       if (allSettled) {
@@ -15045,20 +15045,20 @@ export function GameController() {
       }
     }
 
-    // â”€â”€ FACE-UP DETECTION + POGS-ON-MAT COUNT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    const faceUpPogs: string[] = [];
-    let pogsOnMatCount = 0;
+    // â”€â”€ FACE-UP DETECTION + slamzS-ON-MAT COUNT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    const faceUpslamzs: string[] = [];
+    let slamzsOnMatCount = 0;
     const MAT_RADIUS = debugParams.battleAreaScale;
 
     world.forEachRigidBody((body) => {
       const userData = body.userData as any;
-      if (typeof userData?.name !== 'string' || !userData.name.startsWith('pog-')) return;
+      if (typeof userData?.name !== 'string' || !userData.name.startsWith('slamz-')) return;
 
       // 1. Position-based "On Mat" check
       const pos = body.translation();
       const distFromCenter = Math.sqrt(pos.x ** 2 + pos.z ** 2);
       if (distFromCenter <= MAT_RADIUS) {
-        pogsOnMatCount++;
+        slamzsOnMatCount++;
       }
 
       // 2. Face-up detection
@@ -15067,22 +15067,22 @@ export function GameController() {
       _vec3.copy(WORLD_UP).applyQuaternion(_quat);
 
       if (_vec3.y > 0.7) {
-        faceUpPogs.push(userData['pog-id']);
+        faceUpslamzs.push(userData['slamz-id']);
       }
     });
 
     // Update state
-    useGameStore.getState().setPogsOnMat(pogsOnMatCount);
-    useGameStore.getState().setWinners(faceUpPogs);
+    useGameStore.getState().setslamzsOnMat(slamzsOnMatCount);
+    useGameStore.getState().setWinners(faceUpslamzs);
     
-    // Combo system: increment combo if POGs were flipped, reset if none
-    if (faceUpPogs.length > 0) {
+    // Combo system: increment combo if slamzs were flipped, reset if none
+    if (faceUpslamzs.length > 0) {
       useGameStore.getState().incrementCombo();
     } else {
       resetCombo();
     }
 
-    if (faceUpPogs.length > 0) {
+    if (faceUpslamzs.length > 0) {
       // ENTER HARVEST PHASE
       setGameState('HARVEST');
     } else {
@@ -15447,14 +15447,14 @@ export function Slammer() {
     // 1.5 HARVEST (Kinematic Hover)
     if (gameState === 'HARVEST') {
       const winners = useGameStore.getState().winners;
-      const pogs = useGameStore.getState().pogs;
+      const slamzs = useGameStore.getState().slamzs;
       
       let centerX = 0, centerZ = 0, count = 0;
       
       // Calculate centroid of winners from physics world
       world.forEachRigidBody((body) => {
         const ud = body.userData as any;
-        if (ud?.name?.startsWith('pog-') && winners.includes(ud['pog-id'])) {
+        if (ud?.name?.startsWith('slamz-') && winners.includes(ud['slamz-id'])) {
           const trans = body.translation();
           centerX += trans.x;
           centerZ += trans.z;
@@ -15553,17 +15553,17 @@ export function Slammer() {
 <file path="src/store/useGameStore.ts">
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import type { GameState, CollectionItem, SessionStats, PogData, GameMode, SessionScore, PracticeSession } from '../types/game';
-import { PROCEDURAL_THEMES, ASSET_THEMES } from '../constants/pogData';
+import type { GameState, CollectionItem, SessionStats, slamzData, GameMode, SessionScore, PracticeSession } from '../types/game';
+import { PROCEDURAL_THEMES, ASSET_THEMES } from '../constants/slamzData';
 import { SetManager } from '../systems/SetManager';
 
 export interface DebugParams {
-  // Physics - Pog
-  pogMass: number;
-  pogRestitution: number;
-  pogFriction: number;
-  pogLinearDamping: number;
-  pogAngularDamping: number;
+  // Physics - slamz
+  slamzMass: number;
+  slamzRestitution: number;
+  slamzFriction: number;
+  slamzLinearDamping: number;
+  slamzAngularDamping: number;
   
   // Physics - Slammer
   slammerMass: number;
@@ -15581,11 +15581,11 @@ export interface DebugParams {
   slammerScaleBoost: number;
   slammerEmissiveIntensity: number;
   
-  // Visual - Pog
-  pogScale: number;
-  pogRotationSpeed: number;
-  pogMetalness: number;
-  pogRoughness: number;
+  // Visual - slamz
+  slamzScale: number;
+  slamzRotationSpeed: number;
+  slamzMetalness: number;
+  slamzRoughness: number;
   
   // Camera
   baseFOV: number;
@@ -15672,12 +15672,12 @@ export interface DebugParams {
   cinematicCometFOVPunch: number;
   cinematicCometShakeIntensity: number;
   
-  // Pog Explosion & Scatter (Eruption Suite)
+  // slamz Explosion & Scatter (Eruption Suite)
   cinematicExplosionForce: number;
   cinematicScatterRadius: number;
   cinematicScatterHeight: number;
-  cinematicPogRotationSpeed: number;
-  cinematicPogFloatDuration: number;
+  cinematicslamzRotationSpeed: number;
+  cinematicslamzFloatDuration: number;
   
   // NEW: Collision Eruption Tuning
   eruptionUpwardMultiplier: number; // The "Kick"
@@ -15690,7 +15690,7 @@ export interface DebugParams {
   cinematicImpactFlashIntensity: number;
   cinematicMotionBlurStrength: number;
   
-  // Pog Lock-on Tracking
+  // slamz Lock-on Tracking
   cinematicLockOnEnabled: boolean;
   cinematicLockOnDuration: number;
   cinematicLockOnOrbitRadius: number;
@@ -15723,7 +15723,7 @@ export interface DebugParams {
 
 
   // New Physics Governance
-  pogMaxVelocity: number;
+  slamzMaxVelocity: number;
 
   // Arena Logo (slamz_logo.glb in Cyber Alley)
   arenaLogoScale: number;
@@ -15820,11 +15820,11 @@ export interface DebugParams {
 }
 
 export const DEFAULT_DEBUG_PARAMS: DebugParams = {
-  "pogMass": 0.25,
-  "pogRestitution": 0.35,
-  "pogFriction": 1,
-  "pogLinearDamping": 0.8,
-  "pogAngularDamping": 1,
+  "slamzMass": 0.25,
+  "slamzRestitution": 0.35,
+  "slamzFriction": 1,
+  "slamzLinearDamping": 0.8,
+  "slamzAngularDamping": 1,
   "slammerMass": 2.5,
   "slammerRestitution": 0.45,
   "slammerFriction": 0.2,
@@ -15837,10 +15837,10 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "slammerOpacity": 0.75,
   "slammerScaleBoost": 0.15,
   "slammerEmissiveIntensity": 1.5,
-  "pogScale": 1,
-  "pogRotationSpeed": 0.002,
-  "pogMetalness": 0.3,
-  "pogRoughness": 0.7,
+  "slamzScale": 1,
+  "slamzRotationSpeed": 0.002,
+  "slamzMetalness": 0.3,
+  "slamzRoughness": 0.7,
   "baseFOV": 49,
   "punchFOV": 65,
   "fovLerpSpeed": 0.15,
@@ -15906,8 +15906,8 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "cinematicExplosionForce": 15,
   "cinematicScatterRadius": 8,
   "cinematicScatterHeight": 6,
-  "cinematicPogRotationSpeed": 8,
-  "cinematicPogFloatDuration": 1.5,
+  "cinematicslamzRotationSpeed": 8,
+  "cinematicslamzFloatDuration": 1.5,
   "eruptionUpwardMultiplier": 2.2,
   "eruptionRadius": 3,
   "eruptionTorqueMultiplier": 0.45,
@@ -15938,7 +15938,7 @@ export const DEFAULT_DEBUG_PARAMS: DebugParams = {
   "wraithArenaPositionZ": 0.25,
   "wraithArenaScale": 15,
   "wraithArenaRotationY": 3.98,
-  "pogMaxVelocity": 15,
+  "slamzMaxVelocity": 15,
   "arenaLogoScale": 22.1,
   "arenaLogoPositionX": -20.5,
   "arenaLogoPositionY": 24.5,
@@ -16027,7 +16027,7 @@ export interface GameStore {
   powerDirection: number;
   collection: any;
   stats: SessionStats;
-  pogs: PogData[];
+  slamzs: slamzData[];
   showcaseQueue: ShowcaseItem[];
   currentShowcase: ShowcaseItem | null;
   lastSlamText: string | null;
@@ -16061,8 +16061,8 @@ export interface GameStore {
   gameMode: GameMode;
   practiceSession: PracticeSession | null;
   sessionScore: SessionScore;
-  selectedForPractice: PogData[];
-  faceUpPogs: string[];
+  selectedForPractice: slamzData[];
+  faceUpslamzs: string[];
   
   // Combo system
   currentCombo: number;
@@ -16086,19 +16086,19 @@ export interface GameStore {
   isCinematicActive: boolean;
   bulletTimeActive: boolean;
   globalDampingScale: number;
-  pogsOnMat: number; // Scoreboard tracking
+  slamzsOnMat: number; // Scoreboard tracking
 
   // Actions
-  initPogs: () => void;
+  initslamzs: () => void;
   setGameState: (state: GameState) => void;
   setPower: (power: number) => void;
   setPowerDirection: (dir: number) => void;
   addToCollection: (item: CollectionItem) => void;
   updateStats: (updates: Partial<SessionStats>) => void;
-  winners: string[]; // IDs of pogs won in current round
+  winners: string[]; // IDs of slamzs won in current round
   setWinners: (ids: string[]) => void;
-  setPogs: (pogs: PogData[]) => void;
-  removePog: (id: string) => void;
+  setslamzs: (slamzs: slamzData[]) => void;
+  removeslamz: (id: string) => void;
   resetStack: () => void;
   resetGame: () => void;
   enqueueShowcase: (items: ShowcaseItem[]) => void;
@@ -16108,8 +16108,8 @@ export interface GameStore {
   toggleAchievements: () => void;
   showAchievementToast: (text: string) => void;
   setSlammerType: (type: string) => void;
-  addFaceUpPog: (pogId: string) => void;
-  setFaceUpPogs: (pogIds: string[]) => void;
+  addFaceUpslamz: (slamzId: string) => void;
+  setFaceUpslamzs: (slamzIds: string[]) => void;
   endPracticeSession: () => void;
   toggleShowcaseRatio: () => void;
   togglePause: () => void;
@@ -16135,7 +16135,7 @@ export interface GameStore {
   triggerPerfectHit: () => void;
   setBulletTimeScale: (scale: number) => void;
   setIsCinematicActive: (active: boolean) => void;
-  setPogsOnMat: (count: number) => void;
+  setslamzsOnMat: (count: number) => void;
   
   togglePhysicsDebug: () => void;
   
@@ -16177,13 +16177,13 @@ export const useGameStore = create<GameStore>()(
       winners: [],
       power: 0,
       powerDirection: 1,
-      collection: JSON.parse(localStorage.getItem('pogCollection') || '[]'),
+      collection: JSON.parse(localStorage.getItem('slamzCollection') || '[]'),
       stats: {
         totalSlams: 0,
-        pogsWon: 0,
+        slamzsWon: 0,
         bestCombo: 0,
       },
-      pogs: [],
+      slamzs: [],
       showcaseQueue: [],
       currentShowcase: null,
       lastSlamText: null,
@@ -16220,16 +16220,16 @@ export const useGameStore = create<GameStore>()(
       gameMode: 'CLASSIC',
       practiceSession: null,
       sessionScore: {
-        totalPogsFlipped: 0,
+        totalslamzsFlipped: 0,
         currentCombo: 0,
         bestCombo: 0,
         accuracy: 100,
         streak: 0,
         totalScore: 0,
-        faceUpPogs: [],
+        faceUpslamzs: [],
       },
       selectedForPractice: [],
-      faceUpPogs: [],
+      faceUpslamzs: [],
       
       // Combo system initial state
       currentCombo: 0,
@@ -16253,13 +16253,13 @@ export const useGameStore = create<GameStore>()(
       isCinematicActive: false,
       bulletTimeActive: false,
       globalDampingScale: 0,
-      pogsOnMat: 0,
+      slamzsOnMat: 0,
       peakVelocity: 0,
 
       // Actions
-      initPogs: () => {
+      initslamzs: () => {
         const state = get();
-        if (state.pogs.length > 0) {
+        if (state.slamzs.length > 0) {
           return;
         }
         get().resetStack();
@@ -16272,7 +16272,7 @@ export const useGameStore = create<GameStore>()(
 
       addToCollection: (item) => set((state) => {
         const newCollection = [...state.collection, item];
-        localStorage.setItem('pogCollection', JSON.stringify(newCollection));
+        localStorage.setItem('slamzCollection', JSON.stringify(newCollection));
         state.setManager.onCapture(newCollection);
         return { collection: newCollection };
       }),
@@ -16281,18 +16281,18 @@ export const useGameStore = create<GameStore>()(
         stats: { ...state.stats, ...updates }
       })),
 
-      setPogs: (pogs) => set({ pogs }),
+      setslamzs: (slamzs) => set({ slamzs }),
       setWinners: (ids: string[]) => set({ winners: ids }),
 
-      removePog: (id) => set((state) => ({
-        pogs: state.pogs.filter(p => p.id !== id)
+      removeslamz: (id) => set((state) => ({
+        slamzs: state.slamzs.filter(p => p.id !== id)
       })),
 
       resetStack: () => {
-        const currentPogs = get().pogs;
+        const currentslamzs = get().slamzs;
 
-        if (currentPogs.length === 0) {
-          const initialPogs: PogData[] = [];
+        if (currentslamzs.length === 0) {
+          const initialslamzs: slamzData[] = [];
           for (let i = 0; i < 15; i++) {
             const jitterX = (Math.random() - 0.5) * 0.05;
             const jitterZ = (Math.random() - 0.5) * 0.05;
@@ -16312,17 +16312,17 @@ export const useGameStore = create<GameStore>()(
               theme = PROCEDURAL_THEMES[Math.floor(Math.random() * PROCEDURAL_THEMES.length)];
             }
 
-            initialPogs.push({
-              id: `pog_pool_${i}`,
+            initialslamzs.push({
+              id: `slamz_pool_${i}`,
               theme,
               rarity,
               position: [jitterX, 0.25 + i * 0.09, jitterZ] as [number, number, number],
               rotation: [0, Math.random() * Math.PI * 2, 0] as [number, number, number],
             });
           }
-          set({ pogs: initialPogs });
+          set({ slamzs: initialslamzs });
         } else {
-          const updatedPogs = currentPogs.map((pog, i) => {
+          const updatedslamzs = currentslamzs.map((slamz, i) => {
             const jitterX = (Math.random() - 0.5) * 0.05;
             const jitterZ = (Math.random() - 0.5) * 0.05;
             const rarityRoll = Math.random();
@@ -16342,26 +16342,26 @@ export const useGameStore = create<GameStore>()(
             }
 
             return {
-              ...pog,
+              ...slamz,
               theme,
               rarity,
               position: [jitterX, 0.35 + i * 0.09, jitterZ] as [number, number, number],
               rotation: [0, Math.random() * Math.PI * 2, 0] as [number, number, number],
             };
           });
-          set({ pogs: updatedPogs, gameState: 'AIMING', power: 0, showcaseQueue: [], currentShowcase: null, peakVelocity: 0 });
+          set({ slamzs: updatedslamzs, gameState: 'AIMING', power: 0, showcaseQueue: [], currentShowcase: null, peakVelocity: 0 });
         }
       },
 
       resetGame: () => {
-        localStorage.removeItem('pogCollection');
+        localStorage.removeItem('slamzCollection');
         get().setManager.resetAll();
         set({
           gameState: 'AIMING',
           power: 0,
           collection: [],
-          stats: { totalSlams: 0, pogsWon: 0, bestCombo: 0 },
-          pogs: [],
+          stats: { totalSlams: 0, slamzsWon: 0, bestCombo: 0 },
+          slamzs: [],
           showcaseQueue: [],
           currentShowcase: null,
         });
@@ -16405,37 +16405,37 @@ export const useGameStore = create<GameStore>()(
 
       setQualityLevel: (qualityLevel: 'low' | 'medium' | 'high') => set({ qualityLevel }),
 
-      addFaceUpPog: (pogId: string) => set((state) => ({
-        faceUpPogs: [...state.faceUpPogs, pogId],
-        sessionScore: { ...state.sessionScore, faceUpPogs: [...state.sessionScore.faceUpPogs, pogId] }
+      addFaceUpslamz: (slamzId: string) => set((state) => ({
+        faceUpslamzs: [...state.faceUpslamzs, slamzId],
+        sessionScore: { ...state.sessionScore, faceUpslamzs: [...state.sessionScore.faceUpslamzs, slamzId] }
       })),
 
-      setFaceUpPogs: (pogIds: string[]) => set((state) => ({
-        faceUpPogs: pogIds,
-        sessionScore: { ...state.sessionScore, faceUpPogs: pogIds }
+      setFaceUpslamzs: (slamzIds: string[]) => set((state) => ({
+        faceUpslamzs: slamzIds,
+        sessionScore: { ...state.sessionScore, faceUpslamzs: slamzIds }
       })),
 
       setGameMode: (gameMode: GameMode) => set({ gameMode }),
       
-      startPracticeSession: (selectedPogs: PogData[], mode: GameMode = 'PRACTICE_FOR_KEEPS') => {
+      startPracticeSession: (selectedslamzs: slamzData[], mode: GameMode = 'PRACTICE_FOR_KEEPS') => {
         const session: PracticeSession = {
-          selectedPogs,
+          selectedslamzs,
           mode,
           score: {
-            totalPogsFlipped: 0,
+            totalslamzsFlipped: 0,
             currentCombo: 0,
             bestCombo: 0,
             accuracy: 100,
             streak: 0,
             totalScore: 0,
-            faceUpPogs: [],
+            faceUpslamzs: [],
           },
           startTime: Date.now(),
         };
         
         set({ 
-          pogs: selectedPogs.map((pog) => ({
-            ...pog,
+          slamzs: selectedslamzs.map((slamz) => ({
+            ...slamz,
             position: [0, 0, 0] as [number, number, number],
             rotation: [0, 0, 0] as [number, number, number],
           })),
@@ -16446,7 +16446,7 @@ export const useGameStore = create<GameStore>()(
       
       endPracticeSession: () => set((state) => ({
         gameState: 'SESSION_SUMMARY',
-        selectedForPractice: state.practiceSession?.selectedPogs || [],
+        selectedForPractice: state.practiceSession?.selectedslamzs || [],
       })),
 
       toggleShowcaseRatio: () => set((state) => ({
@@ -16506,7 +16506,7 @@ export const useGameStore = create<GameStore>()(
       
       endSession: () => set((state) => ({
         sessionActive: false,
-        finalScore: state.stats.pogsWon * 50 * state.comboMultiplier,
+        finalScore: state.stats.slamzsWon * 50 * state.comboMultiplier,
         bestCombo: Math.max(state.bestCombo, state.currentCombo)
       })),
       
@@ -16529,7 +16529,7 @@ export const useGameStore = create<GameStore>()(
 
       setBulletTimeScale: (bulletTimeScale: number) => set({ bulletTimeScale }),
       setIsCinematicActive: (isCinematicActive) => set({ isCinematicActive }),
-      setPogsOnMat: (pogsOnMat) => set({ pogsOnMat }),
+      setslamzsOnMat: (slamzsOnMat) => set({ slamzsOnMat }),
     };
   })
 );

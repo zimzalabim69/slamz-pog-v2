@@ -47,7 +47,7 @@
 ## [2026-04-13] - Documentation Overhaul "Indestructible"
 - **Unified Standards**: Consolidated React Hook hygiene rules into `DEVELOPER_GUIDE.md`.
 - **Physics Registry**: Documented all "Magic Numbers" (Gravity: -16, Slam: -22) for future tuning.
-- **Asset Pipeline**: Added 3-step tutorial for procedural POG set generation.
+- **Asset Pipeline**: Added 3-step tutorial for procedural SLAMZ set generation.
 - **Submission Checklist**: Added Vibejam 2026 pre-flight checklist.
 - **Crisis Archive**: Moved historical "React Hooks Crisis" details to `PORT_DOCUMENTATION.md`.
 

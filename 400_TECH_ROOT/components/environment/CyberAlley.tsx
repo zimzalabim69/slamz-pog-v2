@@ -1,11 +1,19 @@
 import * as THREE from 'three';
 import { useMemo, useRef, Suspense, Component } from 'react';
 import type { ReactNode } from 'react';
-import { useFrame } from '@react-three/fiber';
 import { useGameStore } from '@100/store/useGameStore';
-import { useGLTF, Text } from '@react-three/drei';
-import { RigidBody } from '@react-three/rapier';
+import { useGLTF } from '@react-three/drei';
 import { SlamzWraith } from '@100/components/game/SlamzWraith';
+
+// THE EXACT GHOST WIREFRAME MATERIAL
+const ghostWireframeMat = new THREE.MeshBasicMaterial({
+  color: '#00ffff',
+  wireframe: true,
+  transparent: true,
+  opacity: 0.6,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+});
 
 /**
  * Silent Error Boundary
@@ -24,23 +32,6 @@ class SilentErrorBoundary extends Component<{ children: ReactNode }, { hasError:
   }
 }
 
-function makeNeonSignTexture(text: string, bgColor: string, textColor: string) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512; canvas.height = 128;
-  const ctx = canvas.getContext('2d')!;
-  ctx.fillStyle = bgColor; ctx.fillRect(0, 0, 512, 128);
-  ctx.shadowBlur = 24; ctx.shadowColor = textColor;
-  ctx.strokeStyle = textColor; ctx.lineWidth = 4;
-  ctx.strokeRect(8, 8, 496, 112);
-  ctx.shadowBlur = 30; ctx.fillStyle = textColor;
-  ctx.font = 'bold 60px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(text, 256, 64);
-  return new THREE.CanvasTexture(canvas);
-}
-
-const SIGN_TEX_OPEN = makeNeonSignTexture('OPEN 24H', '#0a000a', '#ff007c');
-const SIGN_TEX_SLAMZ = makeNeonSignTexture('SLAMZ', '#000a0a', '#00e5ff');
-
 function ArcadeModel({ 
   url,
   position, 
@@ -58,19 +49,9 @@ function ArcadeModel({
     const clone = scene.clone();
     clone.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
-        const name = child.name.toLowerCase();
-        
-        // Ensure everything is visible but calibrated
-        child.visible = true; 
-        child.castShadow = true;
-        child.receiveShadow = true;
-
-        if (name.includes('neon') || name.includes('light') || name.includes('emissive')) {
-           if ((child as THREE.Mesh).material) {
-             const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
-             mat.emissiveIntensity = 2;
-           }
-        }
+        // FORCE THE WIREFRAME VIBE ON EVERYTHING
+        (child as THREE.Mesh).material = ghostWireframeMat;
+        child.visible = true;
       }
     });
     return clone;
@@ -186,7 +167,37 @@ export function CyberAlley() {
           scale={debugParams.arcadeBackScale}
         />
       )}
+
+      {/* DYNAMIC POWER SURGE LIGHTS */}
+      <SurgeController />
     </group>
   );
 }
 
+import { physicsFogBridge } from '@400/systems/PhysicsFogBridge';
+import { useFrame } from '@react-three/fiber';
+
+function SurgeController() {
+  const lightRef = useRef<THREE.PointLight>(null);
+  const ambientRef = useRef<THREE.AmbientLight>(null);
+
+  useFrame(() => {
+    const energy = physicsFogBridge.energy;
+    const flicker = 0.8 + Math.random() * 0.4;
+    
+    // Dim ambient light when energy is high (Power drain)
+    if (ambientRef.current) {
+      const targetIntensity = energy > 1000 ? 0.1 : 0.4;
+      ambientRef.current.intensity = THREE.MathUtils.lerp(ambientRef.current.intensity, targetIntensity * flicker, 0.2);
+    }
+
+    // Flicker main light
+    if (lightRef.current) {
+      const surgeIntensity = energy > 500 ? 50 * flicker : 1;
+      lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, surgeIntensity, 0.2);
+    }
+  });
+
+  // MeshBasicMaterial is unlit, so we don't need real lights anymore.
+  return null;
+}

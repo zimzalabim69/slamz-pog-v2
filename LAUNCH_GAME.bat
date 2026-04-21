@@ -1,14 +1,14 @@
 @echo off
 setlocal
 
-set "PROJECT_DIR=C:\Users\sikke\CascadeProjects\slamz-pog-v2"
+set "PROJECT_DIR=%~dp0"
 set "GAME_URL=http://127.0.0.1:4173"
 
 cd /d "%PROJECT_DIR%"
 
 echo.
 echo ========================================
-echo   SLAMZ POG v2 - VIBE JAM 2026
+echo   SLAMZ PRO-TOUR v2 - VIBE JAM 2026
 echo ========================================
 echo.
 

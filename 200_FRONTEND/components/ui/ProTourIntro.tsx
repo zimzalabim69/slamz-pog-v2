@@ -34,7 +34,7 @@ export const ProTourIntro = ({ onStartComplete }: ProTourIntroProps) => {
         <div className="flex h-full items-center justify-center bg-black">
           <div className="text-cyan-500 font-mono text-sm animate-pulse">
             {'>'} INITIALIZING NEURAL LINK...<br/>
-            {'>'} LOADING POG_ENGINE_V2.0.6...<br/>
+            {'>'} LOADING slamz_ENGINE_V2.0.6...<br/>
             {'>'} SLAMMER CALIBRATION: OK
           </div>
         </div>

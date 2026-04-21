@@ -166,3 +166,8 @@
     66% { transform: translate(10px, 0) scaleY(1.5); border-color: #ff0055; }
     100% { transform: translate(0, 0); filter: none; }
 }
+
+@keyframes impactFlashAnim {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.1); }
+}

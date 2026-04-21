@@ -24,7 +24,7 @@ export function PhysicsFogController() {
         const pos = body.translation();
         const userData = body.userData as any;
         
-        // Identify if it's a special glowing POG
+        // Identify if it's a special glowing SLAMZ
         let color = '';
         if (userData?.rarity === 'holographic') color = '#ff00ff';
         else if (userData?.rarity === 'shiny') color = '#00ffff';

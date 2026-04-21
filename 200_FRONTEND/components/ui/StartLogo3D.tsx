@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGameStore } from '@100/store/useGameStore';
+import { GAME_CONFIG } from '@100/constants/gameConfig';
 import { audioManager } from '@500/utils/AudioManager';
 
 // ─── Easing Functions ───────────────────────────────────────
@@ -32,9 +33,9 @@ const SLAM_DURATION = 1.2;
 const DROP_HEIGHT = 60;
 const DROP_SCALE_BOOST = 1.3;
 
-// ─── Pog Explosion System ───────────────────────────────────
+// ─── slamz Explosion System ───────────────────────────────────
 
-interface PogParticle {
+interface SlamzParticle {
   px: number; py: number; pz: number;
   vx: number; vy: number; vz: number;
   rx: number; ry: number; rz: number;
@@ -50,8 +51,8 @@ const GROUND_Y = -6;
 const DAMPING = 0.55;
 const ANGULAR_DAMPING = 0.88;
 
-function createParticles(ix: number, iy: number, iz: number): PogParticle[] {
-  const particles: PogParticle[] = [];
+function createParticles(ix: number, iy: number, iz: number): SlamzParticle[] {
+  const particles: SlamzParticle[] = [];
   for (let i = 0; i < PARTICLE_COUNT; i++) {
     const angle = (Math.PI * 2 * i) / PARTICLE_COUNT + (Math.random() - 0.5) * 0.8;
     const speed = 6 + Math.random() * 18;
@@ -68,7 +69,7 @@ function createParticles(ix: number, iy: number, iz: number): PogParticle[] {
       avx: (Math.random() - 0.5) * 18,
       avy: (Math.random() - 0.5) * 18,
       avz: (Math.random() - 0.5) * 18,
-      scale: (0.5 + Math.random() * 0.6) * 1.5 * (useGameStore.getState().debugParams.pogScale || 1),
+      scale: (0.5 + Math.random() * 0.6) * 1.5 * (useGameStore.getState().debugParams.slamzScale || 1),
       settled: false,
       groundY: GROUND_Y + Math.random() * 1.0,
       bounces: 0,
@@ -77,20 +78,20 @@ function createParticles(ix: number, iy: number, iz: number): PogParticle[] {
   return particles;
 }
 
-function PogExplosion({ active, impactX, impactY, impactZ }: {
+function SlamzExplosion({ active, impactX, impactY, impactZ }: {
   active: boolean;
   impactX: number;
   impactY: number;
   impactZ: number;
 }) {
   const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const particlesRef = useRef<PogParticle[] | null>(null);
+  const particlesRef = useRef<SlamzParticle[] | null>(null);
   const debugParams = useGameStore((state) => state.debugParams);
 
-  // Shared geometry (cylinder pog shape)
+  // Shared geometry (cylinder slamz shape)
   const geometry = useMemo(() => new THREE.CylinderGeometry(0.55, 0.55, 0.09, 24), []);
 
-  // SLAMZ graffiti gradient materials - each pog gets a unique 2-color gradient
+  // SLAMZ graffiti gradient materials - each slamz gets a unique 2-color gradient
   const materials = useMemo(() => {
     const palette = [
       new THREE.Color('#00ffff'), // bright cyan
@@ -135,7 +136,7 @@ function PogExplosion({ active, impactX, impactY, impactZ }: {
           varying vec3 vNormal;
           varying vec3 vViewDir;
           void main() {
-            // Diagonal gradient across the pog face
+            // Diagonal gradient across the slamz face
             float grad = smoothstep(0.0, 1.0, (vUv.x + vUv.y) * 0.5);
             vec3 baseColor = mix(colorA, colorB, grad);
 
@@ -255,13 +256,13 @@ export function StartLogo3D() {
         const mesh = child as THREE.Mesh;
         const mat = mesh.material as THREE.MeshStandardMaterial;
         if (mat) {
-          mat.metalness = debugParams.pogMetalness;
-          mat.roughness = debugParams.pogRoughness;
+          mat.metalness = GAME_CONFIG.SLAMZ_METALNESS;
+          mat.roughness = GAME_CONFIG.SLAMZ_ROUGHNESS;
           mat.needsUpdate = true;
         }
       }
     });
-  }, [scene, debugParams.pogMetalness, debugParams.pogRoughness]);
+  }, [scene, GAME_CONFIG.SLAMZ_METALNESS, GAME_CONFIG.SLAMZ_ROUGHNESS]);
 
   // Fire impact effects once
   const fireImpact = useCallback(() => {
@@ -289,12 +290,7 @@ export function StartLogo3D() {
     // Audio
     audioManager.playSfx('slam_start', 0.7);
 
-    // Haptic
-    if ('vibrate' in navigator) {
-      navigator.vibrate([30, 20, 80]);
-    }
-
-    // POG EXPLOSION
+    // slamz EXPLOSION
     setExplosionActive(true);
   }, []);
 
@@ -348,7 +344,7 @@ export function StartLogo3D() {
       <group ref={groupRef}>
         <primitive object={scene.clone()} />
       </group>
-      <PogExplosion
+      <SlamzExplosion
         active={explosionActive}
         impactX={impactCoords.current.x}
         impactY={impactCoords.current.y}

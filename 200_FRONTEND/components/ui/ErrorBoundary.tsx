@@ -5,7 +5,6 @@
 
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
-import { mobileLogger } from '@500/utils/mobileLogger';
 import './ErrorBoundary.css';
 
 interface Props {
@@ -30,16 +29,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('React Error Boundary caught an error:', error, errorInfo);
-    
-    // Log to mobile logger for detailed debugging
-    mobileLogger.error('React Error Boundary caught error', {
-      errorMessage: error.message,
-      errorStack: error.stack,
-      componentStack: errorInfo.componentStack,
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-      timestamp: new Date().toISOString()
-    });
+    console.error('Component stack:', errorInfo.componentStack);
     
     this.setState({
       error,
@@ -47,8 +37,8 @@ export class ErrorBoundary extends Component<Props, State> {
     });
 
     // Log error details for debugging
-    console.log('Error Stack:', error.stack);
-    console.log('Component Stack:', errorInfo.componentStack);
+    
+    
   }
 
   render() {

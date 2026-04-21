@@ -3,11 +3,11 @@ import { useGameStore } from '@100/store/useGameStore';
 import * as THREE from 'three';
 
 interface FaceUpEffectProps {
-  pogId: string;
+  slamzId: string;
   position: [number, number, number];
 }
 
-export function FaceUpEffect({ pogId, position }: FaceUpEffectProps) {
+export function FaceUpEffect({ slamzId, position }: FaceUpEffectProps) {
   const qualityLevel = useGameStore((state) => state.qualityLevel);
   const meshRef = useRef<THREE.Mesh>(null);
   
@@ -40,7 +40,7 @@ export function FaceUpEffect({ pogId, position }: FaceUpEffectProps) {
     }, 2000);
     
     return () => clearTimeout(timeout);
-  }, [pogId, qualityLevel]);
+  }, [slamzId, qualityLevel]);
 
   return (
     <mesh ref={meshRef} position={position}>

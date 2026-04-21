@@ -2,8 +2,9 @@ import { RigidBody, CylinderCollider, RapierRigidBody } from '@react-three/rapie
 import { useFrame } from '@react-three/fiber';
 import { useGameStore } from '@100/store/useGameStore';
 import { useRef, useEffect, memo, useMemo, useState } from 'react';
-import { getMaterialFromRegistry } from '@500/utils/TextureGenerator';
+import { getMaterialFromRegistry, generateGlowTexture } from '@500/utils/TextureGenerator';
 import { cinematicEngine } from '@400/systems/CinematicEngine';
+import { GAME_CONFIG } from '@100/constants/gameConfig';
 import * as THREE from 'three';
 
 // Procedural Fragment Geometry
@@ -38,19 +39,35 @@ const ShardFragment = ({ position, color }: ShardProps) => {
   return (
     <RigidBody ref={rb} position={position} colliders="cuboid">
       <mesh geometry={fragmentGeom}>
-        <meshStandardMaterial 
+        <meshBasicMaterial 
           color={color} 
-          emissive={color} 
-          emissiveIntensity={4} 
           transparent 
           opacity={opacity} 
+          wireframe={true}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
     </RigidBody>
   );
 };
 
-interface PogProps {
+const GlowHalo = ({ color, opacity }: { color: string, opacity: number }) => {
+  const tex = useMemo(() => generateGlowTexture(), []);
+  return (
+    <sprite scale={[4, 4, 1]}>
+      <spriteMaterial 
+        map={tex} 
+        color={color} 
+        transparent 
+        opacity={opacity * 0.4}
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+      />
+    </sprite>
+  );
+};
+
+interface SlamzProps {
   id: string;
   theme: string;
   rarity: 'standard' | 'shiny' | 'holographic';
@@ -58,7 +75,7 @@ interface PogProps {
   rotation: [number, number, number];
 }
 
-export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) => {
+export const Slamz = memo(({ id, theme, rarity, position, rotation }: SlamzProps) => {
   const rb = useRef<RapierRigidBody>(null);
   const shatteringIds = useGameStore((s) => s.shatteringIds);
   const finalizeShatter = useGameStore((s) => s.finalizeShatter);
@@ -74,31 +91,29 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
   };
   const baseColor = rarityColors[rarity] || '#00ffff';
 
-  const ghostMat = useMemo(() => new THREE.MeshStandardMaterial({
+  const ghostMat = useMemo(() => new THREE.MeshBasicMaterial({
     color: baseColor,
-    emissive: baseColor,
-    emissiveIntensity: 2,
     wireframe: true,
     transparent: true,
     opacity: 0.6,
     blending: THREE.AdditiveBlending,
-    depthWrite: false, // Allows seeing through stacked pogs for 'digital lattice' effect
+    depthWrite: false, // Allows seeing through stacked slamz for 'digital lattice' effect
   }), [baseColor]);
 
   const pulseRef = useRef(0);
 
-  const mass = useGameStore((state) => state.debugParams.pogMass);
-  const friction = useGameStore((state) => state.debugParams.pogFriction);
-  const restitution = useGameStore((state) => state.debugParams.pogRestitution);
-  const linearDampingDefault = useGameStore((state) => state.debugParams.pogLinearDamping);
-  const angularDampingDefault = useGameStore((state) => state.debugParams.pogAngularDamping);
-  const pogScale = useGameStore((state) => state.debugParams.pogScale);
-  const pogMaxVelocity = useGameStore((state) => state.debugParams.pogMaxVelocity);
+  const mass = GAME_CONFIG.SLAMZ_MASS;
+  const friction = GAME_CONFIG.SLAMZ_FRICTION;
+  const restitution = GAME_CONFIG.SLAMZ_RESTITUTION;
+  const linearDampingDefault = GAME_CONFIG.SLAMZ_LINEAR_DAMPING;
+  const angularDampingDefault = GAME_CONFIG.SLAMZ_ANGULAR_DAMPING;
+  const slamzScale = GAME_CONFIG.SLAMZ_SCALE;
+  const slamzMaxVelocity = GAME_CONFIG.SLAMZ_MAX_VELOCITY;
 
   const winners = useGameStore((s) => s.winners);
   const isWinner = winners.includes(id);
   
-  const userData = useMemo(() => ({ name: `pog-${id}`, theme, rarity, 'pog-id': id }), [id, theme, rarity]);
+  const userData = useMemo(() => ({ name: `slamz-${id}`, theme, rarity, 'slamz-id': id }), [id, theme, rarity]);
 
   useEffect(() => {
     if (isShattering && shatterStep === 'NONE') {
@@ -141,15 +156,12 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
   useFrame((state) => {
     if (!rb.current) return;
     
-    // GHOST PULSE Logic
-    pulseRef.current = 2.0 + Math.sin(state.clock.elapsedTime * 6) * 1.5;
-    if (isWinner) {
-      pulseRef.current = 5.0 + Math.sin(state.clock.elapsedTime * 15) * 3.0; // Violent pulse on win
-    }
-    ghostMat.emissiveIntensity = pulseRef.current;
-    ghostMat.opacity = isWinner ? 0.9 : 0.6;
+    // GHOST PULSE Logic (Opacity-based for MeshBasicMaterial)
+    const pulseBase = isWinner ? 0.8 : 0.5;
+    const pulseAmount = isWinner ? 0.2 : 0.1;
+    ghostMat.opacity = pulseBase + Math.sin(state.clock.elapsedTime * (isWinner ? 15 : 6)) * pulseAmount;
 
-    // ATOMIC HIT-STOP: Freeze all pog logic during impact crunch
+    // ATOMIC HIT-STOP: Freeze all slamz logic during impact crunch
     if (useGameStore.getState().hitStopActive) return;
 
     if (isShattering) return;
@@ -176,8 +188,8 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
     const velocityMagnitude = Math.sqrt(linvel.x ** 2 + linvel.y ** 2 + linvel.z ** 2);
     if (velocityMagnitude > 0.01) setPeakVelocity(velocityMagnitude);
 
-    if (cinematicEngine.isCinematicActive && velocityMagnitude > pogMaxVelocity * 1.5) {
-      const scaleVal = (pogMaxVelocity * 1.5) / velocityMagnitude;
+    if (cinematicEngine.isCinematicActive && velocityMagnitude > slamzMaxVelocity * 1.5) {
+      const scaleVal = (slamzMaxVelocity * 1.5) / velocityMagnitude;
       rb.current.setLinvel({
         x: linvel.x * scaleVal,
         y: linvel.y * scaleVal,
@@ -218,14 +230,15 @@ export const Pog = memo(({ id, theme, rarity, position, rotation }: PogProps) =>
       <CylinderCollider args={[0.0245, 0.814]} />
       <mesh 
         material={ghostMat} 
-        scale={pogScale} 
+        scale={slamzScale} 
         renderOrder={20}
         visible={(shatterStep as string) !== 'EXPLODED'}
       >
         <cylinderGeometry args={[0.814, 0.814, 0.049, 32]} />
       </mesh>
+      <GlowHalo color={baseColor} opacity={ghostMat.opacity} />
     </RigidBody>
   );
 });
 
-Pog.displayName = 'Pog';
+Slamz.displayName = 'Slamz';

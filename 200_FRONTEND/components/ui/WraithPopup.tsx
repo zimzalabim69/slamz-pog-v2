@@ -4,16 +4,16 @@ import './WraithPopup.css';
 
 const WRAITH_TAUNTS = {
   early: ["YOU_AR3_3N7R4PP3D", "QU17_WH1L3_YOU_C4N", "7H1$_1$_MY_W0RLD", "D474_H31$7_1MM1N3N7"],
-  mid: ["P0G_73CH_1$_0B$0L373", "YOU_F1GH7_PHYNIK$", "I_4M_7H3_C0D3", "B0R1NG_P$YCH0L0GY"],
+  mid: ["SLAMZ_73CH_1$_0B$0L373", "YOU_F1GH7_PHYNIK$", "I_4M_7H3_C0D3", "B0R1NG_P$YCH0L0GY"],
   late: ["7H3_FL1P_W0N7_H3LP", "YOUR_F1NG3R$_4R3_W34K", "3X7R4C710N_F41LUR3", "YOU_4R3_C0N$UM3D"],
   swarm: ["$Y$73M_FAILUR3", "L0W_P0W3R_P47H371C", "M1$$_D373C73D", "YOU_C4NN07_3$C4P3"],
 };
 
-function getWraithTaunt(pogsWon: number, isSwarm: boolean): string {
+function getWraithTaunt(slamzWon: number, isSwarm: boolean): string {
   let stage: 'early' | 'mid' | 'late' | 'swarm' = 'early';
   if (isSwarm) stage = 'swarm';
-  else if (pogsWon > 25) stage = 'late';
-  else if (pogsWon > 8) stage = 'mid';
+  else if (slamzWon > 25) stage = 'late';
+  else if (slamzWon > 8) stage = 'mid';
 
   const pool = WRAITH_TAUNTS[stage];
   let text = pool[Math.floor(Math.random() * pool.length)];
@@ -40,7 +40,7 @@ export function WraithPopup() {
 
   const isCinematicActive = useGameStore((s) => s.isCinematicActive);
   const bulletTimeActive = useGameStore((s) => s.bulletTimeActive);
-  const pogsWon = useGameStore((s) => s.pogsOnMat); 
+  const slamzWon = useGameStore((s) => s.slamzOnMat); 
   const throwsRemaining = useGameStore((s) => s.throwsRemaining);
 
   const swarmActive = useGameStore((s) => s.swarmActive);
@@ -66,7 +66,7 @@ export function WraithPopup() {
         id,
         x: 5 + Math.random() * 70,
         y: 5 + Math.random() * 70,
-        taunt: getWraithTaunt(pogsWon, true)
+        taunt: getWraithTaunt(slamzWon, true)
       };
 
       setInstances(prev => [...prev, newInstance]);
@@ -90,7 +90,7 @@ export function WraithPopup() {
     }, 6000);
 
     return () => clearTimeout(globalTimer);
-  }, [swarmActive, swarmCount, pogsWon, clearSwarm]);
+  }, [swarmActive, swarmCount, slamzWon, clearSwarm]);
 
   // Standard Cinematic Taunt Trigger (Triggered at 50% throws remaining)
   useEffect(() => {
@@ -98,7 +98,7 @@ export function WraithPopup() {
     const shouldTaunt = throwsRemaining <= 2;
 
     if (isCinematicActive && bulletTimeActive && !visible && !swarmActive && shouldTaunt) {
-      const newTaunt = getWraithTaunt(pogsWon, false);
+      const newTaunt = getWraithTaunt(slamzWon, false);
       setTaunt(newTaunt);
       setVisible(true);
 
@@ -112,7 +112,7 @@ export function WraithPopup() {
     if (!isCinematicActive && visible) {
       setVisible(false);
     }
-  }, [isCinematicActive, bulletTimeActive, pogsWon, swarmActive, visible, throwsRemaining]); 
+  }, [isCinematicActive, bulletTimeActive, slamzWon, swarmActive, visible, throwsRemaining]); 
 
   if (!visible && !swarmActive) return null;
 

@@ -1,17 +1,19 @@
 {
-  "name": "slamz-pog-v2",
+  "name": "slamz-pro-tour-v2",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "compress-assets": "node 300_ASSET_PIPELINE/compress-glbs.mjs"
   },
   "devDependencies": {
     "@react-dev-inspector/vite-plugin": "^2.0.1",
     "@react-scan/vite-plugin-react-scan": "^0.2.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "gltf-pipeline": "^4.3.1",
     "leva": "^0.10.1",
     "n8ao": "^1.10.1",
     "react-scan": "^0.5.3",

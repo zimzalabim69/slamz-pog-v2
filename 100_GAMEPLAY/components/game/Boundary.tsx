@@ -3,7 +3,7 @@ import { useGameStore } from '@100/store/useGameStore';
 
 /**
  * BOUNDARY — Invisible containment cylinder
- * This keeps pogs from flying off the arena mat.
+ * This keeps slamzs from flying off the arena mat.
  */
 export function Boundary() {
   const debugParams = useGameStore((state) => state.debugParams);

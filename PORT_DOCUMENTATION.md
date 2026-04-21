@@ -34,7 +34,7 @@ We do not render the React app until the Texture Registry and Physics State are 
 #### Texture Registry Integration
 - **Phase 3 Addition**: Texture registry now initializes physics world state
 - **Synchronous Pre-population**: Physics world populated during texture loading
-- **Single Initialization**: Prevents duplicate POG creation
+- **Single Initialization**: Prevents duplicate SLAMZ creation
 
 ## Component Port Status
 
@@ -49,7 +49,7 @@ These components have been ported directly from the original with minimal change
 #### Systems
 - **Audio System**: Ported 1:1 from `AudioSystem.js`. Managed via `systems/audio.ts`.
 - **Set Manager**: Ported 1:1. Handles collection logic and achievement triggers.
-- **Set Definitions**: Ported 1:1. The "Source of Truth" for POG visual properties.
+- **Set Definitions**: Ported 1:1. The "Source of Truth" for SLAMZ visual properties.
 
 #### Game Logic
 - **Drawing Core**: "1:1 PROTOTYPE LOGIC" maintained in texture generation
